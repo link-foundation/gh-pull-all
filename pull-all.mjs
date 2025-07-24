@@ -154,6 +154,7 @@ class StatusDisplay {
 
 // Configure CLI arguments
 const argv = yargs(hideBin(process.argv))
+  .scriptName('pull-all.mjs')
   .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
   .option('org', {
     alias: 'o',
@@ -185,12 +186,29 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Target directory for repositories',
     default: process.cwd()
   })
+  .option('threads', {
+    alias: 'j',
+    type: 'number',
+    describe: 'Number of concurrent operations (default: 8)',
+    default: 8
+  })
+  .option('single-thread', {
+    type: 'boolean',
+    describe: 'Run operations sequentially (equivalent to --threads 1)',
+    default: false
+  })
   .check((argv) => {
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
     }
     if (argv.org && argv.user) {
       throw new Error('You cannot specify both --org and --user')
+    }
+    if (argv.threads < 1) {
+      throw new Error('Thread count must be at least 1')
+    }
+    if (argv['single-thread'] && argv.threads !== 8) {
+      throw new Error('Cannot specify both --single-thread and --threads')
     }
     return true
   })
@@ -199,6 +217,9 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
   .example('$0 --user konard', 'Sync all repositories from konard user account')
   .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')
+  .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
+  .example('$0 --user konard --single-thread', 'Run operations sequentially')
+  .example('$0 --user konard -j 16', 'Use 16 concurrent operations (alias for --threads)')
   .argv
 
 async function getOrganizationRepos(org, token) {
@@ -346,14 +367,18 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token) 
 }
 
 async function main() {
-  const { org, user, token, ssh: useSsh, dir: targetDir } = argv
+  const { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread } = argv
   
   const target = org || user
   const targetType = org ? 'organization' : 'user'
   
+  // Determine concurrency limit: single-thread overrides threads setting
+  const concurrencyLimit = singleThread ? 1 : threads
+  
   log('blue', `🚀 Starting ${target} ${targetType} repository sync...`)
   log('cyan', `📁 Target directory: ${targetDir}`)
   log('cyan', `🔗 Using ${useSsh ? 'SSH' : 'HTTPS'} for cloning`)
+  log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
   
   // Ensure target directory exists
   await fs.ensureDir(targetDir)
@@ -373,19 +398,26 @@ async function main() {
   // Initial render
   statusDisplay.render()
   
-  // Process all repositories in parallel
-  const concurrencyLimit = 10 // Limit concurrent operations to avoid overwhelming the system
+  // Process all repositories with configurable concurrency
   const results = []
   
-  // Process repos in batches to control concurrency
-  for (let i = 0; i < repos.length; i += concurrencyLimit) {
-    const batch = repos.slice(i, i + concurrencyLimit)
-    const batchPromises = batch.map(repo => 
-      processRepository(repo, targetDir, useSsh, statusDisplay, token)
-    )
-    
-    const batchResults = await Promise.all(batchPromises)
-    results.push(...batchResults)
+  if (concurrencyLimit === 1) {
+    // Sequential processing for single-thread mode
+    for (const repo of repos) {
+      const result = await processRepository(repo, targetDir, useSsh, statusDisplay, token)
+      results.push(result)
+    }
+  } else {
+    // Parallel processing in batches
+    for (let i = 0; i < repos.length; i += concurrencyLimit) {
+      const batch = repos.slice(i, i + concurrencyLimit)
+      const batchPromises = batch.map(repo => 
+        processRepository(repo, targetDir, useSsh, statusDisplay, token)
+      )
+      
+      const batchResults = await Promise.all(batchPromises)
+      results.push(...batchResults)
+    }
   }
   
   // Print final summary

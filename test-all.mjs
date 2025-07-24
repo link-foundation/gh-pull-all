@@ -144,8 +144,9 @@ async function main() {
     const result = await runTest(testFile)
     results.push(result)
     
-    // Parse test output to count individual tests
-    const testCount = (result.stdout.match(/✓/g) || []).length
+    // Parse test output to count individual tests from uvu format
+    const totalMatch = result.stdout.match(/Total:\s+(\d+)/)
+    const testCount = totalMatch ? parseInt(totalMatch[1]) : 0
     totalTests += testCount
     
     if (result.code === 0) {

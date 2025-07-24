@@ -26,13 +26,16 @@ const colors = {
 
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
-// Status display system for in-place updates
+// Status display system with safe terminal output
 class StatusDisplay {
-  constructor() {
+  constructor(liveUpdates = false) {
     this.repos = new Map()
     this.startTime = Date.now()
-    this.isInteractive = process.stdout.isTTY
+    this.isInteractive = process.stdout.isTTY && !process.env.CI
+    this.useInPlaceUpdates = liveUpdates && this.isInteractive
+    this.lastLoggedRepo = null
     this.headerPrinted = false
+    this.renderedOnce = false
   }
 
   addRepo(name, status = 'pending') {
@@ -40,25 +43,50 @@ class StatusDisplay {
       name,
       status,
       startTime: Date.now(),
-      message: ''
+      message: '',
+      logged: false
     })
   }
 
   updateRepo(name, status, message = '') {
     const repo = this.repos.get(name)
     if (repo) {
+      const oldStatus = repo.status
       repo.status = status
       repo.message = message
       if (status !== 'pending') {
         repo.endTime = Date.now()
       }
-      this.render()
+      
+      if (this.useInPlaceUpdates) {
+        this.render()
+      } else {
+        this.logStatusChange(repo, oldStatus)
+      }
     }
   }
 
+  logStatusChange(repo, oldStatus) {
+    // Only log meaningful status changes to avoid spam
+    if (repo.status === 'pending' || repo.status === oldStatus) {
+      return
+    }
+
+    const statusIcon = this.getStatusIcon(repo.status)
+    const statusColor = this.getStatusColor(repo.status)
+    const duration = repo.endTime ? 
+      `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
+      `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
+    
+    // Simple append-only log line - no cursor manipulation
+    const line = `${statusColor}${statusIcon} ${repo.name.padEnd(30)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+    console.log(line)
+    repo.logged = true
+  }
+
   render() {
-    if (!this.isInteractive) {
-      return // Don't render table in non-interactive mode
+    if (!this.useInPlaceUpdates) {
+      return // Use append-only mode by default
     }
 
     if (!this.headerPrinted) {
@@ -67,8 +95,8 @@ class StatusDisplay {
       this.headerPrinted = true
     }
 
-    // Move cursor up by the number of repos to overwrite previous output
-    if (this.repos.size > 0) {
+    // Move cursor up by the number of repos to overwrite previous output (only if we've rendered before)
+    if (this.renderedOnce && this.repos.size > 0) {
       process.stdout.write(`\x1b[${this.repos.size}A`)
     }
 
@@ -80,12 +108,14 @@ class StatusDisplay {
         `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
         `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
       
-      const line = `${statusColor}${statusIcon}${colors.reset} ${name.padEnd(30)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+      const line = `${statusColor}${statusIcon}${colors.reset} ${repo.name.padEnd(30)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
       
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
       console.log(line)
     }
+    
+    this.renderedOnce = true
   }
 
   getStatusIcon(status) {
@@ -136,10 +166,14 @@ class StatusDisplay {
         case 'skipped':
           summary.skipped++
           break
+        case 'uncommitted':
+          summary.uncommitted++
+          break
       }
     }
 
-    console.log(`\n${colors.bold}📊 Summary:${colors.reset}`)
+    console.log() // Add spacing before summary
+    log('blue', `${colors.bold}📊 Summary:${colors.reset}`)
     if (summary.cloned > 0) log('green', `✅ Cloned: ${summary.cloned}`)
     if (summary.pulled > 0) log('green', `✅ Pulled: ${summary.pulled}`)
     if (summary.uncommitted > 0) log('cyan', `🔄 Uncommitted changes: ${summary.uncommitted}`)
@@ -197,6 +231,11 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Run operations sequentially (equivalent to --threads 1)',
     default: false
   })
+  .option('live-updates', {
+    type: 'boolean',
+    describe: 'Enable live in-place status updates (may interfere with terminal history)',
+    default: false
+  })
   .check((argv) => {
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
@@ -220,6 +259,7 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
   .example('$0 --user konard --single-thread', 'Run operations sequentially')
   .example('$0 --user konard -j 16', 'Use 16 concurrent operations (alias for --threads)')
+  .example('$0 --user konard --live-updates', 'Enable live in-place status updates')
   .argv
 
 async function getOrganizationRepos(org, token) {
@@ -367,7 +407,7 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token) 
 }
 
 async function main() {
-  const { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread } = argv
+  const { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates } = argv
   
   const target = org || user
   const targetType = org ? 'organization' : 'user'
@@ -388,15 +428,12 @@ async function main() {
     : await getUserRepos(user, token)
   
   // Initialize status display
-  const statusDisplay = new StatusDisplay()
+  const statusDisplay = new StatusDisplay(liveUpdates)
   
   // Add all repositories to status display
   for (const repo of repos) {
     statusDisplay.addRepo(repo.name)
   }
-  
-  // Initial render
-  statusDisplay.render()
   
   // Process all repositories with configurable concurrency
   const results = []

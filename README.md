@@ -58,6 +58,7 @@ Options:
   -d, --dir            Target directory for repositories (default: current directory)
   -j, --threads        Number of concurrent operations (default: 8)
       --single-thread  Run operations sequentially (equivalent to --threads 1)
+      --live-updates   Enable live in-place status updates (may interfere with terminal history)
   -h, --help           Show help
 ```
 
@@ -81,11 +82,14 @@ Options:
 
 # Maximum concurrency (be careful with rate limits)
 ./pull-all.mjs --org myorg --threads 20 --token $GITHUB_TOKEN
+
+# Enable live updates (updates in place, may interfere with terminal history)
+./pull-all.mjs --user octocat --live-updates
 ```
 
 ## Status Display
 
-The script shows real-time progress with visual indicators:
+The script shows real-time progress with visual indicators. By default, it uses append-only output to preserve terminal history. Use `--live-updates` for in-place updates if you prefer.
 
 - ⏳ `pending` - Repository queued for processing
 - 📦 `cloning` - Currently cloning repository  

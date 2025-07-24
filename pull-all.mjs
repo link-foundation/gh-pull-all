@@ -233,8 +233,8 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('live-updates', {
     type: 'boolean',
-    describe: 'Enable live in-place status updates (may interfere with terminal history)',
-    default: false
+    describe: 'Enable live in-place status updates (default: true, use --no-live-updates to disable)',
+    default: true
   })
   .check((argv) => {
     if (!argv.org && !argv.user) {
@@ -259,7 +259,7 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
   .example('$0 --user konard --single-thread', 'Run operations sequentially')
   .example('$0 --user konard -j 16', 'Use 16 concurrent operations (alias for --threads)')
-  .example('$0 --user konard --live-updates', 'Enable live in-place status updates')
+  .example('$0 --user konard --no-live-updates', 'Disable live updates for terminal history preservation')
   .argv
 
 async function getOrganizationRepos(org, token) {

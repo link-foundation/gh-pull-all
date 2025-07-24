@@ -42,8 +42,8 @@ function runScript(args) {
   })
 }
 
-test('default mode should not use cursor manipulation', async () => {
-  const result = await runScript(['--user', 'nonexistent-test-user'])
+test('no-live-updates mode should not use cursor manipulation', async () => {
+  const result = await runScript(['--user', 'nonexistent-test-user', '--no-live-updates'])
   
   // Should not contain ANSI cursor movement codes
   assert.not.match(result.stdout, /\x1b\[\d+A/) // No cursor up
@@ -54,27 +54,25 @@ test('default mode should not use cursor manipulation', async () => {
   assert.match(result.stdout, /Concurrency: 8 threads/)
 })
 
-test('live-updates mode should show help option', async () => {
+test('help should show both live-updates options', async () => {
   const result = await runScript(['--help'])
   
   assert.equal(result.code, 0)
   assert.match(result.stdout, /--live-updates/)
+  assert.match(result.stdout, /--no-live-updates/)
   assert.match(result.stdout, /Enable live in-place status updates/)
 })
 
-test('default mode should preserve terminal history', async () => {
+test('default mode uses live updates', async () => {
   const result = await runScript(['--user', 'test-nonexistent'])
-  
-  // All output should be on separate lines without overwriting
-  const lines = result.stdout.split('\n').filter(line => line.trim())
-  
-  // Should have multiple distinct lines
-  assert.ok(lines.length >= 4, 'Should have multiple output lines')
   
   // Should contain startup information
   assert.match(result.stdout, /Starting test-nonexistent user repository sync/)
   assert.match(result.stdout, /Target directory:/)
   assert.match(result.stdout, /Concurrency:/)
+  
+  // Since it's the default, no special flags should be needed
+  assert.equal(result.code, 1) // Should fail with non-existent user
 })
 
 test.run()

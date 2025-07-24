@@ -26,13 +26,18 @@ const log = (color, message) => console.log(`${colors[color]}${message}${colors.
 
 // Configure CLI arguments
 const argv = yargs(hideBin(process.argv))
-  .usage('Usage: $0 --org <organization> [options]')
+  .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
   .option('org', {
     alias: 'o',
     type: 'string',
-    demandOption: true,
     describe: 'GitHub organization name',
     example: 'deep-assistant'
+  })
+  .option('user', {
+    alias: 'u',
+    type: 'string',
+    describe: 'GitHub username',
+    example: 'konard'
   })
   .option('token', {
     alias: 't',
@@ -52,9 +57,19 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Target directory for repositories',
     default: process.cwd()
   })
+  .check((argv) => {
+    if (!argv.org && !argv.user) {
+      throw new Error('You must specify either --org or --user')
+    }
+    if (argv.org && argv.user) {
+      throw new Error('You cannot specify both --org and --user')
+    }
+    return true
+  })
   .help('h')
   .alias('h', 'help')
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
+  .example('$0 --user konard', 'Sync all repositories from konard user account')
   .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')
   .argv
 
@@ -88,6 +103,45 @@ async function getOrganizationRepos(org, token) {
   } catch (error) {
     if (error.status === 404) {
       log('red', `❌ Organization '${org}' not found or not accessible`)
+    } else if (error.status === 401) {
+      log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
+    } else {
+      log('red', `❌ Failed to fetch repositories: ${error.message}`)
+    }
+    process.exit(1)
+  }
+}
+
+async function getUserRepos(username, token) {
+  try {
+    log('blue', `🔍 Fetching repositories from ${username} user account...`)
+    
+    // Create Octokit instance
+    const octokit = new Octokit({
+      auth: token
+    })
+    
+    // Get all repositories for the user
+    const { data: repos } = await octokit.rest.repos.listForUser({
+      username: username,
+      type: 'all',
+      per_page: 100,
+      sort: 'updated',
+      direction: 'desc'
+    })
+    
+    log('green', `✅ Found ${repos.length} repositories`)
+    return repos.map(repo => ({
+      name: repo.name,
+      clone_url: repo.clone_url,
+      ssh_url: repo.ssh_url,
+      html_url: repo.html_url,
+      updated_at: repo.updated_at,
+      private: repo.private
+    }))
+  } catch (error) {
+    if (error.status === 404) {
+      log('red', `❌ User '${username}' not found or not accessible`)
     } else if (error.status === 401) {
       log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
     } else {
@@ -145,16 +199,21 @@ async function cloneRepository(repo, targetDir, useSsh) {
 }
 
 async function main() {
-  const { org, token, ssh: useSsh, dir: targetDir } = argv
+  const { org, user, token, ssh: useSsh, dir: targetDir } = argv
   
-  log('blue', `🚀 Starting ${org} organization repository sync...`)
+  const target = org || user
+  const targetType = org ? 'organization' : 'user'
+  
+  log('blue', `🚀 Starting ${target} ${targetType} repository sync...`)
   log('cyan', `📁 Target directory: ${targetDir}`)
   log('cyan', `🔗 Using ${useSsh ? 'SSH' : 'HTTPS'} for cloning`)
   
   // Ensure target directory exists
   await fs.ensureDir(targetDir)
   
-  const repos = await getOrganizationRepos(org, token)
+  const repos = org 
+    ? await getOrganizationRepos(org, token)
+    : await getUserRepos(user, token)
   
   let cloned = 0
   let pulled = 0

@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 
 // Main test runner script - executes all tests
-const useJs = await fetch('https://unpkg.com/use-m/use.js')
-const { use } = eval(await useJs.text())
+const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 const fs = await use('fs-extra@latest')
 const path = await use('path@latest')

@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 
 // Test thread configuration functionality
-const useJs = await fetch('https://unpkg.com/use-m/use.js')
-const { use } = eval(await useJs.text())
+const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')

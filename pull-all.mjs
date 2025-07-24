@@ -18,10 +18,139 @@ const colors = {
   blue: '\x1b[34m',
   red: '\x1b[31m',
   cyan: '\x1b[36m',
+  magenta: '\x1b[35m',
+  dim: '\x1b[2m',
+  bold: '\x1b[1m',
   reset: '\x1b[0m'
 }
 
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
+
+// Status display system for in-place updates
+class StatusDisplay {
+  constructor() {
+    this.repos = new Map()
+    this.startTime = Date.now()
+    this.isInteractive = process.stdout.isTTY
+    this.headerPrinted = false
+  }
+
+  addRepo(name, status = 'pending') {
+    this.repos.set(name, {
+      name,
+      status,
+      startTime: Date.now(),
+      message: ''
+    })
+  }
+
+  updateRepo(name, status, message = '') {
+    const repo = this.repos.get(name)
+    if (repo) {
+      repo.status = status
+      repo.message = message
+      if (status !== 'pending') {
+        repo.endTime = Date.now()
+      }
+      this.render()
+    }
+  }
+
+  render() {
+    if (!this.isInteractive) {
+      return // Don't render table in non-interactive mode
+    }
+
+    if (!this.headerPrinted) {
+      console.log(`\n${colors.bold}Repository Status${colors.reset}`)
+      console.log(`${colors.dim}${'─'.repeat(80)}${colors.reset}`)
+      this.headerPrinted = true
+    }
+
+    // Move cursor up by the number of repos to overwrite previous output
+    if (this.repos.size > 0) {
+      process.stdout.write(`\x1b[${this.repos.size}A`)
+    }
+
+    // Render each repository status
+    for (const [name, repo] of this.repos) {
+      const statusIcon = this.getStatusIcon(repo.status)
+      const statusColor = this.getStatusColor(repo.status)
+      const duration = repo.endTime ? 
+        `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
+        `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
+      
+      const line = `${statusColor}${statusIcon}${colors.reset} ${name.padEnd(30)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+      
+      // Clear the line and write new content
+      process.stdout.write('\x1b[2K') // Clear entire line
+      console.log(line)
+    }
+  }
+
+  getStatusIcon(status) {
+    switch (status) {
+      case 'pending': return '⏳'
+      case 'cloning': return '📦'
+      case 'pulling': return '📥'
+      case 'success': return '✅'
+      case 'failed': return '❌'
+      case 'skipped': return '⚠️ '
+      case 'uncommitted': return '🔄'
+      default: return '❓'
+    }
+  }
+
+  getStatusColor(status) {
+    switch (status) {
+      case 'pending': return colors.dim
+      case 'cloning':
+      case 'pulling': return colors.yellow
+      case 'success': return colors.green
+      case 'failed': return colors.red
+      case 'skipped': return colors.yellow
+      case 'uncommitted': return colors.cyan
+      default: return colors.reset
+    }
+  }
+
+  printSummary() {
+    const summary = {
+      cloned: 0,
+      pulled: 0,
+      failed: 0,
+      skipped: 0,
+      uncommitted: 0
+    }
+
+    for (const [name, repo] of this.repos) {
+      switch (repo.status) {
+        case 'success':
+          if (repo.message.includes('cloned')) summary.cloned++
+          else if (repo.message.includes('pulled')) summary.pulled++
+          else if (repo.message.includes('uncommitted')) summary.uncommitted++
+          break
+        case 'failed':
+          summary.failed++
+          break
+        case 'skipped':
+          summary.skipped++
+          break
+      }
+    }
+
+    console.log(`\n${colors.bold}📊 Summary:${colors.reset}`)
+    if (summary.cloned > 0) log('green', `✅ Cloned: ${summary.cloned}`)
+    if (summary.pulled > 0) log('green', `✅ Pulled: ${summary.pulled}`)
+    if (summary.uncommitted > 0) log('cyan', `🔄 Uncommitted changes: ${summary.uncommitted}`)
+    if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
+    if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
+
+    const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)
+    log('blue', `⏱️  Total time: ${totalTime}s`)
+    log('blue', '🎉 Repository sync completed!')
+  }
+}
 
 // Configure CLI arguments
 const argv = yargs(hideBin(process.argv))
@@ -159,41 +288,60 @@ async function directoryExists(dirPath) {
   }
 }
 
-async function pullRepository(repoName, targetDir) {
+async function pullRepository(repoName, targetDir, statusDisplay) {
   try {
-    log('yellow', `📥 Pulling ${repoName}...`)
+    statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
     const simpleGit = git(repoPath)
     
     const status = await simpleGit.status()
     if (status.files.length > 0) {
-      log('cyan', `⚠️  ${repoName} has uncommitted changes, skipping pull`)
-      return true
+      statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped')
+      return { success: true, type: 'uncommitted' }
     }
     
+    statusDisplay.updateRepo(repoName, 'pulling', 'Pulling changes...')
     await simpleGit.pull()
-    log('green', `✅ Successfully pulled ${repoName}`)
-    return true
+    statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled')
+    return { success: true, type: 'pulled' }
   } catch (error) {
-    log('red', `❌ Failed to pull ${repoName}: ${error.message}`)
-    return false
+    statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
+    return { success: false, type: 'pull', error: error.message }
   }
 }
 
-async function cloneRepository(repo, targetDir, useSsh) {
+async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   try {
-    log('yellow', `📦 Cloning ${repo.name}...`)
+    statusDisplay.updateRepo(repo.name, 'cloning', 'Starting clone...')
     const simpleGit = git(targetDir)
     
     // Use SSH if requested and available, fallback to HTTPS
     const cloneUrl = useSsh && repo.ssh_url ? repo.ssh_url : repo.clone_url
     await simpleGit.clone(cloneUrl, repo.name)
     
-    log('green', `✅ Successfully cloned ${repo.name}`)
-    return true
+    statusDisplay.updateRepo(repo.name, 'success', 'Successfully cloned')
+    return { success: true, type: 'cloned' }
   } catch (error) {
-    log('red', `❌ Failed to clone ${repo.name}: ${error.message}`)
-    return false
+    statusDisplay.updateRepo(repo.name, 'failed', `Error: ${error.message}`)
+    return { success: false, type: 'clone', error: error.message }
+  }
+}
+
+// Process repository (either pull or clone)
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token) {
+  const repoPath = path.join(targetDir, repo.name)
+  const exists = await directoryExists(repoPath)
+  
+  // Check if private repo without token
+  if (repo.private && !token && !exists) {
+    statusDisplay.updateRepo(repo.name, 'skipped', 'Private repo, no token provided')
+    return { success: true, type: 'skipped' }
+  }
+  
+  if (exists) {
+    return await pullRepository(repo.name, targetDir, statusDisplay)
+  } else {
+    return await cloneRepository(repo, targetDir, useSsh, statusDisplay)
   }
 }
 
@@ -214,43 +362,34 @@ async function main() {
     ? await getOrganizationRepos(org, token)
     : await getUserRepos(user, token)
   
-  let cloned = 0
-  let pulled = 0
-  let failed = 0
-  let skipped = 0
+  // Initialize status display
+  const statusDisplay = new StatusDisplay()
   
+  // Add all repositories to status display
   for (const repo of repos) {
-    const repoPath = path.join(targetDir, repo.name)
-    const exists = await directoryExists(repoPath)
+    statusDisplay.addRepo(repo.name)
+  }
+  
+  // Initial render
+  statusDisplay.render()
+  
+  // Process all repositories in parallel
+  const concurrencyLimit = 10 // Limit concurrent operations to avoid overwhelming the system
+  const results = []
+  
+  // Process repos in batches to control concurrency
+  for (let i = 0; i < repos.length; i += concurrencyLimit) {
+    const batch = repos.slice(i, i + concurrencyLimit)
+    const batchPromises = batch.map(repo => 
+      processRepository(repo, targetDir, useSsh, statusDisplay, token)
+    )
     
-    if (exists) {
-      const success = await pullRepository(repo.name, targetDir)
-      if (success) pulled++
-      else failed++
-    } else {
-      if (repo.private && !token) {
-        log('yellow', `⚠️  Skipping private repository ${repo.name} (no token provided)`)
-        skipped++
-        continue
-      }
-      
-      const success = await cloneRepository(repo, targetDir, useSsh)
-      if (success) cloned++
-      else failed++
-    }
+    const batchResults = await Promise.all(batchPromises)
+    results.push(...batchResults)
   }
   
-  log('blue', '\n📊 Summary:')
-  log('green', `✅ Cloned: ${cloned}`)
-  log('green', `✅ Pulled: ${pulled}`)
-  if (skipped > 0) {
-    log('yellow', `⚠️  Skipped: ${skipped}`)
-  }
-  if (failed > 0) {
-    log('red', `❌ Failed: ${failed}`)
-  }
-  
-  log('blue', '🎉 Repository sync completed!')
+  // Print final summary
+  statusDisplay.printSummary()
 }
 
 main().catch(error => {

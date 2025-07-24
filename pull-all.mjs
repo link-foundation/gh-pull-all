@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 
 // Download use-m dynamically
-const useJs = await fetch('https://unpkg.com/use-m/use.js')
-const { use } = eval(await useJs.text())
+const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
 const { Octokit } = await use('@octokit/rest@latest')

@@ -590,6 +590,9 @@ async function main() {
     statusDisplay.addRepo(repo.name)
   }
   
+  // Sort repositories alphabetically by name
+  repos.sort((a, b) => a.name.localeCompare(b.name))
+  
   // Process all repositories with configurable concurrency
   const results = []
   

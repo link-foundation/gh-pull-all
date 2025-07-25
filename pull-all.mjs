@@ -28,15 +28,30 @@ const log = (color, message) => console.log(`${colors[color]}${message}${colors.
 
 // Status display system with safe terminal output
 class StatusDisplay {
-  constructor(liveUpdates = false) {
+  constructor(liveUpdates = false, threads = 1) {
     this.repos = new Map()
     this.startTime = Date.now()
     this.isInteractive = process.stdout.isTTY && !process.env.CI
-    this.useInPlaceUpdates = liveUpdates && this.isInteractive
+    this.threads = threads
+    this.liveUpdates = liveUpdates
+    this.useInPlaceUpdates = liveUpdates && this.isInteractive && threads > 1
     this.lastLoggedRepo = null
     this.headerPrinted = false
     this.renderedOnce = false
     this.maxNameLength = 0
+    this.terminalWidth = process.stdout.columns || 80
+    this.errors = []
+    this.errorCounter = 0
+    
+    // Listen for terminal resize
+    if (this.isInteractive) {
+      process.stdout.on('resize', () => {
+        this.terminalWidth = process.stdout.columns || 80
+        if (this.useInPlaceUpdates) {
+          this.render()
+        }
+      })
+    }
   }
 
   addRepo(name, status = 'pending') {
@@ -45,7 +60,8 @@ class StatusDisplay {
       status,
       startTime: Date.now(),
       message: '',
-      logged: false
+      logged: false,
+      errorNumber: null
     })
     // Update max name length for proper alignment
     this.maxNameLength = Math.max(this.maxNameLength, name.length)
@@ -59,6 +75,17 @@ class StatusDisplay {
       repo.message = message
       if (status !== 'pending') {
         repo.endTime = Date.now()
+      }
+      
+      // Handle error tracking
+      if (status === 'failed' && !repo.errorNumber) {
+        this.errorCounter++
+        repo.errorNumber = this.errorCounter
+        this.errors.push({
+          number: this.errorCounter,
+          repo: name,
+          message: message
+        })
       }
       
       if (this.useInPlaceUpdates) {
@@ -75,14 +102,33 @@ class StatusDisplay {
       return
     }
 
+    // For single thread mode or no live updates with multiple threads,
+    // only log final status (not intermediate states like 'pulling', 'cloning')
+    if (this.threads === 1 || (!this.liveUpdates && this.threads > 1)) {
+      if (repo.status === 'pulling' || repo.status === 'cloning') {
+        return // Skip intermediate states
+      }
+    }
+
     const statusIcon = this.getStatusIcon(repo.status)
     const statusColor = this.getStatusColor(repo.status)
     const duration = repo.endTime ? 
       `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
       `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
     
+    // Calculate available space for message
+    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
+    const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
+    
+    let displayMessage = repo.message
+    if (repo.status === 'failed' && repo.errorNumber) {
+      displayMessage = `Error #${repo.errorNumber}: ${this.truncateMessage(repo.message, availableWidth - 10)}`
+    } else {
+      displayMessage = this.truncateMessage(repo.message, availableWidth)
+    }
+    
     // Simple append-only log line - no cursor manipulation
-    const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+    const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
     console.log(line)
     repo.logged = true
   }
@@ -94,7 +140,7 @@ class StatusDisplay {
 
     if (!this.headerPrinted) {
       console.log(`\n${colors.bold}Repository Status${colors.reset}`)
-      console.log(`${colors.dim}${'─'.repeat(80)}${colors.reset}`)
+      console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
       this.headerPrinted = true
     }
 
@@ -102,6 +148,10 @@ class StatusDisplay {
     if (this.renderedOnce && this.repos.size > 0) {
       process.stdout.write(`\x1b[${this.repos.size}A`)
     }
+
+    // Calculate available space for message
+    const baseLength = 2 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
+    const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
 
     // Render each repository status
     for (const [name, repo] of this.repos) {
@@ -111,7 +161,14 @@ class StatusDisplay {
         `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
         `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
       
-      const line = `${statusColor}${statusIcon}${colors.reset} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+      let displayMessage = repo.message
+      if (repo.status === 'failed' && repo.errorNumber) {
+        displayMessage = `Error #${repo.errorNumber}: ${this.truncateMessage(repo.message, availableWidth - 10)}`
+      } else {
+        displayMessage = this.truncateMessage(repo.message, availableWidth)
+      }
+      
+      const line = `${statusColor}${statusIcon}${colors.reset} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
       
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
@@ -147,6 +204,27 @@ class StatusDisplay {
     }
   }
 
+  truncateMessage(message, maxLength) {
+    if (!message || message.length <= maxLength) {
+      return message
+    }
+    return message.substring(0, maxLength - 3) + '...'
+  }
+
+  printErrors() {
+    if (this.errors.length === 0) {
+      return
+    }
+
+    console.log() // Add spacing
+    log('red', `${colors.bold}❌ Errors:${colors.reset}`)
+    console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
+    
+    for (const error of this.errors) {
+      console.log(`${colors.red}#${error.number.toString().padStart(2)} ${colors.yellow}${error.repo}${colors.reset}: ${error.message}`)
+    }
+  }
+
   printSummary() {
     const summary = {
       cloned: 0,
@@ -174,6 +252,9 @@ class StatusDisplay {
           break
       }
     }
+
+    // Print errors list (append-only, after all repos are done)
+    this.printErrors()
 
     console.log() // Add spacing before summary
     log('blue', `${colors.bold}📊 Summary:${colors.reset}`)
@@ -502,7 +583,7 @@ async function main() {
   }
   
   // Initialize status display
-  const statusDisplay = new StatusDisplay(liveUpdates)
+  const statusDisplay = new StatusDisplay(liveUpdates, concurrencyLimit)
   
   // Add all repositories to status display
   for (const repo of repos) {

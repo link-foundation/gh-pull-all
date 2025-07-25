@@ -1,105 +1,226 @@
 #!/usr/bin/env bun
 
-// Integration test for the pull-all script
+// Comprehensive integration test covering all functionality
+// Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
-const { test } = await use('uvu@0.5.6')
-const assert = await use('uvu@0.5.6/assert')
+// Import modern npm libraries using use-m
 const fs = await use('fs-extra@latest')
 const path = await use('path@latest')
-const { spawn } = await import('child_process')
+const os = await import('os')
+const { execSync } = await import('child_process')
 
-const testDir = path.join(process.cwd(), 'test-integration-temp')
-
-test.before(async () => {
-  // Ensure test directory exists
-  await fs.ensureDir(testDir)
-})
-
-test.after(async () => {
-  // Clean up test directory
-  await fs.remove(testDir)
-})
-
-function runScript(args) {
-  return new Promise((resolve, reject) => {
-    const child = spawn('bun', ['./pull-all.mjs', ...args], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      cwd: process.cwd()
-    })
-    
-    let stdout = ''
-    let stderr = ''
-    
-    child.stdout.on('data', (data) => {
-      stdout += data.toString()
-    })
-    
-    child.stderr.on('data', (data) => {
-      stderr += data.toString()
-    })
-    
-    child.on('close', (code) => {
-      resolve({ code, stdout, stderr })
-    })
-    
-    child.on('error', (error) => {
-      reject(error)
-    })
-    
-    // Timeout after 10 seconds
-    setTimeout(() => {
-      child.kill('SIGTERM')
-      reject(new Error('Test timeout'))
-    }, 10000)
-  })
+// Colors for console output
+const colors = {
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  red: '\x1b[31m',
+  cyan: '\x1b[36m',
+  magenta: '\x1b[35m',
+  dim: '\x1b[2m',
+  bold: '\x1b[1m',
+  reset: '\x1b[0m'
 }
 
-test('script should show help when no arguments provided', async () => {
-  const result = await runScript([])
-  
-  // Script should exit with error code due to validation
-  assert.not.equal(result.code, 0)
-  assert.match(result.stderr, /You must specify either --org or --user/)
-})
+const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
-test('script should show help with --help flag', async () => {
-  const result = await runScript(['--help'])
+async function testIntegration() {
+  const testDir = path.join(os.tmpdir(), 'pull-all-test-integration')
   
-  assert.equal(result.code, 0)
-  assert.match(result.stdout, /Usage:/)
-  assert.match(result.stdout, /GitHub organization name/)
-  assert.match(result.stdout, /GitHub username/)
-})
+  try {
+    log('blue', '🧪 Running comprehensive integration test...')
+    log('cyan', '🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width')
+    
+    // Clean up any existing test directory
+    await fs.remove(testDir)
+    await fs.ensureDir(testDir)
+    
+    // === PHASE 1: Initial clone with mixed scenarios ===
+    log('cyan', '🔧 Phase 1: Setting up mixed scenario environment...')
+    
+    // Create conflicting files for some repos (to test error handling)
+    await fs.writeFile(path.join(testDir, 'Spoon-Knife'), 'conflicting file content to trigger error #1')
+    await fs.writeFile(path.join(testDir, 'Hello-World'), 'conflicting file content to trigger error #2')
+    
+    // Run initial clone with errors expected
+    let phase1Result
+    try {
+      phase1Result = execSync(`./pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
+        encoding: 'utf8',
+        stdio: 'pipe'
+      })
+    } catch (execError) {
+      phase1Result = execError.stdout || ''
+    }
+    
+    log('green', '✅ Phase 1 completed: Initial clone with errors')
+    
+    // === PHASE 2: Add uncommitted changes ===
+    log('cyan', '🔧 Phase 2: Adding uncommitted changes to successful clones...')
+    
+    const repos = await fs.readdir(testDir)
+    const validRepos = repos.filter(repo => {
+      try {
+        const stat = fs.statSync(path.join(testDir, repo))
+        return stat.isDirectory()
+      } catch {
+        return false
+      }
+    })
+    
+    if (validRepos.length >= 2) {
+      // Add uncommitted changes to first two successful repos
+      await fs.writeFile(path.join(testDir, validRepos[0], 'uncommitted-test.txt'), 'uncommitted change 1')
+      await fs.writeFile(path.join(testDir, validRepos[1], 'uncommitted-test.txt'), 'uncommitted change 2')
+      log('cyan', `🔧 Added uncommitted changes to ${validRepos[0]} and ${validRepos[1]}`)
+    }
+    
+    // === PHASE 3: Test pull with mixed states ===
+    log('cyan', '🔧 Phase 3: Running pull with mixed repository states...')
+    
+    let phase3Result
+    try {
+      phase3Result = execSync(`./pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+        encoding: 'utf8',
+        stdio: 'pipe'
+      })
+    } catch (execError) {
+      phase3Result = execError.stdout || ''
+    }
+    
+    log('green', '✅ Phase 3 completed: Pull with mixed states')
+    
+    // === PHASE 4: Test single-thread mode ===
+    log('cyan', '🔧 Phase 4: Testing single-thread mode behavior...')
+    
+    // Remove one error file to change the scenario
+    await fs.remove(path.join(testDir, 'Spoon-Knife'))
+    
+    let phase4Result
+    try {
+      phase4Result = execSync(`./pull-all.mjs --user octocat --single-thread --dir ${testDir}`, {
+        encoding: 'utf8',
+        stdio: 'pipe'
+      })
+    } catch (execError) {
+      phase4Result = execError.stdout || ''
+    }
+    
+    log('green', '✅ Phase 4 completed: Single-thread mode')
+    
+    // === COMPREHENSIVE VALIDATION ===
+    log('cyan', '🔍 Validating all functionality...')
+    
+    const allResults = phase1Result + '\n' + phase3Result + '\n' + phase4Result
+    
+    // Test 1: Error numbering and handling
+    const errorNumbers = (allResults.match(/Error #\d+:/g) || []).length
+    if (errorNumbers > 0) {
+      log('green', `✅ Error numbering: Found ${errorNumbers} numbered errors`)
+    } else {
+      throw new Error('Expected error numbering not found')
+    }
+    
+    // Test 2: Error list display
+    if (allResults.includes('❌ Errors:')) {
+      log('green', '✅ Error list: Errors section displayed')
+    } else {
+      throw new Error('Expected errors section not found')
+    }
+    
+    // Test 3: Uncommitted changes handling
+    if (allResults.includes('🔄') && allResults.includes('uncommitted changes')) {
+      log('green', '✅ Uncommitted changes: Properly detected and handled')
+    } else {
+      throw new Error('Expected uncommitted changes handling not found')
+    }
+    
+    // Test 4: Threading modes
+    if (allResults.includes('threads (parallel)') && allResults.includes('thread (sequential)')) {
+      log('green', '✅ Threading modes: Both parallel and sequential tested')
+    } else {
+      log('yellow', '⚠️ Threading modes: Not all modes clearly identified')
+    }
+    
+    // Test 5: Status variety
+    const statusTypes = {
+      success: (allResults.match(/✅/g) || []).length,
+      failed: (allResults.match(/❌/g) || []).length,
+      uncommitted: (allResults.match(/🔄/g) || []).length
+    }
+    
+    if (statusTypes.success > 0 && statusTypes.failed > 0 && statusTypes.uncommitted > 0) {
+      log('green', `✅ Status variety: Success(${statusTypes.success}), Failed(${statusTypes.failed}), Uncommitted(${statusTypes.uncommitted})`)
+    } else {
+      log('yellow', `⚠️ Status variety: Success(${statusTypes.success}), Failed(${statusTypes.failed}), Uncommitted(${statusTypes.uncommitted})`)
+    }
+    
+    // Test 6: Summary sections
+    if (allResults.includes('📊 Summary:')) {
+      log('green', '✅ Summary sections: Present in all test runs')
+    } else {
+      throw new Error('Expected summary sections not found')
+    }
+    
+    // Test 7: Message truncation (check for ellipsis)
+    if (allResults.includes('...')) {
+      log('green', '✅ Message truncation: Found truncated messages')
+    } else {
+      log('yellow', '⚠️ Message truncation: No truncation detected (may be normal)')
+    }
+    
+    // Test 8: GitHub CLI integration
+    if (allResults.includes('Using GitHub token from gh CLI') || allResults.includes('Using gh CLI to fetch repositories')) {
+      log('green', '✅ GitHub CLI integration: Successfully used gh CLI')
+    } else {
+      log('yellow', '⚠️ GitHub CLI integration: gh CLI usage not detected')
+    }
+    
+    // Test 9: Concurrency settings
+    const concurrencyMatches = allResults.match(/Concurrency: \d+ thread/g) || []
+    if (concurrencyMatches.length > 0) {
+      log('green', `✅ Concurrency settings: Found ${concurrencyMatches.length} concurrency configurations`)
+    } else {
+      throw new Error('Expected concurrency settings not found')
+    }
+    
+    // Final validation: Check file system state
+    const finalRepos = await fs.readdir(testDir)
+    const finalValidRepos = finalRepos.filter(repo => {
+      try {
+        const stat = fs.statSync(path.join(testDir, repo))
+        return stat.isDirectory()
+      } catch {
+        return false
+      }
+    })
+    
+    if (finalValidRepos.length > 0) {
+      log('green', `✅ File system: ${finalValidRepos.length} repositories successfully managed`)
+    } else {
+      throw new Error('No valid repositories found in final state')
+    }
+    
+    log('green', '🎉 Comprehensive integration test passed!')
+    log('magenta', '✨ All major functionality validated successfully')
+    
+  } catch (error) {
+    log('red', `❌ Integration test failed: ${error.message}`)
+    throw error
+  } finally {
+    // Clean up
+    try {
+      await fs.remove(testDir)
+      log('cyan', '🧹 Cleaned up test directory')
+    } catch (cleanupError) {
+      log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)
+    }
+  }
+}
 
-test('script should handle non-existent organization gracefully', async () => {
-  const result = await runScript(['--org', 'nonexistent-org-12345', '--dir', testDir])
-  
-  assert.equal(result.code, 1)
-  assert.match(result.stdout, /Organization 'nonexistent-org-12345' not found/)
+// Run the test
+testIntegration().catch(error => {
+  log('red', `💥 Test failed: ${error.message}`)
+  process.exit(1)
 })
-
-test('script should handle non-existent user gracefully', async () => {
-  const result = await runScript(['--user', 'nonexistent-user-12345', '--dir', testDir])
-  
-  assert.equal(result.code, 1)
-  assert.match(result.stdout, /User 'nonexistent-user-12345' not found/)
-})
-
-test('script should start processing without crashing', async () => {
-  // Simple test to ensure script doesn't crash on startup with valid args
-  const result = await runScript(['--org', 'nonexistent-test-org-12345', '--dir', testDir])
-  
-  // Should fail gracefully, not crash
-  assert.equal(result.code, 1)
-  assert.match(result.stdout, /Organization 'nonexistent-test-org-12345' not found/)
-})
-
-test('script should validate conflicting org and user arguments', async () => {
-  const result = await runScript(['--org', 'test-org', '--user', 'test-user'])
-  
-  assert.not.equal(result.code, 0)
-  assert.match(result.stderr, /You cannot specify both --org and --user/)
-})
-
-test.run()

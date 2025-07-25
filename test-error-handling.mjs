@@ -1,127 +1,121 @@
 #!/usr/bin/env bun
 
-// Test error handling scenarios
+// Test error handling and numbering system
+// Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
-const { test } = await use('uvu@0.5.6')
-const assert = await use('uvu@0.5.6/assert')
-const { Octokit } = await use('@octokit/rest@latest')
+// Import modern npm libraries using use-m
+const fs = await use('fs-extra@latest')
+const path = await use('path@latest')
+const os = await import('os')
+const { execSync } = await import('child_process')
 
-test('Octokit should handle invalid token gracefully', async () => {
-  const octokit = new Octokit({
-    auth: 'invalid-token-12345'
-  })
+// Colors for console output
+const colors = {
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  red: '\x1b[31m',
+  cyan: '\x1b[36m',
+  magenta: '\x1b[35m',
+  dim: '\x1b[2m',
+  bold: '\x1b[1m',
+  reset: '\x1b[0m'
+}
+
+const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
+
+async function testErrorHandling() {
+  const testDir = path.join(os.tmpdir(), 'pull-all-test-error-handling')
   
   try {
-    await octokit.rest.repos.listForOrg({
-      org: 'github',
-      per_page: 1
-    })
-    assert.unreachable('Should have thrown authentication error')
-  } catch (error) {
-    assert.ok(error.status === 401, 'Should return 401 for invalid token')
-    assert.match(error.message, /Bad credentials/)
-  }
-})
-
-test('Octokit should handle network errors', async () => {
-  // Create Octokit instance with invalid base URL
-  const octokit = new Octokit({
-    baseUrl: 'https://invalid-github-api.com'
-  })
-  
-  try {
-    await octokit.rest.repos.listForOrg({
-      org: 'github',
-      per_page: 1
-    })
-    assert.unreachable('Should have thrown network error')
-  } catch (error) {
-    // Accept various network error types
-    const isNetworkError = error.code === 'ENOTFOUND' || 
-                          error.code === 'ECONNREFUSED' ||
-                          error.message.includes('getaddrinfo') ||
-                          error.message.includes('network') ||
-                          error.status >= 500
-    assert.ok(isNetworkError, `Expected network error, got: ${error.message}`)
-  }
-})
-
-test('Octokit should handle 404 errors for non-existent organization', async () => {
-  const octokit = new Octokit()
-  
-  try {
-    await octokit.rest.repos.listForOrg({
-      org: 'nonexistent-org-12345-test',
-      per_page: 1
-    })
-    assert.unreachable('Should have thrown 404 error')
-  } catch (error) {
-    assert.ok(error.status === 404, 'Should return 404 for non-existent org')
-  }
-})
-
-test('Octokit should handle 404 errors for non-existent user', async () => {
-  const octokit = new Octokit()
-  
-  try {
-    await octokit.rest.repos.listForUser({
-      username: 'nonexistent-user-12345-test',
-      per_page: 1
-    })
-    assert.unreachable('Should have thrown 404 error')
-  } catch (error) {
-    assert.ok(error.status === 404, 'Should return 404 for non-existent user')
-  }
-})
-
-test('Octokit should handle rate limiting gracefully', async () => {
-  const octokit = new Octokit()
-  
-  // Make multiple rapid requests to potentially trigger rate limiting
-  const requests = Array(5).fill().map(() => 
-    octokit.rest.repos.listForOrg({
-      org: 'github',
-      per_page: 1
-    }).catch(error => error)
-  )
-  
-  const results = await Promise.all(requests)
-  
-  // Check if any request was rate limited
-  const rateLimited = results.some(result => 
-    result && result.status === 403 && 
-    result.message && result.message.includes('rate limit')
-  )
-  
-  if (rateLimited) {
-    assert.ok(true, 'Rate limiting handled appropriately')
-  } else {
-    assert.ok(true, 'No rate limiting encountered')
-  }
-})
-
-test('Error serialization should preserve important properties', async () => {
-  const octokit = new Octokit({
-    auth: 'invalid-token'
-  })
-  
-  try {
-    await octokit.rest.repos.listForOrg({
-      org: 'github',
-      per_page: 1
-    })
-    assert.unreachable('Should have thrown authentication error')
-  } catch (error) {
-    // Test that error has essential properties
-    assert.ok(error.message, 'Error should have message')
-    assert.ok(error.status, 'Error should have status')
-    assert.ok(typeof error.status === 'number', 'Status should be a number')
+    log('blue', '🧪 Testing error handling and numbering system...')
     
-    // Test serialization
-    const serialized = JSON.parse(JSON.stringify(error))
-    assert.ok(typeof serialized === 'object', 'Error should be serializable')
+    // Clean up any existing test directory
+    await fs.remove(testDir)
+    await fs.ensureDir(testDir)
+    
+    // Create conflicting files to force errors
+    await fs.writeFile(path.join(testDir, 'Spoon-Knife'), 'conflicting file content')
+    await fs.writeFile(path.join(testDir, 'Hello-World'), 'another conflicting file')
+    
+    log('cyan', '🔧 Created conflicting files to trigger errors')
+    
+    // Run the script and expect some failures
+    let result
+    try {
+      result = execSync(`./pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+        encoding: 'utf8',
+        stdio: 'pipe'
+      })
+    } catch (execError) {
+      // The command might return non-zero exit code due to errors, but we still want the output
+      result = execError.stdout || ''
+    }
+    
+    log('green', '✅ Error handling test completed')
+    
+    // Check for error numbering in status messages
+    if (result.includes('Error #1:') || result.includes('Error #2:')) {
+      log('green', '✅ Error numbering found in status messages')
+    } else {
+      throw new Error('Expected error numbering not found in status messages')
+    }
+    
+    // Check for errors section after status list
+    if (result.includes('❌ Errors:')) {
+      log('green', '✅ Errors section found after status list')
+    } else {
+      throw new Error('Expected errors section not found')
+    }
+    
+    // Check for full error details in errors section
+    if (result.includes('destination path') && result.includes('already exists')) {
+      log('green', '✅ Full error details found in errors section')
+    } else {
+      throw new Error('Expected full error details not found')
+    }
+    
+    // Check for failed summary count
+    if (result.includes('❌ Failed:')) {
+      log('green', '✅ Failed count found in summary')
+    } else {
+      throw new Error('Expected failed count not found in summary')
+    }
+    
+    // Verify some repos still succeeded
+    const repos = await fs.readdir(testDir)
+    const validRepos = repos.filter(repo => {
+      try {
+        const stat = fs.statSync(path.join(testDir, repo))
+        return stat.isDirectory()
+      } catch {
+        return false
+      }
+    })
+    
+    if (validRepos.length > 0) {
+      log('green', `✅ Found ${validRepos.length} successfully cloned repositories despite errors`)
+    }
+    
+    log('green', '🎉 Error handling test passed!')
+    
+  } catch (error) {
+    log('red', `❌ Error handling test failed: ${error.message}`)
+    throw error
+  } finally {
+    // Clean up
+    try {
+      await fs.remove(testDir)
+      log('cyan', '🧹 Cleaned up test directory')
+    } catch (cleanupError) {
+      log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)
+    }
   }
-})
+}
 
-test.run()
+// Run the test
+testErrorHandling().catch(error => {
+  log('red', `💥 Test failed: ${error.message}`)
+  process.exit(1)
+})

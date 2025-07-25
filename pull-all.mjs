@@ -36,6 +36,7 @@ class StatusDisplay {
     this.lastLoggedRepo = null
     this.headerPrinted = false
     this.renderedOnce = false
+    this.maxNameLength = 0
   }
 
   addRepo(name, status = 'pending') {
@@ -46,6 +47,8 @@ class StatusDisplay {
       message: '',
       logged: false
     })
+    // Update max name length for proper alignment
+    this.maxNameLength = Math.max(this.maxNameLength, name.length)
   }
 
   updateRepo(name, status, message = '') {
@@ -79,7 +82,7 @@ class StatusDisplay {
       `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
     
     // Simple append-only log line - no cursor manipulation
-    const line = `${statusColor}${statusIcon} ${repo.name.padEnd(30)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+    const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
     console.log(line)
     repo.logged = true
   }
@@ -108,7 +111,7 @@ class StatusDisplay {
         `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
         `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
       
-      const line = `${statusColor}${statusIcon}${colors.reset} ${repo.name.padEnd(30)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
+      const line = `${statusColor}${statusIcon}${colors.reset} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${repo.message}`
       
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
@@ -183,6 +186,59 @@ class StatusDisplay {
     const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)
     log('blue', `⏱️  Total time: ${totalTime}s`)
     log('blue', '🎉 Repository sync completed!')
+  }
+}
+
+// Helper function to check if gh CLI is installed
+async function isGhInstalled() {
+  try {
+    const { execSync } = await import('child_process')
+    execSync('gh --version', { stdio: 'pipe' })
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+// Helper function to get GitHub token from gh CLI if available
+async function getGhToken() {
+  try {
+    if (!(await isGhInstalled())) {
+      return null
+    }
+    
+    const { execSync } = await import('child_process')
+    const token = execSync('gh auth token', { encoding: 'utf8', stdio: 'pipe' }).trim()
+    return token
+  } catch (error) {
+    return null
+  }
+}
+
+// Helper function to get repositories using gh CLI
+async function getReposFromGhCli(org, user) {
+  try {
+    if (!(await isGhInstalled())) {
+      return null
+    }
+    
+    const { execSync } = await import('child_process')
+    const target = org || user
+    
+    const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt --limit 1000`
+    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' })
+    const repos = JSON.parse(output)
+    
+    return repos.map(repo => ({
+      name: repo.name,
+      clone_url: repo.url + '.git',
+      ssh_url: repo.sshUrl,
+      html_url: repo.url,
+      updated_at: repo.updatedAt,
+      private: repo.isPrivate
+    }))
+  } catch (error) {
+    return null
   }
 }
 
@@ -407,7 +463,16 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token) 
 }
 
 async function main() {
-  const { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates } = argv
+  
+  // If no token provided, try to get it from gh CLI
+  if (!token || token === undefined) {
+    const ghToken = await getGhToken()
+    if (ghToken) {
+      token = ghToken
+      log('cyan', '🔑 Using GitHub token from gh CLI')
+    }
+  }
   
   const target = org || user
   const targetType = org ? 'organization' : 'user'
@@ -423,9 +488,18 @@ async function main() {
   // Ensure target directory exists
   await fs.ensureDir(targetDir)
   
-  const repos = org 
-    ? await getOrganizationRepos(org, token)
-    : await getUserRepos(user, token)
+  // Try to get repositories using gh CLI first (includes private repos)
+  let repos = await getReposFromGhCli(org, user)
+  
+  if (repos) {
+    log('cyan', '📋 Using gh CLI to fetch repositories (includes private repos)')
+  } else {
+    // Fallback to API calls
+    log('cyan', '📋 Using GitHub API to fetch repositories')
+    repos = org 
+      ? await getOrganizationRepos(org, token)
+      : await getUserRepos(user, token)
+  }
   
   // Initialize status display
   const statusDisplay = new StatusDisplay(liveUpdates)

@@ -13,6 +13,7 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 - 🔐 **SSH Support**: Use SSH URLs for cloning with `--ssh` flag
 - ⚡ **Flexible Threading**: Use `--single-thread` for sequential processing or customize with `--threads N`
 - 🎯 **Comprehensive**: Works with both organizations and user accounts
+- 🔑 **Smart Authentication**: Automatic GitHub CLI integration for seamless private repo access
 - 🛡️ **Error Handling**: Graceful handling of rate limits, authentication, and network issues
 
 ## Quick Start
@@ -63,13 +64,57 @@ Options:
   -h, --help           Show help
 ```
 
+## Authentication
+
+The script supports multiple authentication methods for accessing private repositories:
+
+### 1. GitHub CLI (Recommended)
+If you have [GitHub CLI](https://cli.github.com/) installed and authenticated, the script will automatically use your credentials:
+
+```bash
+# Authenticate with GitHub CLI (one-time setup)
+gh auth login
+
+# Script automatically detects and uses gh CLI authentication
+./pull-all.mjs --org myorg  # Includes private repos!
+```
+
+### 2. Environment Variable
+Set the `GITHUB_TOKEN` environment variable:
+
+```bash
+export GITHUB_TOKEN=ghp_your_token_here
+./pull-all.mjs --org myorg
+```
+
+### 3. Command Line Token
+Pass the token directly with `--token`:
+
+```bash
+./pull-all.mjs --org myorg --token ghp_your_token_here
+```
+
+### Authentication Priority
+The script uses this fallback chain:
+1. `--token` command line argument (highest priority)
+2. `GITHUB_TOKEN` environment variable
+3. GitHub CLI authentication (if `gh` is installed and authenticated)
+4. No authentication (public repos only)
+
 ## Examples
 
 ```bash
 # Basic usage - sync all public repos from a user
 ./pull-all.mjs --user octocat
 
-# Sync organization repos with authentication
+# Sync all repos (including private) using GitHub CLI auth
+./pull-all.mjs --org myorg  # Automatically uses gh CLI if authenticated
+
+# Sync organization repos with environment token
+export GITHUB_TOKEN=ghp_your_token_here
+./pull-all.mjs --org myorg
+
+# Sync with explicit token
 ./pull-all.mjs --org github --token ghp_your_token_here
 
 # Use SSH for cloning (faster for multiple repos)
@@ -82,7 +127,7 @@ Options:
 ./pull-all.mjs --user octocat --single-thread
 
 # Maximum concurrency (be careful with rate limits)
-./pull-all.mjs --org myorg --threads 20 --token $GITHUB_TOKEN
+./pull-all.mjs --org myorg --threads 20
 
 # Disable live updates for terminal history preservation
 ./pull-all.mjs --user octocat --no-live-updates
@@ -104,7 +149,9 @@ The script shows real-time progress with visual indicators. By default, it uses 
 
 - [Bun](https://bun.sh/) runtime
 - Git installed and configured
-- GitHub personal access token (for private repos or higher rate limits)
+- For private repositories (optional):
+  - [GitHub CLI](https://cli.github.com/) (recommended) OR
+  - GitHub personal access token (via `--token` or `GITHUB_TOKEN` env var)
 - SSH keys configured (if using `--ssh` option)
 
 ## Testing
@@ -126,9 +173,9 @@ The project includes a comprehensive test suite:
 
 ## Rate Limits
 
-- **Unauthenticated**: 60 requests per hour
-- **Authenticated**: 5,000 requests per hour
-- Use `--token` for better rate limits and access to private repositories
+- **Unauthenticated**: 60 requests per hour (public repos only)
+- **Authenticated**: 5,000 requests per hour (includes private repos)
+- Authentication is automatically handled if GitHub CLI is set up
 - Use `--threads 1` or `--single-thread` if hitting rate limits
 
 ## License

@@ -37,6 +37,6 @@ jobs:
 
       - name: Publish to NPM
         if: steps.check_version.outputs.should_publish == 'true'
-        run: bun publish
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun publish -p --access public

@@ -20,23 +20,40 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 
 ```bash
 # Clone all repositories from a user account
-./pull-all.mjs --user octocat
+pull-all --user octocat
 
 # Clone all repositories from an organization
-./pull-all.mjs --org github
+pull-all --org github
 
 # Use SSH for cloning with custom thread count
-./pull-all.mjs --user octocat --ssh --threads 16
+pull-all --user octocat --ssh --threads 16
 
 # Sequential processing for debugging
-./pull-all.mjs --org myorg --single-thread
+pull-all --org myorg --single-thread
 ```
 
 ## Installation
 
+### Global Installation (Recommended)
+
+Install globally for system-wide access:
+
+```bash
+# Using npm
+npm install -g @link-foundation/pull-all
+
+# Using bun
+bun install -g @link-foundation/pull-all
+
+# After installation, use anywhere:
+pull-all --help
+```
+
+### Local Installation
+
 ```bash
 # Clone the repository
-git clone https://github.com/konard/pull-all.git
+git clone https://github.com/link-foundation/pull-all.git
 cd pull-all
 
 # Make the script executable
@@ -49,7 +66,7 @@ chmod +x pull-all.mjs
 ## Usage
 
 ```
-Usage: pull-all.mjs [--org <organization> | --user <username>] [options]
+Usage: pull-all [--org <organization> | --user <username>] [options]
 
 Options:
   -o, --org            GitHub organization name
@@ -76,7 +93,7 @@ If you have [GitHub CLI](https://cli.github.com/) installed and authenticated, t
 gh auth login
 
 # Script automatically detects and uses gh CLI authentication
-./pull-all.mjs --org myorg  # Includes private repos!
+pull-all --org myorg  # Includes private repos!
 ```
 
 ### 2. Environment Variable
@@ -84,14 +101,14 @@ Set the `GITHUB_TOKEN` environment variable:
 
 ```bash
 export GITHUB_TOKEN=ghp_your_token_here
-./pull-all.mjs --org myorg
+pull-all --org myorg
 ```
 
 ### 3. Command Line Token
 Pass the token directly with `--token`:
 
 ```bash
-./pull-all.mjs --org myorg --token ghp_your_token_here
+pull-all --org myorg --token ghp_your_token_here
 ```
 
 ### Authentication Priority
@@ -105,32 +122,32 @@ The script uses this fallback chain:
 
 ```bash
 # Basic usage - sync all public repos from a user
-./pull-all.mjs --user octocat
+pull-all --user octocat
 
 # Sync all repos (including private) using GitHub CLI auth
-./pull-all.mjs --org myorg  # Automatically uses gh CLI if authenticated
+pull-all --org myorg  # Automatically uses gh CLI if authenticated
 
 # Sync organization repos with environment token
 export GITHUB_TOKEN=ghp_your_token_here
-./pull-all.mjs --org myorg
+pull-all --org myorg
 
 # Sync with explicit token
-./pull-all.mjs --org github --token ghp_your_token_here
+pull-all --org github --token ghp_your_token_here
 
 # Use SSH for cloning (faster for multiple repos)
-./pull-all.mjs --user octocat --ssh
+pull-all --user octocat --ssh
 
 # Custom directory and thread count
-./pull-all.mjs --org myorg --dir ./repositories --threads 16
+pull-all --org myorg --dir ./repositories --threads 16
 
 # Single-threaded for debugging or rate limit issues
-./pull-all.mjs --user octocat --single-thread
+pull-all --user octocat --single-thread
 
 # Maximum concurrency (be careful with rate limits)
-./pull-all.mjs --org myorg --threads 20
+pull-all --org myorg --threads 20
 
 # Disable live updates for terminal history preservation
-./pull-all.mjs --user octocat --no-live-updates
+pull-all --user octocat --no-live-updates
 ```
 
 ## Status Display
@@ -147,7 +164,7 @@ The script shows real-time progress with visual indicators. By default, it uses 
 
 ## Requirements
 
-- [Bun](https://bun.sh/) runtime
+- [Bun](https://bun.sh/) (>=1.2.0) or [Node.js](https://nodejs.org/) (>=22.17.0) runtime
 - Git installed and configured
 - For private repositories (optional):
   - [GitHub CLI](https://cli.github.com/) (recommended) OR

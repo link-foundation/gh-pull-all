@@ -33,7 +33,7 @@ jobs:
 
       - name: Run tests
         if: steps.check_version.outputs.should_publish == 'true'
-        run: bun test
+        run: bun run test
 
       - name: Publish to NPM
         if: steps.check_version.outputs.should_publish == 'true'

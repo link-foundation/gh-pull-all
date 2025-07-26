@@ -1,0 +1,42 @@
+name: Publish to NPM
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Check if version is already published
+        id: check_version
+        run: |
+          PACKAGE_NAME=$(bun -p "require('./package.json').name")
+          PACKAGE_VERSION=$(bun -p "require('./package.json').version")
+          
+          # Check if this version exists on npm
+          if bun pm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null; then
+            echo "Version ${PACKAGE_VERSION} already published"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version ${PACKAGE_VERSION} not found, will publish"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: bun test
+
+      - name: Publish to NPM
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: bun publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

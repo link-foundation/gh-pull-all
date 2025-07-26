@@ -1,0 +1,40 @@
+{
+  "name": "pull-all",
+  "version": "1.0.0",
+  "description": "A tool to pull all git repositories in a directory with parallel processing and status display",
+  "type": "module",
+  "main": "pull-all.mjs",
+  "bin": {
+    "pull-all": "./pull-all.mjs"
+  },
+  "scripts": {
+    "test": "./run-tests.mjs"
+  },
+  "keywords": [
+    "git",
+    "pull",
+    "repositories",
+    "parallel",
+    "cli",
+    "tool"
+  ],
+  "author": "Link.Foundation",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/link-foundation/pull-all.git"
+  },
+  "bugs": {
+    "url": "https://github.com/link-foundation/pull-all/issues"
+  },
+  "homepage": "https://github.com/link-foundation/pull-all#readme",
+  "engines": {
+    "node": ">=22.17.0",
+    "bun": ">=1.2.0"
+  },
+  "files": [
+    "pull-all.mjs",
+    "README.md",
+    "LICENSE"
+  ]
+}

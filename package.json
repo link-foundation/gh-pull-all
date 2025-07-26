@@ -28,10 +28,6 @@
     "url": "https://github.com/link-foundation/pull-all/issues"
   },
   "homepage": "https://github.com/link-foundation/pull-all#readme",
-  "engines": {
-    "node": ">=22.17.0",
-    "bun": ">=1.2.0"
-  },
   "files": [
     "pull-all.mjs",
     "README.md",

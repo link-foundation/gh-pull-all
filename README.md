@@ -39,14 +39,26 @@ pull-all --org myorg --single-thread
 Install globally for system-wide access:
 
 ```bash
-# Using npm
-npm install -g @link-foundation/pull-all
-
 # Using bun
 bun install -g @link-foundation/pull-all
 
+# Using npm
+npm install -g @link-foundation/pull-all
+
 # After installation, use anywhere:
 pull-all --help
+```
+
+### Uninstall
+
+Remove the global installation:
+
+```bash
+# Using bun
+bun uninstall -g @link-foundation/pull-all
+
+# Using npm
+npm uninstall -g @link-foundation/pull-all
 ```
 
 ### Local Installation

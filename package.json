@@ -1,6 +1,6 @@
 {
   "name": "@link-foundation/pull-all",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A tool to pull all git repositories in a directory with parallel processing and status display",
   "type": "module",
   "main": "pull-all.mjs",

@@ -1,4 +1,5 @@
-#!/usr/bin/env node
+#!/usr/bin/env sh
+':' //# ; exec "$(command -v bun || command -v node)" "$0" "$@"
 
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());

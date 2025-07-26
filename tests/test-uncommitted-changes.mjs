@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
+import path from 'path'
+
 // Test uncommitted changes handling
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
 const os = await import('os')
 const { execSync } = await import('child_process')
 
@@ -32,11 +33,11 @@ async function testUncommittedChanges() {
     log('blue', '🧪 Testing uncommitted changes handling...')
     
     // Clean up any existing test directory
-    await fs.remove(testDir)
+    await fs.rm(testDir, {recursive: true, force: true})
     
     // First, clone repositories normally
     log('cyan', '🔧 Step 1: Cloning repositories initially...')
-    execSync(`./pull-all.mjs --user octocat --threads 2 --dir ${testDir}`, {
+    execSync(`../pull-all.mjs --user octocat --threads 2 --dir ${testDir}`, {
       stdio: 'pipe'
     })
     
@@ -68,7 +69,7 @@ async function testUncommittedChanges() {
     
     let result
     try {
-      result = execSync(`./pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+      result = execSync(`../pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -134,7 +135,7 @@ async function testUncommittedChanges() {
   } finally {
     // Clean up
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, {recursive: true, force: true})
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

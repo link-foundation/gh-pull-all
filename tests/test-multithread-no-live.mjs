@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
+import path from 'path'
+
 // Test multi-thread mode without live updates
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
 const os = await import('os')
 const { execSync } = await import('child_process')
 
@@ -32,10 +33,10 @@ async function testMultiThreadNoLive() {
     log('blue', '🧪 Testing multi-thread mode without live updates...')
     
     // Clean up any existing test directory
-    await fs.remove(testDir)
+    await fs.rm(testDir, {recursive: true, force: true})
     
     // Run the script in multi-thread mode without live updates
-    const result = execSync(`./pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
+    const result = execSync(`../pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
       encoding: 'utf8',
       stdio: 'pipe'
     })
@@ -86,7 +87,7 @@ async function testMultiThreadNoLive() {
   } finally {
     // Clean up
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, {recursive: true, force: true})
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

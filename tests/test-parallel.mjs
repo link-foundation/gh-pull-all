@@ -1,29 +1,30 @@
 #!/usr/bin/env bun
 
+import path from 'path'
+
 // Test parallel processing functionality
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
 const { spawn } = await import('child_process')
 
 const testDir = '/tmp/test-parallel-demo'
 
 test.before(async () => {
   // Clean up any existing test directory
-  await fs.remove(testDir)
+  await fs.rm(testDir, {recursive: true, force: true})
 })
 
 test.after(async () => {
   // Clean up test directory
-  await fs.remove(testDir)
+  await fs.rm(testDir, {recursive: true, force: true})
 })
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn('bun', ['./pull-all.mjs', ...args], {
+    const child = spawn('bun', ['../pull-all.mjs', ...args], {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: process.cwd()
     })
@@ -64,7 +65,7 @@ test('parallel processing should handle invalid user gracefully', async () => {
 
 test('parallel processing should initialize status display', async () => {
   // Test with a very simple case that will start the parallel processing
-  const child = spawn('bun', ['./pull-all.mjs', '--user', 'github', '--dir', testDir], {
+  const child = spawn('bun', ['../pull-all.mjs', '--user', 'github', '--dir', testDir], {
     stdio: ['pipe', 'pipe', 'pipe'],
     cwd: process.cwd()
   })

@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
+import path from 'path'
+
 // Test terminal width handling and message truncation
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
 const os = await import('os')
 const { execSync } = await import('child_process')
 
@@ -32,8 +33,8 @@ async function testTerminalWidth() {
     log('blue', '🧪 Testing terminal width handling and message truncation...')
     
     // Clean up any existing test directory
-    await fs.remove(testDir)
-    await fs.ensureDir(testDir)
+    await fs.rm(testDir, { recursive: true, force: true })
+    await fs.mkdir(testDir, { recursive: true })
     
     // Create a conflicting file to generate a longer error message
     await fs.writeFile(path.join(testDir, 'Spoon-Knife'), 'conflicting file content that will generate a longer error message')
@@ -44,7 +45,7 @@ async function testTerminalWidth() {
     // Since we can't actually control terminal width in non-TTY, we'll test the logic
     let result
     try {
-      result = execSync(`./pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+      result = execSync(`../pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -116,7 +117,7 @@ async function testTerminalWidth() {
   } finally {
     // Clean up
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, { recursive: true, force: true })
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

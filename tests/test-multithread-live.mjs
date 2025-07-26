@@ -5,8 +5,8 @@
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
+import path from 'path'
 const os = await import('os')
 const { execSync } = await import('child_process')
 
@@ -32,10 +32,10 @@ async function testMultiThreadLive() {
     log('blue', '🧪 Testing multi-thread mode with live updates...')
     
     // Clean up any existing test directory
-    await fs.remove(testDir)
+    await fs.rm(testDir, {recursive: true, force: true})
     
     // Run the script in multi-thread mode with live updates
-    const result = execSync(`./pull-all.mjs --user octocat --threads 4 --live-updates --dir ${testDir}`, {
+    const result = execSync(`../pull-all.mjs --user octocat --threads 4 --live-updates --dir ${testDir}`, {
       encoding: 'utf8',
       stdio: 'pipe'
     })
@@ -79,7 +79,7 @@ async function testMultiThreadLive() {
   } finally {
     // Clean up
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, {recursive: true, force: true})
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

@@ -5,7 +5,7 @@
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
+import { promises as fs } from 'fs'
 const { execSync } = await import('child_process')
 
 // Colors for console output
@@ -37,7 +37,8 @@ const testDescriptions = {
   'test-github-api.mjs': 'Tests GitHub API integration and error handling',
   'test-parallel.mjs': 'Tests parallel processing functionality',
   'test-terminal-output.mjs': 'Tests terminal output formatting and colors',
-  'test-threading.mjs': 'Tests threading and concurrency management'
+  'test-threading.mjs': 'Tests threading and concurrency management',
+  'test-sorting.mjs': 'Tests alphabetical sorting of repositories'
 }
 
 function getTestDisplayName(filename) {

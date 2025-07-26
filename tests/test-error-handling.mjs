@@ -5,8 +5,8 @@
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
+import path from 'path'
 const os = await import('os')
 const { execSync } = await import('child_process')
 
@@ -32,8 +32,8 @@ async function testErrorHandling() {
     log('blue', '🧪 Testing error handling and numbering system...')
     
     // Clean up any existing test directory
-    await fs.remove(testDir)
-    await fs.ensureDir(testDir)
+    await fs.rm(testDir, {recursive: true, force: true})
+    await fs.mkdir(testDir, {recursive: true})
     
     // Create conflicting files to force errors
     await fs.writeFile(path.join(testDir, 'Spoon-Knife'), 'conflicting file content')
@@ -44,7 +44,7 @@ async function testErrorHandling() {
     // Run the script and expect some failures
     let result
     try {
-      result = execSync(`./pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+      result = execSync(`../pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -106,7 +106,7 @@ async function testErrorHandling() {
   } finally {
     // Clean up
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, {recursive: true, force: true})
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

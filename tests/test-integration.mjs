@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 
+import path from 'path'
+
 // Comprehensive integration test covering all functionality
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
 const os = await import('os')
 const { execSync } = await import('child_process')
 
@@ -33,8 +34,8 @@ async function testIntegration() {
     log('cyan', '🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width')
     
     // Clean up any existing test directory
-    await fs.remove(testDir)
-    await fs.ensureDir(testDir)
+    await fs.rm(testDir, {recursive: true, force: true})
+    await fs.mkdir(testDir, {recursive: true})
     
     // === PHASE 1: Initial clone with mixed scenarios ===
     log('cyan', '🔧 Phase 1: Setting up mixed scenario environment...')
@@ -46,7 +47,7 @@ async function testIntegration() {
     // Run initial clone with errors expected
     let phase1Result
     try {
-      phase1Result = execSync(`./pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
+      phase1Result = execSync(`../pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -81,7 +82,7 @@ async function testIntegration() {
     
     let phase3Result
     try {
-      phase3Result = execSync(`./pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+      phase3Result = execSync(`../pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -95,11 +96,11 @@ async function testIntegration() {
     log('cyan', '🔧 Phase 4: Testing single-thread mode behavior...')
     
     // Remove one error file to change the scenario
-    await fs.remove(path.join(testDir, 'Spoon-Knife'))
+    await fs.rm(path.join(testDir, 'Spoon-Knife'), {recursive: true, force: true})
     
     let phase4Result
     try {
-      phase4Result = execSync(`./pull-all.mjs --user octocat --single-thread --dir ${testDir}`, {
+      phase4Result = execSync(`../pull-all.mjs --user octocat --single-thread --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -211,7 +212,7 @@ async function testIntegration() {
   } finally {
     // Clean up
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, {recursive: true, force: true})
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

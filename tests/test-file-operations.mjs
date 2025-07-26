@@ -5,8 +5,8 @@ const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text(
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
-const fs = await use('fs-extra@latest')
-const path = await use('path@latest')
+import { promises as fs } from 'fs'
+import path from 'path'
 const { default: git } = await use('simple-git@latest')
 
 // Test file system functions by creating them here
@@ -60,12 +60,12 @@ const testDir = path.join(process.cwd(), 'test-temp')
 
 test.before(async () => {
   // Ensure test directory exists
-  await fs.ensureDir(testDir)
+  await fs.mkdir(testDir, {recursive: true})
 })
 
 test.after(async () => {
   // Clean up test directory
-  await fs.remove(testDir)
+  await fs.rm(testDir, {recursive: true, force: true})
 })
 
 test('directoryExists should return true for existing directory', async () => {
@@ -86,7 +86,7 @@ test('directoryExists should return false for file path', async () => {
   const exists = await directoryExists(filePath)
   assert.not.ok(exists, 'Should return false for file path')
   
-  await fs.remove(filePath)
+  await fs.rm(filePath, {recursive: true, force: true})
 })
 
 test('cloneRepository should clone a public repository', async () => {
@@ -104,7 +104,7 @@ test('cloneRepository should clone a public repository', async () => {
   assert.ok(exists, 'Cloned repository directory should exist')
   
   // Clean up cloned repository
-  await fs.remove(repoPath)
+  await fs.rm(repoPath, {recursive: true, force: true})
 })
 
 test('cloneRepository should handle invalid repository URL', async () => {

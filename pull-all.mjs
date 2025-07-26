@@ -3,6 +3,11 @@
 
 // Import built-in Node.js modules
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
@@ -13,6 +18,19 @@ const { default: git } = await use('simple-git@3.28.0')
 const fs = await use('fs-extra@11.3.0')
 const { default: yargs } = await use('yargs@18.0.0')
 const { hideBin } = await use('yargs@18.0.0/helpers')
+
+// Get version from package.json or fallback
+let version = '1.0.2' // Fallback version
+
+try {
+  const packagePath = path.join(__dirname, 'package.json')
+  if (await fs.pathExists(packagePath)) {
+    const packageJson = await fs.readJson(packagePath)
+    version = packageJson.version
+  }
+} catch (error) {
+  // Use fallback version if package.json can't be read
+}
 
 // Colors for console output
 const colors = {
@@ -327,8 +345,10 @@ async function getReposFromGhCli(org, user) {
 }
 
 // Configure CLI arguments
+const scriptName = path.basename(process.argv[1])
 const argv = yargs(hideBin(process.argv))
-  .scriptName('pull-all.mjs')
+  .scriptName(scriptName)
+  .version(version)
   .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
   .option('org', {
     alias: 'o',

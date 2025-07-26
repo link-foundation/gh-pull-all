@@ -5,12 +5,12 @@
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
 // Import modern npm libraries using use-m
-const { Octokit } = await use('@octokit/rest@latest')
-const { default: git } = await use('simple-git@latest')
-const fs = await use('fs-extra@latest')
+const { Octokit } = await use('@octokit/rest@22.0.0')
+const { default: git } = await use('simple-git@3.28.0')
+const fs = await use('fs-extra@11.3.0')
 const path = await use('path@latest')
-const { default: yargs } = await use('yargs@latest')
-const { hideBin } = await use('yargs@latest/helpers')
+const { default: yargs } = await use('yargs@18.0.0')
+const { hideBin } = await use('yargs@18.0.0/helpers')
 
 // Colors for console output
 const colors = {

@@ -61,13 +61,20 @@ class StatusDisplay {
     this.renderedOnce = false
     this.maxNameLength = 0
     this.terminalWidth = process.stdout.columns || 80
+    this.terminalHeight = process.stdout.rows || 24
     this.errors = []
     this.errorCounter = 0
+    this.headerLines = 3 // Header + separator line + blank line
+    this.completedRepos = [] // Store completed repos for persistent display
+    this.currentBatchStart = 0
+    this.lastRenderedCount = 0
+    this.batchDisplayMode = true // New mode for batch-based display
     
     // Listen for terminal resize
     if (this.isInteractive) {
       process.stdout.on('resize', () => {
         this.terminalWidth = process.stdout.columns || 80
+        this.terminalHeight = process.stdout.rows || 24
         if (this.useInPlaceUpdates) {
           this.render()
         }
@@ -162,20 +169,66 @@ class StatusDisplay {
     if (!this.headerPrinted) {
       console.log(`\n${colors.bold}Repository Status${colors.reset}`)
       console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
+      this.headerLines = 3 // Don't include legend in header lines
       this.headerPrinted = true
     }
 
-    // Move cursor up by the number of repos to overwrite previous output (only if we've rendered before)
-    if (this.renderedOnce && this.repos.size > 0) {
-      process.stdout.write(`\x1b[${this.repos.size}A`)
+    // In batch mode, we show completed repos + current batch
+    const sortedRepos = Array.from(this.repos.entries()).sort((a, b) => a[0].localeCompare(b[0]))
+    const activeRepos = []
+    const newlyCompleted = []
+    
+    // Separate active and completed repos
+    for (const [name, repo] of sortedRepos) {
+      if (repo.status === 'pending' || repo.status === 'pulling' || repo.status === 'cloning') {
+        activeRepos.push([name, repo])
+      } else if (!this.completedRepos.find(r => r[0] === name)) {
+        newlyCompleted.push([name, repo])
+      }
+    }
+    
+    // Add newly completed repos to the persistent list
+    this.completedRepos.push(...newlyCompleted)
+    
+    // Calculate display space
+    const availableLines = Math.max(1, this.terminalHeight - this.headerLines - 5) // Reserve space for progress bar + legend
+    const batchSize = Math.min(this.threads, availableLines)
+    
+    // Determine current batch of active repos
+    const currentBatch = activeRepos.slice(0, batchSize)
+    
+    // Move cursor up only for the current batch
+    if (this.renderedOnce && this.lastRenderedCount > 0) {
+      process.stdout.write(`\x1b[${this.lastRenderedCount}A`)
     }
 
     // Calculate available space for message
     const baseLength = 2 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
     const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
 
-    // Render each repository status
-    for (const [name, repo] of this.repos) {
+    // Print newly completed repos (these won't be updated again)
+    for (const [name, repo] of newlyCompleted) {
+      const statusIcon = this.getStatusIcon(repo.status)
+      const statusColor = this.getStatusColor(repo.status)
+      const duration = repo.endTime ? 
+        `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
+        `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
+      
+      let displayMessage = repo.message || this.getStatusMessage(repo.status)
+      const baseLength = name.length + this.maxNameLength + 15
+      const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10)
+      
+      if (displayMessage && displayMessage.length > availableWidth) {
+        displayMessage = this.truncateMessage(displayMessage, availableWidth)
+      }
+      
+      console.log(`${statusColor}${statusIcon} ${name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`)
+    }
+    
+    // Render current batch of active repos with live updates
+    let renderedCount = 0
+    for (const [name, repo] of currentBatch) {
+      
       const statusIcon = this.getStatusIcon(repo.status)
       const statusColor = this.getStatusColor(repo.status)
       const duration = repo.endTime ? 
@@ -194,9 +247,38 @@ class StatusDisplay {
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
       console.log(line)
+      renderedCount++
+    }
+    
+    // Show progress bar and legend together
+    if (this.isInteractive) {
+      process.stdout.write('\x1b[2K') // Clear line
+      console.log() // Empty line for spacing
+      renderedCount++
+      
+      // Legend line (right above progress bar)
+      process.stdout.write('\x1b[2K')
+      console.log(`${colors.dim}Progress: ${colors.green}█${colors.dim}=success ${colors.red}█${colors.dim}=error ${colors.yellow}█${colors.dim}=skipped ${colors.cyan}█${colors.dim}=active ${colors.dim}░=pending${colors.reset}`)
+      renderedCount++
+      
+      // Progress bar
+      const progressBar = this.createProgressBar()
+      if (progressBar) {
+        process.stdout.write('\x1b[2K')
+        console.log(progressBar)
+        renderedCount++
+      }
+      
+      // Show active batch info if there are still active repos
+      if (activeRepos.length > 0) {
+        process.stdout.write('\x1b[2K')
+        console.log(`${colors.dim}Active batch: ${currentBatch.length} repositories${colors.reset}`)
+        renderedCount++
+      }
     }
     
     this.renderedOnce = true
+    this.lastRenderedCount = renderedCount
   }
 
   getStatusIcon(status) {
@@ -209,6 +291,18 @@ class StatusDisplay {
       case 'skipped': return '⚠️ '
       case 'uncommitted': return '🔄'
       default: return '❓'
+    }
+  }
+
+  getStatusMessage(status) {
+    switch (status) {
+      case 'success': return 'Successfully pulled'
+      case 'failed': return 'Failed to pull'
+      case 'skipped': return 'Skipped - not a git repository'
+      case 'uncommitted': return 'Has uncommitted changes'
+      case 'cloning': return 'Cloning repository...'
+      case 'pulling': return 'Pulling updates...'
+      default: return ''
     }
   }
 
@@ -230,6 +324,72 @@ class StatusDisplay {
       return message
     }
     return message.substring(0, maxLength - 3) + '...'
+  }
+
+  createProgressBar() {
+    const repoCount = this.repos.size
+    if (repoCount === 0) return ''
+    
+    // Count statuses
+    const statusCounts = {
+      success: 0,
+      failed: 0,
+      pending: 0,
+      pulling: 0,
+      cloning: 0,
+      skipped: 0,
+      uncommitted: 0
+    }
+    
+    for (const [_, repo] of this.repos) {
+      if (statusCounts.hasOwnProperty(repo.status)) {
+        statusCounts[repo.status]++
+      }
+    }
+    
+    // Calculate bar width (reserve space for text)
+    const barWidth = Math.min(50, this.terminalWidth - 40)
+    const completed = statusCounts.success + statusCounts.failed + statusCounts.skipped + statusCounts.uncommitted
+    const inProgress = statusCounts.pulling + statusCounts.cloning
+    const pending = statusCounts.pending
+    
+    // Create bar segments - ensure they sum to barWidth
+    const successWidth = Math.round((statusCounts.success / repoCount) * barWidth)
+    const failedWidth = Math.round((statusCounts.failed / repoCount) * barWidth)
+    const skippedWidth = Math.round(((statusCounts.skipped + statusCounts.uncommitted) / repoCount) * barWidth)
+    const inProgressWidth = Math.round((inProgress / repoCount) * barWidth)
+    let pendingWidth = barWidth - successWidth - failedWidth - skippedWidth - inProgressWidth
+    
+    // Adjust for rounding errors
+    if (pendingWidth < 0) pendingWidth = 0
+    const totalWidth = successWidth + failedWidth + skippedWidth + inProgressWidth + pendingWidth
+    if (totalWidth < barWidth && completed === repoCount) {
+      // If all done but bar not full due to rounding, extend success segment
+      const diff = barWidth - totalWidth
+      return this.createProgressBar.call(this, { 
+        ...arguments[0], 
+        _successWidth: successWidth + diff 
+      })
+    }
+    
+    // Build the bar
+    let bar = ''
+    const finalSuccessWidth = arguments[0]?._successWidth || successWidth
+    bar += colors.green + '█'.repeat(finalSuccessWidth)
+    bar += colors.red + '█'.repeat(failedWidth)
+    bar += colors.yellow + '█'.repeat(skippedWidth)
+    bar += colors.cyan + '█'.repeat(inProgressWidth)
+    bar += colors.dim + '░'.repeat(Math.max(0, pendingWidth))
+    bar += colors.reset
+    
+    // Create status text
+    const percentage = Math.round((completed / repoCount) * 100)
+    const statusText = `${completed}/${repoCount} (${percentage}%)`
+    
+    // Add error count if any
+    const errorText = statusCounts.failed > 0 ? ` ${colors.red}${statusCounts.failed} errors${colors.reset}` : ''
+    
+    return `[${bar}] ${statusText}${errorText}`
   }
 
   printErrors() {

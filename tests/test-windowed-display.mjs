@@ -33,7 +33,7 @@ for (let i = 1; i <= 50; i++) {
 }
 
 console.log(`Created 50 test repositories in ${testDir}`)
-console.log(`\nNow run: ./pull-all.mjs ${testDir} --threads 10`)
+console.log(`\nNow run: ../pull-all.mjs ${testDir} --threads 10`)
 console.log(`\nThe display will show only 10 repositories at a time (or terminal height, whichever is smaller)`)
 console.log(`and will cycle through all 50 repositories over time.`)
 console.log(`\nTo cleanup: rm -rf ${testDir}`)

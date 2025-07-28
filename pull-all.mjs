@@ -75,6 +75,7 @@ class StatusDisplay {
       process.stdout.on('resize', () => {
         this.terminalWidth = process.stdout.columns || 80
         this.terminalHeight = process.stdout.rows || 24
+        // Keep render on resize for immediate response
         if (this.useInPlaceUpdates) {
           this.render()
         }
@@ -116,11 +117,10 @@ class StatusDisplay {
         })
       }
       
-      if (this.useInPlaceUpdates) {
-        this.render()
-      } else {
+      if (!this.useInPlaceUpdates) {
         this.logStatusChange(repo, oldStatus)
       }
+      // Render is now handled by the main loop at 10 FPS
     }
   }
 
@@ -140,9 +140,10 @@ class StatusDisplay {
 
     const statusIcon = this.getStatusIcon(repo.status)
     const statusColor = this.getStatusColor(repo.status)
-    const duration = repo.endTime ? 
-      `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
-      `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
+    // Only show static time for completed statuses in append-only mode
+    const duration = (repo.status === 'success' || repo.status === 'failed' || repo.status === 'skipped' || repo.status === 'uncommitted') && repo.endTime
+      ? `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` 
+      : `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
     
     // Calculate available space for message
     const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
@@ -210,9 +211,8 @@ class StatusDisplay {
     for (const [name, repo] of newlyCompleted) {
       const statusIcon = this.getStatusIcon(repo.status)
       const statusColor = this.getStatusColor(repo.status)
-      const duration = repo.endTime ? 
-        `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
-        `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
+      // Show static time for completed repos
+      const duration = `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s`
       
       let displayMessage = repo.message || this.getStatusMessage(repo.status)
       const baseLength = name.length + this.maxNameLength + 15
@@ -231,9 +231,8 @@ class StatusDisplay {
       
       const statusIcon = this.getStatusIcon(repo.status)
       const statusColor = this.getStatusColor(repo.status)
-      const duration = repo.endTime ? 
-        `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` : 
-        `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
+      // Always show ticking time for active repos (no endTime)
+      const duration = `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
       
       let displayMessage = repo.message
       if (repo.status === 'failed' && repo.errorNumber) {
@@ -242,7 +241,7 @@ class StatusDisplay {
         displayMessage = this.truncateMessage(repo.message, availableWidth)
       }
       
-      const line = `${statusColor}${statusIcon}${colors.reset} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
+      const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
       
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
@@ -252,13 +251,14 @@ class StatusDisplay {
     
     // Show progress bar and legend together
     if (this.isInteractive) {
-      process.stdout.write('\x1b[2K') // Clear line
-      console.log() // Empty line for spacing
+      // Empty line before progress section
+      process.stdout.write('\x1b[2K')
+      console.log()
       renderedCount++
       
       // Legend line (right above progress bar)
       process.stdout.write('\x1b[2K')
-      console.log(`${colors.dim}Progress: ${colors.green}█${colors.dim}=success ${colors.red}█${colors.dim}=error ${colors.yellow}█${colors.dim}=skipped ${colors.cyan}█${colors.dim}=active ${colors.dim}░=pending${colors.reset}`)
+      console.log(`${colors.dim}Progress: ${colors.green}█${colors.dim}=success ${colors.red}█${colors.dim}=failed ${colors.yellow}█${colors.dim}=skipped/uncommitted ${colors.cyan}█${colors.dim}=pulling/cloning ${colors.dim}░=pending${colors.reset}`)
       renderedCount++
       
       // Progress bar
@@ -269,12 +269,7 @@ class StatusDisplay {
         renderedCount++
       }
       
-      // Show active batch info if there are still active repos
-      if (activeRepos.length > 0) {
-        process.stdout.write('\x1b[2K')
-        console.log(`${colors.dim}Active batch: ${currentBatch.length} repositories${colors.reset}`)
-        renderedCount++
-      }
+      // No empty line after progress bar - it creates double spacing during process
     }
     
     this.renderedOnce = true
@@ -310,11 +305,11 @@ class StatusDisplay {
     switch (status) {
       case 'pending': return colors.dim
       case 'cloning':
-      case 'pulling': return colors.yellow
+      case 'pulling': return colors.cyan  // Changed to cyan to match progress bar "active"
       case 'success': return colors.green
       case 'failed': return colors.red
       case 'skipped': return colors.yellow
-      case 'uncommitted': return colors.cyan
+      case 'uncommitted': return colors.yellow  // Changed to yellow to group with skipped
       default: return colors.reset
     }
   }
@@ -588,7 +583,8 @@ async function getOrganizationRepos(org, token) {
     
     // Create Octokit instance
     const octokit = new Octokit({
-      auth: token
+      auth: token,
+      baseUrl: 'https://api.github.com'
     })
     
     // Get all repositories from the organization
@@ -610,12 +606,24 @@ async function getOrganizationRepos(org, token) {
       private: repo.private
     }))
   } catch (error) {
+    const apiUrl = `https://api.github.com/orgs/${org}/repos`
     if (error.status === 404) {
       log('red', `❌ Organization '${org}' not found or not accessible`)
+      log('yellow', `   API URL: ${apiUrl}`)
     } else if (error.status === 401) {
       log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
+      log('yellow', `   API URL: ${apiUrl}`)
     } else {
-      log('red', `❌ Failed to fetch repositories: ${error.message}`)
+      log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
+      log('red', `   Error: ${error.message}`)
+      if (error.message.includes('Unable to connect')) {
+        log('yellow', '💡 Please check your internet connection')
+        log('yellow', `   You can test by visiting: ${apiUrl}`)
+      }
+    }
+    if (!token) {
+      log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
+      log('yellow', '   Visit: https://github.com/settings/tokens')
     }
     process.exit(1)
   }
@@ -627,7 +635,8 @@ async function getUserRepos(username, token) {
     
     // Create Octokit instance
     const octokit = new Octokit({
-      auth: token
+      auth: token,
+      baseUrl: 'https://api.github.com'
     })
     
     // Get all repositories for the user
@@ -649,12 +658,24 @@ async function getUserRepos(username, token) {
       private: repo.private
     }))
   } catch (error) {
+    const apiUrl = `https://api.github.com/users/${username}/repos`
     if (error.status === 404) {
       log('red', `❌ User '${username}' not found or not accessible`)
+      log('yellow', `   API URL: ${apiUrl}`)
     } else if (error.status === 401) {
       log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
+      log('yellow', `   API URL: ${apiUrl}`)
     } else {
-      log('red', `❌ Failed to fetch repositories: ${error.message}`)
+      log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
+      log('red', `   Error: ${error.message}`)
+      if (error.message.includes('Unable to connect')) {
+        log('yellow', '💡 Please check your internet connection')
+        log('yellow', `   You can test by visiting: ${apiUrl}`)
+      }
+    }
+    if (!token) {
+      log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
+      log('yellow', '   Visit: https://github.com/settings/tokens')
     }
     process.exit(1)
   }
@@ -779,22 +800,39 @@ async function main() {
   // Process all repositories with configurable concurrency
   const results = []
   
-  if (concurrencyLimit === 1) {
-    // Sequential processing for single-thread mode
-    for (const repo of repos) {
-      const result = await processRepository(repo, targetDir, useSsh, statusDisplay, token)
-      results.push(result)
+  // Start render loop at 10 FPS for dynamic updates
+  let renderInterval
+  if (statusDisplay.useInPlaceUpdates) {
+    renderInterval = setInterval(() => {
+      statusDisplay.render()
+    }, 100) // 100ms = 10 FPS
+  }
+  
+  try {
+    if (concurrencyLimit === 1) {
+      // Sequential processing for single-thread mode
+      for (const repo of repos) {
+        const result = await processRepository(repo, targetDir, useSsh, statusDisplay, token)
+        results.push(result)
+      }
+    } else {
+      // Parallel processing in batches
+      for (let i = 0; i < repos.length; i += concurrencyLimit) {
+        const batch = repos.slice(i, i + concurrencyLimit)
+        const batchPromises = batch.map(repo => 
+          processRepository(repo, targetDir, useSsh, statusDisplay, token)
+        )
+        
+        const batchResults = await Promise.all(batchPromises)
+        results.push(...batchResults)
+      }
     }
-  } else {
-    // Parallel processing in batches
-    for (let i = 0; i < repos.length; i += concurrencyLimit) {
-      const batch = repos.slice(i, i + concurrencyLimit)
-      const batchPromises = batch.map(repo => 
-        processRepository(repo, targetDir, useSsh, statusDisplay, token)
-      )
-      
-      const batchResults = await Promise.all(batchPromises)
-      results.push(...batchResults)
+  } finally {
+    // Stop render loop
+    if (renderInterval) {
+      clearInterval(renderInterval)
+      // One final render to ensure everything is up to date
+      statusDisplay.render()
     }
   }
   

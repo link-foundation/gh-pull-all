@@ -8,7 +8,7 @@
     "pull-all": "./pull-all.mjs"
   },
   "scripts": {
-    "test": "./run-tests.mjs",
+    "test": "./tests/run-tests.mjs",
     "version:patch": "./version.mjs patch",
     "version:minor": "./version.mjs minor",
     "version:major": "./version.mjs major"

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { TerminalSimulator, runTerminalTest } from './terminal-simulator.mjs'
+import { TerminalSimulator, runTerminalTest } from '../demos/terminal-simulator.mjs'
 
 // Create a minimal version of StatusDisplay for testing
 const createTestableStatusDisplay = () => {
@@ -30,12 +30,19 @@ const createTestableStatusDisplay = () => {
       this.renderedOnce = false
       this.maxNameLength = 0
       this.terminalWidth = process.stdout.columns || 80
+      this.terminalHeight = process.stdout.rows || 24
       this.errors = []
       this.errorCounter = 0
+      this.headerLines = 3
+      this.completedRepos = []
+      this.currentBatchStart = 0
+      this.lastRenderedCount = 0
+      this.batchDisplayMode = true
       
       if (this.isInteractive) {
         process.stdout.on('resize', () => {
           this.terminalWidth = process.stdout.columns || 80
+          this.terminalHeight = process.stdout.rows || 24
           if (this.useInPlaceUpdates) {
             this.render()
           }
@@ -174,11 +181,11 @@ const createTestableStatusDisplay = () => {
       switch (status) {
         case 'pending': return colors.dim
         case 'cloning':
-        case 'pulling': return colors.yellow
+        case 'pulling': return colors.cyan
         case 'success': return colors.green
         case 'failed': return colors.red
         case 'skipped': return colors.yellow
-        case 'uncommitted': return colors.cyan
+        case 'uncommitted': return colors.yellow
         default: return colors.reset
       }
     }

@@ -45,21 +45,21 @@ test('should show single-thread concurrency', async () => {
   const result = await runScript(['--user', 'nonexistent-test-user', '--single-thread'])
   
   assert.equal(result.code, 1)
-  assert.match(result.stdout, /Concurrency: 1 thread \(sequential\)/)
+  assert.match(result.stdout, /⚡ Concurrency: 1 thread \(sequential\)/)
 })
 
 test('should show custom thread count', async () => {
   const result = await runScript(['--user', 'nonexistent-test-user', '--threads', '5'])
   
   assert.equal(result.code, 1)
-  assert.match(result.stdout, /Concurrency: 5 threads \(parallel\)/)
+  assert.match(result.stdout, /⚡ Concurrency: 5 threads \(parallel\)/)
 })
 
 test('should support -j alias for threads', async () => {
   const result = await runScript(['--user', 'nonexistent-test-user', '-j', '7'])
   
   assert.equal(result.code, 1)
-  assert.match(result.stdout, /Concurrency: 7 threads \(parallel\)/)
+  assert.match(result.stdout, /⚡ Concurrency: 7 threads \(parallel\)/)
 })
 
 test('should reject thread count less than 1', async () => {
@@ -86,7 +86,7 @@ test('should default to 8 threads when no option specified', async () => {
   const result = await runScript(['--user', 'nonexistent-test-user'])
   
   assert.equal(result.code, 1)
-  assert.match(result.stdout, /Concurrency: 8 threads \(parallel\)/)
+  assert.match(result.stdout, /⚡ Concurrency: 8 threads \(parallel\)/)
 })
 
 test('should show help with new threading options', async () => {

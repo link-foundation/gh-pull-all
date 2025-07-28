@@ -38,7 +38,12 @@ const testDescriptions = {
   'test-parallel.mjs': 'Tests parallel processing functionality',
   'test-terminal-output.mjs': 'Tests terminal output formatting and colors',
   'test-threading.mjs': 'Tests threading and concurrency management',
-  'test-sorting.mjs': 'Tests alphabetical sorting of repositories'
+  'test-sorting.mjs': 'Tests alphabetical sorting of repositories',
+  'test-fixed-rendering.mjs': 'Tests fixed terminal rendering functionality',
+  'test-terminal-rendering.mjs': 'Tests terminal rendering output and formatting',
+  'test-windowed-display.mjs': 'Tests windowed display mode for terminal output',
+  'test-progress-bar.mjs': 'Tests progress bar functionality and display',
+  'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior'
 }
 
 function getTestDisplayName(filename) {

@@ -1,7 +1,8 @@
-# pull-all
-
+[![npm version](https://img.shields.io/npm/v/@link-foundation/pull-all?style=flat-square)](https://www.npmjs.com/package/@link-foundation/pull-all)
 [![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?style=flat-square&logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/pull-all)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?style=flat-square&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/pull-all)
+
+# pull-all
 
 The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing and real-time status updates.
 

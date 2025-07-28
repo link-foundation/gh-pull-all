@@ -1,7 +1,7 @@
 # pull-all
 
-[![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?style=flat-square&logo=gitpod)](https://gitpod.io/#https://github.com/konard/pull-all)
-[![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?style=flat-square&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=konard/pull-all)
+[![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?style=flat-square&logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/pull-all)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?style=flat-square&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/pull-all)
 
 The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing and real-time status updates.
 
@@ -15,6 +15,11 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 - 🎯 **Comprehensive**: Works with both organizations and user accounts
 - 🔑 **Smart Authentication**: Automatic GitHub CLI integration for seamless private repo access
 - 🛡️ **Error Handling**: Graceful handling of rate limits, authentication, and network issues
+- 📈 **Visual Progress Bar**: Color-coded progress bar shows real-time status (green=success, red=failed, yellow=skipped, cyan=active, gray=pending)
+- 🖥️ **Smart Terminal Display**: Windowed display mode automatically adjusts to terminal height for large repo counts
+- 🔍 **Uncommitted Changes Detection**: Automatically detects and skips repositories with uncommitted changes
+- 📋 **Error Summary**: Numbered error tracking with detailed error list at completion
+- ⚡ **Smooth Updates**: 10 FPS render loop for fluid terminal animations in multi-thread mode
 
 ## Quick Start
 
@@ -166,6 +171,7 @@ pull-all --user octocat --no-live-updates
 
 The script shows real-time progress with visual indicators. By default, it uses live in-place updates for a dynamic experience. Use `--no-live-updates` to disable in-place updates if you need to preserve terminal history.
 
+### Status Icons
 - ⏳ `pending` - Repository queued for processing
 - 📦 `cloning` - Currently cloning repository  
 - 📥 `pulling` - Currently pulling updates
@@ -173,6 +179,19 @@ The script shows real-time progress with visual indicators. By default, it uses 
 - ❌ `failed` - Operation failed (see error message)
 - ⚠️ `skipped` - Repository skipped (e.g., private repo without token)
 - 🔄 `uncommitted` - Has uncommitted changes, pull skipped
+
+### Visual Progress Bar
+In multi-thread mode with live updates, the script displays a color-coded progress bar:
+- 🟩 Green segments = Successfully completed
+- 🟥 Red segments = Failed operations
+- 🟨 Yellow segments = Skipped or uncommitted changes
+- 🟦 Cyan segments = Currently processing
+- ⬜ Gray segments = Pending operations
+
+### Display Modes
+- **Live Updates Mode** (default): Dynamic in-place updates with progress bar and windowed display
+- **Append-Only Mode** (`--no-live-updates`): Traditional line-by-line output for terminal history preservation
+- **Windowed Display**: Automatically adjusts visible repositories based on terminal height to prevent scrolling
 
 ## Requirements
 

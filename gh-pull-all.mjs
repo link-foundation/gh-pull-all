@@ -20,7 +20,7 @@ const { default: yargs } = await use('yargs@18.0.0')
 const { hideBin } = await use('yargs@18.0.0/helpers')
 
 // Get version from package.json or fallback
-let version = '1.3.1' // Fallback version
+let version = '1.3.2' // Fallback version
 
 try {
   const packagePath = path.join(__dirname, 'package.json')
@@ -156,9 +156,17 @@ class StatusDisplay {
       displayMessage = this.truncateMessage(repo.message, availableWidth)
     }
     
-    // Simple append-only log line - no cursor manipulation
+    // Build the line with proper padding to ensure full width clearing
     const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
-    console.log(line)
+    
+    // Calculate the visible length of the line (excluding ANSI codes)
+    const visibleLength = this.getVisibleLength(line)
+    
+    // Pad the line to terminal width to ensure complete clearing
+    const padding = Math.max(0, this.terminalWidth - visibleLength)
+    const paddedLine = line + ' '.repeat(padding)
+    
+    console.log(paddedLine)
     repo.logged = true
   }
 
@@ -222,7 +230,16 @@ class StatusDisplay {
         displayMessage = this.truncateMessage(displayMessage, availableWidth)
       }
       
-      console.log(`${statusColor}${statusIcon} ${name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`)
+      const line = `${statusColor}${statusIcon} ${name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
+      
+      // Calculate the visible length of the line (excluding ANSI codes)
+      const visibleLength = this.getVisibleLength(line)
+      
+      // Pad the line to terminal width to ensure complete clearing
+      const padding = Math.max(0, this.terminalWidth - visibleLength)
+      const paddedLine = line + ' '.repeat(padding)
+      
+      console.log(paddedLine)
     }
     
     // Render current batch of active repos with live updates
@@ -243,9 +260,16 @@ class StatusDisplay {
       
       const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
       
+      // Calculate the visible length of the line (excluding ANSI codes)
+      const visibleLength = this.getVisibleLength(line)
+      
+      // Pad the line to terminal width to ensure complete clearing
+      const padding = Math.max(0, this.terminalWidth - visibleLength)
+      const paddedLine = line + ' '.repeat(padding)
+      
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
-      console.log(line)
+      console.log(paddedLine)
       renderedCount++
     }
     
@@ -319,6 +343,11 @@ class StatusDisplay {
       return message
     }
     return message.substring(0, maxLength - 3) + '...'
+  }
+
+  getVisibleLength(str) {
+    // Remove ANSI escape codes to calculate visible length
+    return str.replace(/\x1b\[[0-9;]*m/g, '').length
   }
 
   createProgressBar() {

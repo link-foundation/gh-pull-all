@@ -162,8 +162,8 @@ class StatusDisplay {
     // Calculate the visible length of the line (excluding ANSI codes)
     const visibleLength = this.getVisibleLength(line)
     
-    // Pad the line to terminal width to ensure complete clearing
-    const padding = Math.max(0, this.terminalWidth - visibleLength)
+    // Pad the line to terminal width minus 1 to avoid wrapping
+    const padding = Math.max(0, this.terminalWidth - visibleLength - 1)
     const paddedLine = line + ' '.repeat(padding)
     
     console.log(paddedLine)
@@ -235,8 +235,8 @@ class StatusDisplay {
       // Calculate the visible length of the line (excluding ANSI codes)
       const visibleLength = this.getVisibleLength(line)
       
-      // Pad the line to terminal width to ensure complete clearing
-      const padding = Math.max(0, this.terminalWidth - visibleLength)
+      // Pad the line to terminal width minus 1 to avoid wrapping
+      const padding = Math.max(0, this.terminalWidth - visibleLength - 1)
       const paddedLine = line + ' '.repeat(padding)
       
       console.log(paddedLine)
@@ -263,8 +263,8 @@ class StatusDisplay {
       // Calculate the visible length of the line (excluding ANSI codes)
       const visibleLength = this.getVisibleLength(line)
       
-      // Pad the line to terminal width to ensure complete clearing
-      const padding = Math.max(0, this.terminalWidth - visibleLength)
+      // Pad the line to terminal width minus 1 to avoid wrapping
+      const padding = Math.max(0, this.terminalWidth - visibleLength - 1)
       const paddedLine = line + ' '.repeat(padding)
       
       // Clear the line and write new content

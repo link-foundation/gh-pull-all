@@ -702,6 +702,9 @@ async function pullRepository(repoName, targetDir, statusDisplay) {
       return { success: true, type: 'uncommitted' }
     }
     
+    statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
+    await simpleGit.fetch(['--all'])
+    
     statusDisplay.updateRepo(repoName, 'pulling', 'Pulling changes...')
     await simpleGit.pull()
     statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled')
@@ -720,6 +723,11 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
     // Use SSH if requested and available, fallback to HTTPS
     const cloneUrl = useSsh && repo.ssh_url ? repo.ssh_url : repo.clone_url
     await simpleGit.clone(cloneUrl, repo.name)
+    
+    statusDisplay.updateRepo(repo.name, 'cloning', 'Fetching all branches...')
+    const repoPath = path.join(targetDir, repo.name)
+    const repoGit = git(repoPath)
+    await repoGit.fetch(['--all'])
     
     statusDisplay.updateRepo(repo.name, 'success', 'Successfully cloned')
     return { success: true, type: 'cloned' }

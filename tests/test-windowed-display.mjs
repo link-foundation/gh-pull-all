@@ -3,14 +3,10 @@
 import { execSync } from 'child_process'
 import { mkdirSync, rmSync } from 'fs'
 import { join } from 'path'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { tmpdir } from 'os'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-// Create test directory with many repos
-const testDir = join(__dirname, 'test-repos-window')
+// Create test directory with many repos in OS temp directory
+const testDir = join(tmpdir(), 'pull-all-test-windowed-display')
 console.log(`Creating test directory with 50 repositories...`)
 
 try {
@@ -36,4 +32,12 @@ console.log(`Created 50 test repositories in ${testDir}`)
 console.log(`\nNow run: ../pull-all.mjs ${testDir} --threads 10`)
 console.log(`\nThe display will show only 10 repositories at a time (or terminal height, whichever is smaller)`)
 console.log(`and will cycle through all 50 repositories over time.`)
-console.log(`\nTo cleanup: rm -rf ${testDir}`)
+
+// Cleanup
+console.log(`\nCleaning up test directory...`)
+try {
+  rmSync(testDir, { recursive: true, force: true })
+  console.log('✅ Test directory cleaned up successfully')
+} catch (error) {
+  console.error('❌ Failed to cleanup test directory:', error.message)
+}

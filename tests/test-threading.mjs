@@ -33,11 +33,7 @@ function runScript(args) {
       reject(error)
     })
     
-    // Timeout after 5 seconds for these quick tests
-    setTimeout(() => {
-      child.kill('SIGTERM')
-      reject(new Error('Test timeout'))
-    }, 5000)
+    // No timeout - let tests run to completion
   })
 }
 

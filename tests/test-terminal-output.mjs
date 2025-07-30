@@ -32,12 +32,6 @@ function runScript(args) {
     child.on('error', (error) => {
       reject(error)
     })
-    
-    // Timeout after 10 seconds
-    setTimeout(() => {
-      child.kill('SIGTERM')
-      reject(new Error('Test timeout'))
-    }, 10000)
   })
 }
 

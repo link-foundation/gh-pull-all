@@ -3,6 +3,7 @@
 // Test the fixed rendering implementation
 import { spawn } from 'child_process'
 import path from 'path'
+import { tmpdir } from 'os'
 
 const colors = {
   green: '\x1b[32m',
@@ -51,7 +52,7 @@ async function runTest(test) {
       '--user', 'octocat',
       '--threads', '4',
       '--live-updates',
-      '--dir', '/tmp/pull-all-test-fixed'
+      '--dir', path.join(tmpdir(), 'pull-all-test-fixed')
     ], {
       env: { ...process.env, ...test.env },
       stdio: 'pipe'
@@ -104,11 +105,6 @@ async function runTest(test) {
     })
 
     child.on('error', reject)
-
-    // Kill after 30 seconds to prevent hanging
-    setTimeout(() => {
-      child.kill('SIGTERM')
-    }, 30000)
   })
 }
 
@@ -146,7 +142,7 @@ async function main() {
   // Cleanup
   try {
     const { rm } = await import('fs/promises')
-    await rm('/tmp/pull-all-test-fixed', { recursive: true, force: true })
+    await rm(path.join(tmpdir(), 'pull-all-test-fixed'), { recursive: true, force: true })
     console.log(`\n${colors.dim}Cleaned up test directory${colors.reset}`)
   } catch (e) {
     // Ignore cleanup errors

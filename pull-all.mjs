@@ -816,15 +816,55 @@ async function main() {
         results.push(result)
       }
     } else {
-      // Parallel processing in batches
-      for (let i = 0; i < repos.length; i += concurrencyLimit) {
-        const batch = repos.slice(i, i + concurrencyLimit)
-        const batchPromises = batch.map(repo => 
-          processRepository(repo, targetDir, useSsh, statusDisplay, token)
-        )
+      // Concurrent processing with worker pool pattern
+      let activeWorkers = 0
+      let repoIndex = 0
+      const resultsMap = new Map()
+      
+      // Create a promise that resolves when all repos are processed
+      await new Promise((resolve) => {
+        const processNext = async () => {
+          // If we've processed all repos and no workers are active, we're done
+          if (repoIndex >= repos.length && activeWorkers === 0) {
+            resolve()
+            return
+          }
+          
+          // Start new workers up to the concurrency limit
+          while (activeWorkers < concurrencyLimit && repoIndex < repos.length) {
+            const currentIndex = repoIndex
+            const repo = repos[currentIndex]
+            repoIndex++
+            activeWorkers++
+            
+            // Process repository asynchronously
+            processRepository(repo, targetDir, useSsh, statusDisplay, token)
+              .then(result => {
+                resultsMap.set(currentIndex, result)
+                activeWorkers--
+                processNext() // Try to start another worker
+              })
+              .catch(error => {
+                // Handle unexpected errors
+                resultsMap.set(currentIndex, { 
+                  success: false, 
+                  type: 'error', 
+                  error: error.message 
+                })
+                statusDisplay.updateRepo(repo.name, 'failed', `Unexpected error: ${error.message}`)
+                activeWorkers--
+                processNext() // Try to start another worker
+              })
+          }
+        }
         
-        const batchResults = await Promise.all(batchPromises)
-        results.push(...batchResults)
+        // Start initial workers
+        processNext()
+      })
+      
+      // Convert resultsMap to array in original order
+      for (let i = 0; i < repos.length; i++) {
+        results.push(resultsMap.get(i))
       }
     }
   } finally {

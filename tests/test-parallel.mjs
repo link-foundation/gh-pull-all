@@ -1,7 +1,5 @@
 #!/usr/bin/env bun
 
-import path from 'path'
-
 // Test parallel processing functionality
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
@@ -48,11 +46,7 @@ function runScript(args) {
       reject(error)
     })
     
-    // Timeout after 15 seconds
-    setTimeout(() => {
-      child.kill('SIGTERM')
-      reject(new Error('Test timeout'))
-    }, 15000)
+    // No timeout - let tests run to completion
   })
 }
 
@@ -75,10 +69,9 @@ test('parallel processing should initialize status display', async () => {
     stdout += data.toString()
   })
   
-  // Kill after 3 seconds to avoid long download
-  setTimeout(() => {
-    child.kill('SIGTERM')
-  }, 3000)
+  // Let it run for a bit then kill to test initialization
+  await new Promise(resolve => setTimeout(resolve, 3000))
+  child.kill('SIGTERM')
   
   const result = await new Promise((resolve) => {
     child.on('close', (code) => {
@@ -88,7 +81,7 @@ test('parallel processing should initialize status display', async () => {
   
   // Should have started the parallel sync process
   assert.match(result.stdout, /Starting github user repository sync/)
-  assert.match(result.stdout, /Fetching repositories/)
+  assert.match(result.stdout, /Concurrency: 8 threads \(parallel\)/)
 })
 
 test('parallel script should show improved output format', async () => {

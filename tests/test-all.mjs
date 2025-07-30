@@ -43,7 +43,8 @@ const testDescriptions = {
   'test-terminal-rendering.mjs': 'Tests terminal rendering output and formatting',
   'test-windowed-display.mjs': 'Tests windowed display mode for terminal output',
   'test-progress-bar.mjs': 'Tests progress bar functionality and display',
-  'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior'
+  'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior',
+  'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern'
 }
 
 function getTestDisplayName(filename) {

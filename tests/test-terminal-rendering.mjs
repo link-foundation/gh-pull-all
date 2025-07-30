@@ -384,7 +384,7 @@ async function runTest(config) {
 
 // Run all tests
 async function runAllTests() {
-  console.log('Terminal Rendering Tests for pull-all.mjs')
+  console.log('Terminal Rendering Tests for gh-pull-all.mjs')
   console.log('=========================================')
   
   const results = []

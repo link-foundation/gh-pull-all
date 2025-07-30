@@ -26,7 +26,7 @@ test.after(async () => {
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn('bun', ['../pull-all.mjs', ...args], {
+    const child = spawn('bun', ['../gh-pull-all.mjs', ...args], {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: process.cwd()
     })
@@ -70,7 +70,7 @@ test('concurrent processing should handle multiple threads gracefully', async ()
 
 test('concurrent processing with valid user should initialize properly', async () => {
   // Test with 'github' user which exists and should start processing before timing out
-  const child = spawn('bun', ['../pull-all.mjs', '--user', 'github', '--dir', testDir, '--threads', '3'], {
+  const child = spawn('bun', ['../gh-pull-all.mjs', '--user', 'github', '--dir', testDir, '--threads', '3'], {
     stdio: ['pipe', 'pipe', 'pipe'],
     cwd: process.cwd()
   })

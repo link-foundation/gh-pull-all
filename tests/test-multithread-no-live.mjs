@@ -27,7 +27,7 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testMultiThreadNoLive() {
-  const testDir = path.join(os.tmpdir(), 'pull-all-test-multithread-no-live')
+  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-multithread-no-live')
   
   try {
     log('blue', '🧪 Testing multi-thread mode without live updates...')
@@ -36,7 +36,7 @@ async function testMultiThreadNoLive() {
     await fs.rm(testDir, {recursive: true, force: true})
     
     // Run the script in multi-thread mode without live updates
-    const result = execSync(`../pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
+    const result = execSync(`../gh-pull-all.mjs --user octocat --threads 3 --no-live-updates --dir ${testDir}`, {
       encoding: 'utf8',
       stdio: 'pipe'
     })

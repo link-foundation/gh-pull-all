@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Demonstrates the terminal rendering bug in pull-all.mjs
+// Demonstrates the terminal rendering bug in gh-pull-all.mjs
 // This simulates what happens when repos exceed terminal height
 
 const colors = {

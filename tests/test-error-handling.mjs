@@ -26,7 +26,7 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testErrorHandling() {
-  const testDir = path.join(os.tmpdir(), 'pull-all-test-error-handling')
+  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-error-handling')
   
   try {
     log('blue', '🧪 Testing error handling and numbering system...')
@@ -44,7 +44,7 @@ async function testErrorHandling() {
     // Run the script and expect some failures
     let result
     try {
-      result = execSync(`../pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+      result = execSync(`../gh-pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })

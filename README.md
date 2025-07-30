@@ -1,8 +1,8 @@
-[![npm version](https://img.shields.io/npm/v/@link-foundation/pull-all)](https://www.npmjs.com/package/@link-foundation/pull-all)
-[![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/pull-all)
-[![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/pull-all)
+[![npm version](https://img.shields.io/npm/v/gh-pull-all)](https://www.npmjs.com/package/gh-pull-all)
+[![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/gh-pull-all)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/gh-pull-all)
 
-# pull-all
+# gh-pull-all
 
 The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing and real-time status updates.
 
@@ -26,16 +26,16 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 
 ```bash
 # Clone all repositories from a user account
-pull-all --user octocat
+gh-pull-all --user octocat
 
 # Clone all repositories from an organization
-pull-all --org github
+gh-pull-all --org github
 
 # Use SSH for cloning with custom thread count
-pull-all --user octocat --ssh --threads 16
+gh-pull-all --user octocat --ssh --threads 16
 
 # Sequential processing for debugging
-pull-all --org myorg --single-thread
+gh-pull-all --org myorg --single-thread
 ```
 
 ## Installation
@@ -46,13 +46,13 @@ Install globally for system-wide access:
 
 ```bash
 # Using bun
-bun install -g @link-foundation/pull-all
+bun install -g gh-pull-all
 
 # Using npm
-npm install -g @link-foundation/pull-all
+npm install -g gh-pull-all
 
 # After installation, use anywhere:
-pull-all --help
+gh-pull-all --help
 ```
 
 ### Uninstall
@@ -61,30 +61,30 @@ Remove the global installation:
 
 ```bash
 # Using bun
-bun uninstall -g @link-foundation/pull-all
+bun uninstall -g gh-pull-all
 
 # Using npm
-npm uninstall -g @link-foundation/pull-all
+npm uninstall -g gh-pull-all
 ```
 
 ### Local Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/link-foundation/pull-all.git
-cd pull-all
+git clone https://github.com/link-foundation/gh-pull-all.git
+cd gh-pull-all
 
 # Make the script executable
-chmod +x pull-all.mjs
+chmod +x gh-pull-all.mjs
 
 # Run it
-./pull-all.mjs --help
+./gh-pull-all.mjs --help
 ```
 
 ## Usage
 
 ```
-Usage: pull-all [--org <organization> | --user <username>] [options]
+Usage: gh-pull-all [--org <organization> | --user <username>] [options]
 
 Options:
   -o, --org            GitHub organization name
@@ -111,7 +111,7 @@ If you have [GitHub CLI](https://cli.github.com/) installed and authenticated, t
 gh auth login
 
 # Script automatically detects and uses gh CLI authentication
-pull-all --org myorg  # Includes private repos!
+gh-pull-all --org myorg  # Includes private repos!
 ```
 
 ### 2. Environment Variable
@@ -119,14 +119,14 @@ Set the `GITHUB_TOKEN` environment variable:
 
 ```bash
 export GITHUB_TOKEN=ghp_your_token_here
-pull-all --org myorg
+gh-pull-all --org myorg
 ```
 
 ### 3. Command Line Token
 Pass the token directly with `--token`:
 
 ```bash
-pull-all --org myorg --token ghp_your_token_here
+gh-pull-all --org myorg --token ghp_your_token_here
 ```
 
 ### Authentication Priority
@@ -140,32 +140,32 @@ The script uses this fallback chain:
 
 ```bash
 # Basic usage - sync all public repos from a user
-pull-all --user octocat
+gh-pull-all --user octocat
 
 # Sync all repos (including private) using GitHub CLI auth
-pull-all --org myorg  # Automatically uses gh CLI if authenticated
+gh-pull-all --org myorg  # Automatically uses gh CLI if authenticated
 
 # Sync organization repos with environment token
 export GITHUB_TOKEN=ghp_your_token_here
-pull-all --org myorg
+gh-pull-all --org myorg
 
 # Sync with explicit token
-pull-all --org github --token ghp_your_token_here
+gh-pull-all --org github --token ghp_your_token_here
 
 # Use SSH for cloning (faster for multiple repos)
-pull-all --user octocat --ssh
+gh-pull-all --user octocat --ssh
 
 # Custom directory and thread count
-pull-all --org myorg --dir ./repositories --threads 16
+gh-pull-all --org myorg --dir ./repositories --threads 16
 
 # Single-threaded for debugging or rate limit issues
-pull-all --user octocat --single-thread
+gh-pull-all --user octocat --single-thread
 
 # Maximum concurrency (be careful with rate limits)
-pull-all --org myorg --threads 20
+gh-pull-all --org myorg --threads 20
 
 # Disable live updates for terminal history preservation
-pull-all --user octocat --no-live-updates
+gh-pull-all --user octocat --no-live-updates
 ```
 
 ## Status Display

@@ -46,13 +46,13 @@ async function runTest(test) {
   console.log('-'.repeat(50))
 
   return new Promise((resolve, reject) => {
-    // Run pull-all with test user (octocat has public repos)
+    // Run gh-pull-all with test user (octocat has public repos)
     const child = spawn('node', [
-      path.join(process.cwd(), 'pull-all.mjs'),
+      path.join(process.cwd(), 'gh-pull-all.mjs'),
       '--user', 'octocat',
       '--threads', '4',
       '--live-updates',
-      '--dir', path.join(tmpdir(), 'pull-all-test-fixed')
+      '--dir', path.join(tmpdir(), 'gh-pull-all-test-fixed')
     ], {
       env: { ...process.env, ...test.env },
       stdio: 'pipe'
@@ -109,7 +109,7 @@ async function runTest(test) {
 }
 
 async function main() {
-  console.log('This test verifies the terminal rendering fix by running pull-all')
+  console.log('This test verifies the terminal rendering fix by running gh-pull-all')
   console.log('with different terminal sizes and checking for duplication.\n')
 
   const results = []
@@ -142,7 +142,7 @@ async function main() {
   // Cleanup
   try {
     const { rm } = await import('fs/promises')
-    await rm(path.join(tmpdir(), 'pull-all-test-fixed'), { recursive: true, force: true })
+    await rm(path.join(tmpdir(), 'gh-pull-all-test-fixed'), { recursive: true, force: true })
     console.log(`\n${colors.dim}Cleaned up test directory${colors.reset}`)
   } catch (e) {
     // Ignore cleanup errors

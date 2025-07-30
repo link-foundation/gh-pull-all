@@ -27,7 +27,7 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testIntegration() {
-  const testDir = path.join(os.tmpdir(), 'pull-all-test-integration')
+  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-integration')
   
   try {
     log('blue', '🧪 Running comprehensive integration test...')
@@ -47,7 +47,7 @@ async function testIntegration() {
     // Run initial clone with errors expected
     let phase1Result
     try {
-      phase1Result = execSync(`../pull-all.mjs --org deep-assistant --threads 3 --no-live-updates --dir ${testDir}`, {
+      phase1Result = execSync(`../gh-pull-all.mjs --org deep-assistant --threads 3 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -88,7 +88,7 @@ async function testIntegration() {
     
     let phase3Result
     try {
-      phase3Result = execSync(`../pull-all.mjs --org deep-assistant --threads 2 --no-live-updates --dir ${testDir}`, {
+      phase3Result = execSync(`../gh-pull-all.mjs --org deep-assistant --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -106,7 +106,7 @@ async function testIntegration() {
     
     let phase4Result
     try {
-      phase4Result = execSync(`../pull-all.mjs --org deep-assistant --single-thread --dir ${testDir}`, {
+      phase4Result = execSync(`../gh-pull-all.mjs --org deep-assistant --single-thread --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })

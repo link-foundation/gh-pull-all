@@ -27,7 +27,7 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testSingleThread() {
-  const testDir = path.join(os.tmpdir(), 'pull-all-test-single-thread')
+  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-single-thread')
   
   try {
     log('blue', '🧪 Testing single-thread mode with live updates...')
@@ -36,7 +36,7 @@ async function testSingleThread() {
     await fs.rm(testDir, {recursive: true, force: true})
     
     // Run the script in single-thread mode
-    const result = execSync(`../pull-all.mjs --user octocat --single-thread --dir ${testDir}`, {
+    const result = execSync(`../gh-pull-all.mjs --user octocat --single-thread --dir ${testDir}`, {
       encoding: 'utf8',
       stdio: 'pipe'
     })

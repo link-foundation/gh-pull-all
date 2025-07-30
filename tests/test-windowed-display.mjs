@@ -6,7 +6,7 @@ import { join } from 'path'
 import { tmpdir } from 'os'
 
 // Create test directory with many repos in OS temp directory
-const testDir = join(tmpdir(), 'pull-all-test-windowed-display')
+const testDir = join(tmpdir(), 'gh-pull-all-test-windowed-display')
 console.log(`Creating test directory with 50 repositories...`)
 
 try {
@@ -31,7 +31,7 @@ for (let i = 1; i <= 50; i++) {
 }
 
 console.log(`Created 50 test repositories in ${testDir}`)
-console.log(`\nNow run: ../pull-all.mjs ${testDir} --threads 10`)
+console.log(`\nNow run: ../gh-pull-all.mjs ${testDir} --threads 10`)
 console.log(`\nThe display will show only 10 repositories at a time (or terminal height, whichever is smaller)`)
 console.log(`and will cycle through all 50 repositories over time.`)
 

@@ -6,8 +6,8 @@ import { execSync } from 'child_process'
 console.log('🧪 Testing repository sorting...')
 
 try {
-  // Run pull-all with --help to ensure it loads correctly
-  execSync('../pull-all.mjs --help', { stdio: 'pipe' })
+  // Run gh-pull-all with --help to ensure it loads correctly
+  execSync('../gh-pull-all.mjs --help', { stdio: 'pipe' })
   console.log('✅ Script loads successfully')
   
   // Test the sorting logic

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// Master test runner for all pull-all.mjs tests
+// Master test runner for all gh-pull-all.mjs tests
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
@@ -72,7 +72,7 @@ async function runAllTests() {
   let failedTests = 0
   const results = []
   
-  log('blue', `${colors.bold}🧪 Pull-All Test Suite${colors.reset}`)
+  log('blue', `${colors.bold}🧪 GH-Pull-All Test Suite${colors.reset}`)
   
   // Discover all test files
   const testFiles = await discoverTests()
@@ -156,7 +156,7 @@ async function runAllTests() {
   log('blue', `⏱️  Total time: ${totalDuration}s`)
   
   if (failedTests === 0) {
-    log('green', `\n🎉 All tests passed! The pull-all.mjs implementation is working correctly.`)
+    log('green', `\n🎉 All tests passed! The gh-pull-all.mjs implementation is working correctly.`)
     log('magenta', '✨ Features validated across all test suites:')
     log('magenta', '   • Single-thread and multi-thread modes')
     log('magenta', '   • Live updates and append-only display modes')

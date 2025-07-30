@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { StatusDisplay } from './pull-all.mjs'
+import { StatusDisplay } from './gh-pull-all.mjs'
 
 // ANSI color codes
 const colors = {

@@ -22,7 +22,7 @@ function updatePackageJson(newVersion) {
 }
 
 function updatePullAllMjs(newVersion) {
-  const pullAllPath = path.join(__dirname, 'pull-all.mjs')
+  const pullAllPath = path.join(__dirname, 'gh-pull-all.mjs')
   const content = fs.readFileSync(pullAllPath, 'utf8')
   const updatedContent = content.replace(
     /let version = '[^']+'/,
@@ -76,7 +76,7 @@ async function main() {
     
     console.log('✅ Version updated successfully!')
     console.log(`   📄 package.json: ${newVersion}`)
-    console.log(`   📄 pull-all.mjs: ${newVersion}`)
+    console.log(`   📄 gh-pull-all.mjs: ${newVersion}`)
     console.log('')
     
     // Automatically commit and push changes

@@ -27,7 +27,7 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testUncommittedChanges() {
-  const testDir = path.join(os.tmpdir(), 'pull-all-test-uncommitted-changes')
+  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-uncommitted-changes')
   
   try {
     log('blue', '🧪 Testing uncommitted changes handling...')
@@ -42,7 +42,7 @@ async function testUncommittedChanges() {
     log('cyan', '🔧 Step 1: Cloning repositories initially...')
     try {
       // Use deep-assistant org
-      const result = execSync(`../pull-all.mjs --org deep-assistant --threads 1 --dir ${testDir}`, {
+      const result = execSync(`../gh-pull-all.mjs --org deep-assistant --threads 1 --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -116,7 +116,7 @@ async function testUncommittedChanges() {
     
     let result
     try {
-      result = execSync(`../pull-all.mjs --org deep-assistant --threads 2 --no-live-updates --dir ${testDir}`, {
+      result = execSync(`../gh-pull-all.mjs --org deep-assistant --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })

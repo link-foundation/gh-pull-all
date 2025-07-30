@@ -27,7 +27,7 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testTerminalWidth() {
-  const testDir = path.join(os.tmpdir(), 'pull-all-test-terminal-width')
+  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-terminal-width')
   
   try {
     log('blue', '🧪 Testing terminal width handling and message truncation...')
@@ -45,7 +45,7 @@ async function testTerminalWidth() {
     // Since we can't actually control terminal width in non-TTY, we'll test the logic
     let result
     try {
-      result = execSync(`../pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
+      result = execSync(`../gh-pull-all.mjs --user octocat --threads 2 --no-live-updates --dir ${testDir}`, {
         encoding: 'utf8',
         stdio: 'pipe'
       })

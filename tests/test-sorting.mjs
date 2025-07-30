@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 // Simple test to verify repository sorting
 import { execSync } from 'child_process'

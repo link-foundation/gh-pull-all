@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 // Test the fixed rendering implementation
 import { spawn } from 'child_process'

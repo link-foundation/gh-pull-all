@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { TerminalSimulator, runTerminalTest } from '../demos/terminal-simulator.mjs'
 

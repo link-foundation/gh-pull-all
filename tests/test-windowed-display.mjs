@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { execSync } from 'child_process'
 import { mkdirSync, rmSync } from 'fs'

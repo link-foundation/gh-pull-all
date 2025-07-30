@@ -22,6 +22,8 @@ for (let i = 1; i <= 50; i++) {
   
   mkdirSync(repoPath)
   execSync('git init', { cwd: repoPath, stdio: 'ignore' })
+  execSync('git config user.email "test@example.com"', { cwd: repoPath, stdio: 'ignore' })
+  execSync('git config user.name "Test User"', { cwd: repoPath, stdio: 'ignore' })
   execSync('git remote add origin https://github.com/example/repo.git', { cwd: repoPath, stdio: 'ignore' })
   execSync('echo "# Test" > README.md', { cwd: repoPath, shell: true })
   execSync('git add .', { cwd: repoPath, stdio: 'ignore' })

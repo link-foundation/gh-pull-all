@@ -4,6 +4,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { execSync } from 'child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -28,6 +29,17 @@ function updatePullAllMjs(newVersion) {
     `let version = '${newVersion}'`
   )
   fs.writeFileSync(pullAllPath, updatedContent)
+}
+
+function runGitCommand(command, description) {
+  try {
+    console.log(`🔄 ${description}...`)
+    execSync(command, { stdio: 'inherit', cwd: __dirname })
+    console.log(`✅ ${description} completed`)
+  } catch (error) {
+    console.error(`❌ Failed to ${description.toLowerCase()}: ${error.message}`)
+    process.exit(1)
+  }
 }
 
 async function main() {
@@ -66,10 +78,13 @@ async function main() {
     console.log(`   📄 package.json: ${newVersion}`)
     console.log(`   📄 pull-all.mjs: ${newVersion}`)
     console.log('')
-    console.log('🚀 Next steps:')
-    console.log('   git add .')
-    console.log(`   git commit -m "Bump version to ${newVersion}"`)
-    console.log('   git push')
+    
+    // Automatically commit and push changes
+    runGitCommand('git add .', 'Adding changes to git')
+    runGitCommand(`git commit -m "${newVersion}"`, 'Committing changes')
+    runGitCommand('git push', 'Pushing to remote repository')
+    
+    console.log('🎉 Version bump completed and pushed!')
   } catch (error) {
     console.error('❌ Error updating files:', error.message)
     process.exit(1)

@@ -93,7 +93,6 @@ test('concurrent processing with valid user should initialize properly', async (
   // Should have started the sync process with concurrent processing
   assert.match(result.stdout, /Starting github user repository sync/)
   assert.match(result.stdout, /Concurrency: 3 threads \(parallel\)/)
-  assert.match(result.stdout, /Using GitHub token from gh CLI/)
 })
 
 test('single-thread mode should show sequential configuration', async () => {

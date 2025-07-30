@@ -1,5 +1,5 @@
 {
-  "name": "@link-foundation/pull-all",
+  "name": "gh-pull-all",
   "version": "1.3.0",
   "description": "A tool to pull all git repositories in a directory with parallel processing and status display",
   "type": "module",

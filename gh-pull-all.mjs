@@ -849,8 +849,8 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
       const defaultBranch = await getDefaultBranch(simpleGit)
       
       if (currentBranchName !== defaultBranch) {
-        // Check if we're behind the default branch
-        statusDisplay.updateRepo(repoName, 'pulling', `Checking if behind ${defaultBranch}...`)
+        // Attempt to merge from default branch
+        statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
         try {
           const remoteName = 'origin' // Assume origin for now
           const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
@@ -860,38 +860,37 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
           const hasRemoteDefault = branches.all.some(branch => branch.includes(remoteDefaultBranch))
           
           if (hasRemoteDefault) {
-            // Get commit hashes to compare
-            const localHash = await simpleGit.revparse([currentBranchName])
-            const remoteHash = await simpleGit.revparse([remoteDefaultBranch])
-            
-            if (localHash.trim() !== remoteHash.trim()) {
-              // Check if current branch is behind (can be fast-forwarded)
-              try {
-                await simpleGit.raw(['merge-base', '--is-ancestor', localHash.trim(), remoteHash.trim()])
-                // If we reach here, current branch is ancestor of remote (behind)
-                statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
-                
-                // Attempt to merge default branch into current branch
-                await simpleGit.merge([remoteDefaultBranch])
-                statusDisplay.updateRepo(repoName, 'success', `Successfully merged ${defaultBranch} into ${currentBranchName}`)
-                return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName } }
-              } catch (ancestorError) {
-                // Branches have diverged, handle carefully
-                statusDisplay.updateRepo(repoName, 'pulling', `Branches diverged, attempting merge from ${defaultBranch}...`)
-                
+            // Attempt to merge - let git decide what to do
+            try {
+              const result = await simpleGit.merge([remoteDefaultBranch])
+              
+              // Check merge result - simple-git returns an object with changes info
+              const hasChanges = (result?.files?.length > 0) || 
+                                (result?.summary?.changes > 0) || 
+                                (result?.summary?.insertions > 0) || 
+                                (result?.summary?.deletions > 0)
+              
+              const isAlreadyUpToDate = !hasChanges
+              
+              if (isAlreadyUpToDate) {
+                statusDisplay.updateRepo(repoName, 'success', `Already up to date with ${defaultBranch}`)
+                return { success: true, type: 'up_to_date_with_default', details: { defaultBranch, currentBranch: currentBranchName } }
+              } else {
+                // Successful merge with changes, now push the changes
+                statusDisplay.updateRepo(repoName, 'pulling', `Pushing merged changes...`)
                 try {
-                  await simpleGit.merge([remoteDefaultBranch])
+                  await simpleGit.push()
                   statusDisplay.updateRepo(repoName, 'success', `Successfully merged ${defaultBranch} into ${currentBranchName}`)
                   return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName } }
-                } catch (mergeError) {
-                  // Merge conflict occurred
-                  statusDisplay.updateRepo(repoName, 'failed', `Merge conflict with ${defaultBranch}: ${mergeError.message}`)
-                  return { success: false, type: 'merge_conflict', error: mergeError.message, details: { from: defaultBranch, to: currentBranchName } }
+                } catch (pushError) {
+                  statusDisplay.updateRepo(repoName, 'success', `Merged ${defaultBranch} into ${currentBranchName} (push failed: ${pushError.message})`)
+                  return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName, pushError: pushError.message } }
                 }
               }
-            } else {
-              statusDisplay.updateRepo(repoName, 'success', `Already up to date with ${defaultBranch}`)
-              return { success: true, type: 'up_to_date_with_default', details: { defaultBranch, currentBranch: currentBranchName } }
+            } catch (mergeError) {
+              // Merge conflict or other merge error
+              statusDisplay.updateRepo(repoName, 'failed', `Merge conflict with ${defaultBranch}: ${mergeError.message}`)
+              return { success: false, type: 'merge_conflict', error: mergeError.message, details: { from: defaultBranch, to: currentBranchName } }
             }
           } else {
             statusDisplay.updateRepo(repoName, 'success', `Remote ${defaultBranch} not found, pulling current branch`)

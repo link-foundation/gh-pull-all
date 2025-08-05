@@ -497,7 +497,7 @@ class StatusDisplay {
     if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
 
     const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)
-    log('blue', `⏱️ Total time: ${totalTime}s`)
+    log('blue', `⏱️  Total time: ${totalTime}s`)
     log('blue', '🎉 Operation completed!')
   }
 }

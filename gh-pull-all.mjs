@@ -322,10 +322,10 @@ class StatusDisplay {
       case 'cloning': return '📦'
       case 'pulling': return '📥'
       case 'checking': return '🔍'
-      case 'deleting': return '🗑️'
+      case 'deleting': return '🗑️ '
       case 'success': return '✅'
       case 'failed': return '❌'
-      case 'skipped': return '⚠️'
+      case 'skipped': return '⚠️ '
       case 'uncommitted': return '🔄'
       default: return '❓'
     }
@@ -493,7 +493,7 @@ class StatusDisplay {
     if (summary.pulled > 0) log('green', `✅ Pulled: ${summary.pulled}`)
     if (summary.deleted > 0) log('green', `✅ Deleted: ${summary.deleted}`)
     if (summary.uncommitted > 0) log('yellow', `🔄 Uncommitted changes: ${summary.uncommitted}`)
-    if (summary.skipped > 0) log('yellow', `⚠️ Skipped: ${summary.skipped}`)
+    if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
     if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
 
     const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)

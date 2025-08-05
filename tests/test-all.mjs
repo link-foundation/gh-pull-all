@@ -45,7 +45,9 @@ const testDescriptions = {
   'test-progress-bar.mjs': 'Tests progress bar functionality and display',
   'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior',
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',
-  'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."'
+  'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
+  'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
+  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option'
 }
 
 function getTestDisplayName(filename) {

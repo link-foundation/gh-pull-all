@@ -4,6 +4,7 @@
 // Import built-in Node.js modules
 import path from 'path'
 import { fileURLToPath } from 'url'
+import readline from 'readline'
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -30,6 +31,21 @@ try {
   }
 } catch (error) {
   // Use fallback version if package.json can't be read
+}
+
+// Helper function for confirmation prompt
+async function askConfirmation(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close()
+      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes')
+    })
+  })
 }
 
 // Colors for console output
@@ -189,7 +205,7 @@ class StatusDisplay {
     
     // Separate active and completed repos
     for (const [name, repo] of sortedRepos) {
-      if (repo.status === 'pending' || repo.status === 'pulling' || repo.status === 'cloning') {
+      if (repo.status === 'pending' || repo.status === 'pulling' || repo.status === 'cloning' || repo.status === 'checking' || repo.status === 'deleting') {
         activeRepos.push([name, repo])
       } else if (!this.completedRepos.find(r => r[0] === name)) {
         newlyCompleted.push([name, repo])
@@ -282,7 +298,7 @@ class StatusDisplay {
       
       // Legend line (right above progress bar)
       process.stdout.write('\x1b[2K')
-      console.log(`${colors.dim}Progress: ${colors.green}█${colors.dim}=success ${colors.red}█${colors.dim}=failed ${colors.yellow}█${colors.dim}=skipped/uncommitted ${colors.cyan}█${colors.dim}=pulling/cloning ${colors.dim}░=pending${colors.reset}`)
+      console.log(`${colors.dim}Progress: ${colors.green}█${colors.dim}=success ${colors.red}█${colors.dim}=failed ${colors.yellow}█${colors.dim}=skipped ${colors.cyan}█${colors.dim}=in progress ${colors.dim}░=pending${colors.reset}`)
       renderedCount++
       
       // Progress bar
@@ -305,9 +321,11 @@ class StatusDisplay {
       case 'pending': return '⏳'
       case 'cloning': return '📦'
       case 'pulling': return '📥'
+      case 'checking': return '🔍'
+      case 'deleting': return '🗑️'
       case 'success': return '✅'
       case 'failed': return '❌'
-      case 'skipped': return '⚠️ '
+      case 'skipped': return '⚠️'
       case 'uncommitted': return '🔄'
       default: return '❓'
     }
@@ -321,6 +339,8 @@ class StatusDisplay {
       case 'uncommitted': return 'Has uncommitted changes'
       case 'cloning': return 'Cloning repository...'
       case 'pulling': return 'Pulling updates...'
+      case 'checking': return 'Checking for uncommitted changes...'
+      case 'deleting': return 'Deleting repository...'
       default: return ''
     }
   }
@@ -329,7 +349,9 @@ class StatusDisplay {
     switch (status) {
       case 'pending': return colors.dim
       case 'cloning':
-      case 'pulling': return colors.cyan  // Changed to cyan to match progress bar "active"
+      case 'pulling': 
+      case 'checking':
+      case 'deleting': return colors.cyan  // Changed to cyan to match progress bar "active"
       case 'success': return colors.green
       case 'failed': return colors.red
       case 'skipped': return colors.yellow
@@ -361,6 +383,8 @@ class StatusDisplay {
       pending: 0,
       pulling: 0,
       cloning: 0,
+      checking: 0,
+      deleting: 0,
       skipped: 0,
       uncommitted: 0
     }
@@ -374,7 +398,7 @@ class StatusDisplay {
     // Calculate bar width (reserve space for text)
     const barWidth = Math.min(50, this.terminalWidth - 40)
     const completed = statusCounts.success + statusCounts.failed + statusCounts.skipped + statusCounts.uncommitted
-    const inProgress = statusCounts.pulling + statusCounts.cloning
+    const inProgress = statusCounts.pulling + statusCounts.cloning + statusCounts.checking + statusCounts.deleting
     const pending = statusCounts.pending
     
     // Create bar segments - ensure they sum to barWidth
@@ -434,6 +458,7 @@ class StatusDisplay {
     const summary = {
       cloned: 0,
       pulled: 0,
+      deleted: 0,
       failed: 0,
       skipped: 0,
       uncommitted: 0
@@ -444,6 +469,7 @@ class StatusDisplay {
         case 'success':
           if (repo.message.includes('cloned')) summary.cloned++
           else if (repo.message.includes('pulled')) summary.pulled++
+          else if (repo.message.includes('deleted')) summary.deleted++
           else if (repo.message.includes('uncommitted')) summary.uncommitted++
           break
         case 'failed':
@@ -465,13 +491,14 @@ class StatusDisplay {
     log('blue', `${colors.bold}📊 Summary:${colors.reset}`)
     if (summary.cloned > 0) log('green', `✅ Cloned: ${summary.cloned}`)
     if (summary.pulled > 0) log('green', `✅ Pulled: ${summary.pulled}`)
-    if (summary.uncommitted > 0) log('cyan', `🔄 Uncommitted changes: ${summary.uncommitted}`)
-    if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
+    if (summary.deleted > 0) log('green', `✅ Deleted: ${summary.deleted}`)
+    if (summary.uncommitted > 0) log('yellow', `🔄 Uncommitted changes: ${summary.uncommitted}`)
+    if (summary.skipped > 0) log('yellow', `⚠️ Skipped: ${summary.skipped}`)
     if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
 
     const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)
-    log('blue', `⏱️  Total time: ${totalTime}s`)
-    log('blue', '🎉 Repository sync completed!')
+    log('blue', `⏱️ Total time: ${totalTime}s`)
+    log('blue', '🎉 Operation completed!')
   }
 }
 
@@ -580,6 +607,11 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Enable live in-place status updates (default: true, use --no-live-updates to disable)',
     default: true
   })
+  .option('delete', {
+    type: 'boolean',
+    describe: 'Delete all cloned repositories (skips repos with uncommitted changes)',
+    default: false
+  })
   .check((argv) => {
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
@@ -604,6 +636,7 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --single-thread', 'Run operations sequentially')
   .example('$0 --user konard -j 16', 'Use 16 concurrent operations (alias for --threads)')
   .example('$0 --user konard --no-live-updates', 'Disable live updates for terminal history preservation')
+  .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
   .argv
 
 async function getOrganizationRepos(org, token) {
@@ -746,7 +779,7 @@ async function pullRepository(repoName, targetDir, statusDisplay) {
 
 async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   try {
-    statusDisplay.updateRepo(repo.name, 'cloning', 'Starting clone...')
+    statusDisplay.updateRepo(repo.name, 'cloning', 'Cloning...')
     const simpleGit = git(targetDir)
     
     // Use SSH if requested and available, fallback to HTTPS
@@ -763,6 +796,43 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   } catch (error) {
     statusDisplay.updateRepo(repo.name, 'failed', `Error: ${error.message}`)
     return { success: false, type: 'clone', error: error.message }
+  }
+}
+
+async function deleteRepository(repoName, targetDir, statusDisplay) {
+  try {
+    const repoPath = path.join(targetDir, repoName)
+    
+    // Check if directory exists
+    if (!(await directoryExists(repoPath))) {
+      statusDisplay.updateRepo(repoName, 'skipped', 'Not found locally')
+      return { success: true, type: 'skipped' }
+    }
+    
+    // Check for uncommitted changes
+    statusDisplay.updateRepo(repoName, 'checking', 'Checking for uncommitted changes...')
+    const simpleGit = git(repoPath)
+    
+    try {
+      const status = await simpleGit.status()
+      if (status.files.length > 0) {
+        statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped')
+        return { success: true, type: 'uncommitted' }
+      }
+    } catch (error) {
+      // If not a git repository, skip it
+      statusDisplay.updateRepo(repoName, 'skipped', 'Not a git repository')
+      return { success: true, type: 'skipped' }
+    }
+    
+    // Delete the repository
+    statusDisplay.updateRepo(repoName, 'deleting', 'Deleting repository...')
+    await fs.remove(repoPath)
+    statusDisplay.updateRepo(repoName, 'success', 'Successfully deleted')
+    return { success: true, type: 'deleted' }
+  } catch (error) {
+    statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
+    return { success: false, type: 'delete', error: error.message }
   }
 }
 
@@ -785,7 +855,7 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token) 
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode } = argv
   
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {
@@ -802,10 +872,23 @@ async function main() {
   // Determine concurrency limit: single-thread overrides threads setting
   const concurrencyLimit = singleThread ? 1 : threads
   
-  log('blue', `🚀 Starting ${target} ${targetType} repository sync...`)
-  log('cyan', `📁 Target directory: ${targetDir}`)
-  log('cyan', `🔗 Using ${useSsh ? 'SSH' : 'HTTPS'} for cloning`)
-  log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
+  if (deleteMode) {
+    log('red', `🗑️  Starting ${target} ${targetType} repository deletion...`)
+    log('cyan', `📁 Target directory: ${targetDir}`)
+    log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
+    
+    // Confirmation prompt
+    const confirmed = await askConfirmation(`⚠️  Are you sure you want to delete all repositories from ${targetDir}? (y/N): `)
+    if (!confirmed) {
+      log('yellow', '✖️  Operation cancelled')
+      process.exit(0)
+    }
+  } else {
+    log('blue', `🚀 Starting ${target} ${targetType} repository sync...`)
+    log('cyan', `📁 Target directory: ${targetDir}`)
+    log('cyan', `🔗 Using ${useSsh ? 'SSH' : 'HTTPS'} for cloning`)
+    log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
+  }
   
   // Ensure target directory exists
   await fs.ensureDir(targetDir)
@@ -849,7 +932,9 @@ async function main() {
     if (concurrencyLimit === 1) {
       // Sequential processing for single-thread mode
       for (const repo of repos) {
-        const result = await processRepository(repo, targetDir, useSsh, statusDisplay, token)
+        const result = deleteMode 
+          ? await deleteRepository(repo.name, targetDir, statusDisplay)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token)
         results.push(result)
       }
     } else {
@@ -875,7 +960,11 @@ async function main() {
             activeWorkers++
             
             // Process repository asynchronously
-            processRepository(repo, targetDir, useSsh, statusDisplay, token)
+            const processPromise = deleteMode
+              ? deleteRepository(repo.name, targetDir, statusDisplay)
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token)
+            
+            processPromise
               .then(result => {
                 resultsMap.set(currentIndex, result)
                 activeWorkers--

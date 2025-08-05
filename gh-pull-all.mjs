@@ -460,8 +460,6 @@ class StatusDisplay {
       pulled: 0,
       merged_from_default: 0,
       up_to_date_with_default: 0,
-      switched_to_default: 0,
-      already_on_default: 0,
       deleted: 0,
       failed: 0,
       skipped: 0,
@@ -475,8 +473,6 @@ class StatusDisplay {
           if (repo.message.includes('cloned')) summary.cloned++
           else if (repo.message.includes('merged') && repo.message.includes('into')) summary.merged_from_default++
           else if (repo.message.includes('up to date with')) summary.up_to_date_with_default++
-          else if (repo.message.includes('Switched from')) summary.switched_to_default++
-          else if (repo.message.includes('Already on default branch')) summary.already_on_default++
           else if (repo.message.includes('pulled')) summary.pulled++
           else if (repo.message.includes('deleted')) summary.deleted++
           else if (repo.message.includes('uncommitted')) summary.uncommitted++
@@ -503,8 +499,6 @@ class StatusDisplay {
     if (summary.pulled > 0) log('green', `✅ Pulled: ${summary.pulled}`)
     if (summary.merged_from_default > 0) log('green', `🔀 Merged from default branch: ${summary.merged_from_default}`)
     if (summary.up_to_date_with_default > 0) log('green', `✅ Up to date with default: ${summary.up_to_date_with_default}`)
-    if (summary.switched_to_default > 0) log('green', `🔄 Switched to default branch: ${summary.switched_to_default}`)
-    if (summary.already_on_default > 0) log('green', `✅ Already on default branch: ${summary.already_on_default}`)
     if (summary.deleted > 0) log('green', `✅ Deleted: ${summary.deleted}`)
     if (summary.uncommitted > 0) log('yellow', `🔄 Uncommitted changes: ${summary.uncommitted}`)
     if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
@@ -632,11 +626,6 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Pull changes from the default branch (main/master) into the current branch if behind',
     default: false
   })
-  .option('switch-to-default', {
-    type: 'boolean',
-    describe: 'Switch to the default branch (main/master) in each repository',
-    default: false
-  })
   .check((argv) => {
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
@@ -649,9 +638,6 @@ const argv = yargs(hideBin(process.argv))
     }
     if (argv['single-thread'] && argv.threads !== 8) {
       throw new Error('Cannot specify both --single-thread and --threads')
-    }
-    if (argv['pull-from-default'] && argv['switch-to-default']) {
-      throw new Error('Cannot specify both --pull-from-default and --switch-to-default')
     }
     return true
   })
@@ -666,7 +652,6 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --no-live-updates', 'Disable live updates for terminal history preservation')
   .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
   .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
-  .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
   .argv
 
 async function getOrganizationRepos(org, token) {
@@ -839,58 +824,6 @@ async function getDefaultBranch(simpleGit) {
   }
 }
 
-async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
-  try {
-    statusDisplay.updateRepo(repoName, 'checking', 'Checking status...')
-    const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath)
-    
-    const status = await simpleGit.status()
-    if (status.files.length > 0) {
-      statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped')
-      return { success: true, type: 'uncommitted' }
-    }
-    
-    statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
-    await simpleGit.fetch(['--all'])
-    
-    // Get current branch
-    const currentBranch = await simpleGit.revparse(['--abbrev-ref', 'HEAD'])
-    const currentBranchName = currentBranch.trim()
-    
-    // Get default branch
-    statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
-    const defaultBranch = await getDefaultBranch(simpleGit)
-    
-    if (currentBranchName === defaultBranch) {
-      statusDisplay.updateRepo(repoName, 'success', `Already on default branch: ${defaultBranch}`)
-      return { success: true, type: 'already_on_default', details: { defaultBranch } }
-    }
-    
-    // Switch to default branch
-    statusDisplay.updateRepo(repoName, 'pulling', `Switching to ${defaultBranch}...`)
-    try {
-      await simpleGit.checkout(defaultBranch)
-      statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch}`)
-      return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
-    } catch (checkoutError) {
-      // Try to create and checkout the branch if it doesn't exist locally
-      statusDisplay.updateRepo(repoName, 'pulling', `Creating local ${defaultBranch} branch...`)
-      try {
-        await simpleGit.checkoutBranch(defaultBranch, `origin/${defaultBranch}`)
-        statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch}`)
-        return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
-      } catch (createError) {
-        statusDisplay.updateRepo(repoName, 'failed', `Could not switch to ${defaultBranch}: ${createError.message}`)
-        return { success: false, type: 'switch_failed', error: createError.message, details: { defaultBranch } }
-      }
-    }
-  } catch (error) {
-    statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
-    return { success: false, type: 'switch', error: error.message }
-  }
-}
-
 async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefault = false) {
   try {
     statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
@@ -1051,7 +984,7 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 }
 
 // Process repository (either pull or clone)
-async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false) {
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false) {
   const repoPath = path.join(targetDir, repo.name)
   const exists = await directoryExists(repoPath)
   
@@ -1062,18 +995,14 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
   }
   
   if (exists) {
-    if (switchToDefault) {
-      return await switchToDefaultBranch(repo.name, targetDir, statusDisplay)
-    } else {
-      return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
-    }
+    return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
   } else {
     return await cloneRepository(repo, targetDir, useSsh, statusDisplay)
   }
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault } = argv
   
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {
@@ -1107,9 +1036,6 @@ async function main() {
     log('cyan', `🔗 Using ${useSsh ? 'SSH' : 'HTTPS'} for cloning`)
     if (pullFromDefault) {
       log('cyan', `🔀 Pull from default branch: enabled`)
-    }
-    if (switchToDefault) {
-      log('cyan', `🔄 Switch to default branch: enabled`)
     }
     log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
   }
@@ -1158,7 +1084,7 @@ async function main() {
       for (const repo of repos) {
         const result = deleteMode 
           ? await deleteRepository(repo.name, targetDir, statusDisplay)
-          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault)
         results.push(result)
       }
     } else {
@@ -1186,7 +1112,7 @@ async function main() {
             // Process repository asynchronously
             const processPromise = deleteMode
               ? deleteRepository(repo.name, targetDir, statusDisplay)
-              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault)
             
             processPromise
               .then(result => {

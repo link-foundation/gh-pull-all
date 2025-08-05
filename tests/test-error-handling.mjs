@@ -55,8 +55,8 @@ async function testErrorHandling() {
     
     log('green', '✅ Error handling test completed')
     
-    // Check for error numbering in status messages
-    if (result.includes('Error #1:') || result.includes('Error #2:')) {
+    // Check for error numbering in status messages (Issue #11: now uses short format)
+    if (result.includes('Failed with error #1') || result.includes('Failed with error #2')) {
       log('green', '✅ Error numbering found in status messages')
     } else {
       throw new Error('Expected error numbering not found in status messages')

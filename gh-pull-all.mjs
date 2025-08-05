@@ -17,8 +17,8 @@ const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text(
 const { Octokit } = await use('@octokit/rest@22.0.0')
 const { default: git } = await use('simple-git@3.28.0')
 const fs = await use('fs-extra@11.3.0')
-const { default: yargs } = await use('yargs@18.0.0')
-const { hideBin } = await use('yargs@18.0.0/helpers')
+const { default: yargs } = await use('yargs@17.7.2')
+const { hideBin } = await use('yargs@17.7.2/helpers')
 
 // Get version from package.json or fallback
 let version = '1.3.3' // Fallback version
@@ -458,22 +458,28 @@ class StatusDisplay {
     const summary = {
       cloned: 0,
       pulled: 0,
+      merged_from_default: 0,
+      up_to_date_with_default: 0,
       deleted: 0,
       failed: 0,
       skipped: 0,
-      uncommitted: 0
+      uncommitted: 0,
+      merge_conflicts: 0
     }
 
     for (const [name, repo] of this.repos) {
       switch (repo.status) {
         case 'success':
           if (repo.message.includes('cloned')) summary.cloned++
+          else if (repo.message.includes('merged') && repo.message.includes('into')) summary.merged_from_default++
+          else if (repo.message.includes('up to date with')) summary.up_to_date_with_default++
           else if (repo.message.includes('pulled')) summary.pulled++
           else if (repo.message.includes('deleted')) summary.deleted++
           else if (repo.message.includes('uncommitted')) summary.uncommitted++
           break
         case 'failed':
-          summary.failed++
+          if (repo.message.includes('Merge conflict')) summary.merge_conflicts++
+          else summary.failed++
           break
         case 'skipped':
           summary.skipped++
@@ -491,9 +497,12 @@ class StatusDisplay {
     log('blue', `${colors.bold}📊 Summary:${colors.reset}`)
     if (summary.cloned > 0) log('green', `✅ Cloned: ${summary.cloned}`)
     if (summary.pulled > 0) log('green', `✅ Pulled: ${summary.pulled}`)
+    if (summary.merged_from_default > 0) log('green', `🔀 Merged from default branch: ${summary.merged_from_default}`)
+    if (summary.up_to_date_with_default > 0) log('green', `✅ Up to date with default: ${summary.up_to_date_with_default}`)
     if (summary.deleted > 0) log('green', `✅ Deleted: ${summary.deleted}`)
     if (summary.uncommitted > 0) log('yellow', `🔄 Uncommitted changes: ${summary.uncommitted}`)
     if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
+    if (summary.merge_conflicts > 0) log('red', `💥 Merge conflicts: ${summary.merge_conflicts}`)
     if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
 
     const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)
@@ -612,6 +621,11 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Delete all cloned repositories (skips repos with uncommitted changes)',
     default: false
   })
+  .option('pull-from-default', {
+    type: 'boolean',
+    describe: 'Pull changes from the default branch (main/master) into the current branch if behind',
+    default: false
+  })
   .check((argv) => {
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
@@ -637,6 +651,7 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard -j 16', 'Use 16 concurrent operations (alias for --threads)')
   .example('$0 --user konard --no-live-updates', 'Disable live updates for terminal history preservation')
   .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
+  .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
   .argv
 
 async function getOrganizationRepos(org, token) {
@@ -752,7 +767,64 @@ async function directoryExists(dirPath) {
   }
 }
 
-async function pullRepository(repoName, targetDir, statusDisplay) {
+async function getDefaultBranch(simpleGit) {
+  try {
+    // First try to get the default branch from the remote
+    const remotes = await simpleGit.getRemotes(true)
+    if (remotes.length > 0) {
+      const remoteName = remotes[0].name || 'origin'
+      
+      // Try to get symbolic ref from remote HEAD
+      try {
+        const remoteHead = await simpleGit.raw(['symbolic-ref', `refs/remotes/${remoteName}/HEAD`])
+        const defaultBranch = remoteHead.trim().replace(`refs/remotes/${remoteName}/`, '')
+        if (defaultBranch) {
+          return defaultBranch
+        }
+      } catch (error) {
+        // Fallback: set the remote HEAD and try again
+        try {
+          await simpleGit.raw(['remote', 'set-head', remoteName, '--auto'])
+          const remoteHead = await simpleGit.raw(['symbolic-ref', `refs/remotes/${remoteName}/HEAD`])
+          const defaultBranch = remoteHead.trim().replace(`refs/remotes/${remoteName}/`, '')
+          if (defaultBranch) {
+            return defaultBranch
+          }
+        } catch (fallbackError) {
+          // Continue to manual detection
+        }
+      }
+    }
+    
+    // Fallback: check common default branch names
+    const branches = await simpleGit.branch(['-r'])
+    const remoteBranches = branches.all.filter(branch => branch.includes('/'))
+    
+    // Look for main or master in remote branches
+    const mainBranch = remoteBranches.find(branch => branch.endsWith('/main'))
+    if (mainBranch) {
+      return 'main'
+    }
+    
+    const masterBranch = remoteBranches.find(branch => branch.endsWith('/master'))
+    if (masterBranch) {
+      return 'master'
+    }
+    
+    // If no common defaults found, use the first remote branch
+    if (remoteBranches.length > 0) {
+      return remoteBranches[0].split('/').pop()
+    }
+    
+    // Final fallback: assume main
+    return 'main'
+  } catch (error) {
+    // Default fallback
+    return 'main'
+  }
+}
+
+async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefault = false) {
   try {
     statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
@@ -767,10 +839,86 @@ async function pullRepository(repoName, targetDir, statusDisplay) {
     statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
     await simpleGit.fetch(['--all'])
     
-    statusDisplay.updateRepo(repoName, 'pulling', 'Pulling changes...')
-    await simpleGit.pull()
-    statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled')
-    return { success: true, type: 'pulled' }
+    if (pullFromDefault) {
+      // Get current branch
+      const currentBranch = await simpleGit.revparse(['--abbrev-ref', 'HEAD'])
+      const currentBranchName = currentBranch.trim()
+      
+      // Get default branch
+      statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
+      const defaultBranch = await getDefaultBranch(simpleGit)
+      
+      if (currentBranchName !== defaultBranch) {
+        // Check if we're behind the default branch
+        statusDisplay.updateRepo(repoName, 'pulling', `Checking if behind ${defaultBranch}...`)
+        try {
+          const remoteName = 'origin' // Assume origin for now
+          const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
+          
+          // Check if remote branch exists
+          const branches = await simpleGit.branch(['-r'])
+          const hasRemoteDefault = branches.all.some(branch => branch.includes(remoteDefaultBranch))
+          
+          if (hasRemoteDefault) {
+            // Get commit hashes to compare
+            const localHash = await simpleGit.revparse([currentBranchName])
+            const remoteHash = await simpleGit.revparse([remoteDefaultBranch])
+            
+            if (localHash.trim() !== remoteHash.trim()) {
+              // Check if current branch is behind (can be fast-forwarded)
+              try {
+                await simpleGit.raw(['merge-base', '--is-ancestor', localHash.trim(), remoteHash.trim()])
+                // If we reach here, current branch is ancestor of remote (behind)
+                statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
+                
+                // Attempt to merge default branch into current branch
+                await simpleGit.merge([remoteDefaultBranch])
+                statusDisplay.updateRepo(repoName, 'success', `Successfully merged ${defaultBranch} into ${currentBranchName}`)
+                return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName } }
+              } catch (ancestorError) {
+                // Branches have diverged, handle carefully
+                statusDisplay.updateRepo(repoName, 'pulling', `Branches diverged, attempting merge from ${defaultBranch}...`)
+                
+                try {
+                  await simpleGit.merge([remoteDefaultBranch])
+                  statusDisplay.updateRepo(repoName, 'success', `Successfully merged ${defaultBranch} into ${currentBranchName}`)
+                  return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName } }
+                } catch (mergeError) {
+                  // Merge conflict occurred
+                  statusDisplay.updateRepo(repoName, 'failed', `Merge conflict with ${defaultBranch}: ${mergeError.message}`)
+                  return { success: false, type: 'merge_conflict', error: mergeError.message, details: { from: defaultBranch, to: currentBranchName } }
+                }
+              }
+            } else {
+              statusDisplay.updateRepo(repoName, 'success', `Already up to date with ${defaultBranch}`)
+              return { success: true, type: 'up_to_date_with_default', details: { defaultBranch, currentBranch: currentBranchName } }
+            }
+          } else {
+            statusDisplay.updateRepo(repoName, 'success', `Remote ${defaultBranch} not found, pulling current branch`)
+            await simpleGit.pull()
+            return { success: true, type: 'pulled' }
+          }
+        } catch (error) {
+          // Fall back to regular pull if default branch operations fail
+          statusDisplay.updateRepo(repoName, 'pulling', 'Falling back to regular pull...')
+          await simpleGit.pull()
+          statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled (fallback)')
+          return { success: true, type: 'pulled' }
+        }
+      } else {
+        // On default branch, just pull normally
+        statusDisplay.updateRepo(repoName, 'pulling', `Pulling ${defaultBranch} (current branch)...`)
+        await simpleGit.pull()
+        statusDisplay.updateRepo(repoName, 'success', `Successfully pulled ${defaultBranch}`)
+        return { success: true, type: 'pulled_default' }
+      }
+    } else {
+      // Standard pull behavior
+      statusDisplay.updateRepo(repoName, 'pulling', 'Pulling changes...')
+      await simpleGit.pull()
+      statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled')
+      return { success: true, type: 'pulled' }
+    }
   } catch (error) {
     statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
     return { success: false, type: 'pull', error: error.message }
@@ -837,7 +985,7 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 }
 
 // Process repository (either pull or clone)
-async function processRepository(repo, targetDir, useSsh, statusDisplay, token) {
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false) {
   const repoPath = path.join(targetDir, repo.name)
   const exists = await directoryExists(repoPath)
   
@@ -848,14 +996,14 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token) 
   }
   
   if (exists) {
-    return await pullRepository(repo.name, targetDir, statusDisplay)
+    return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
   } else {
     return await cloneRepository(repo, targetDir, useSsh, statusDisplay)
   }
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault } = argv
   
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {
@@ -887,6 +1035,9 @@ async function main() {
     log('blue', `🚀 Starting ${target} ${targetType} repository sync...`)
     log('cyan', `📁 Target directory: ${targetDir}`)
     log('cyan', `🔗 Using ${useSsh ? 'SSH' : 'HTTPS'} for cloning`)
+    if (pullFromDefault) {
+      log('cyan', `🔀 Pull from default branch: enabled`)
+    }
     log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
   }
   
@@ -934,7 +1085,7 @@ async function main() {
       for (const repo of repos) {
         const result = deleteMode 
           ? await deleteRepository(repo.name, targetDir, statusDisplay)
-          : await processRepository(repo, targetDir, useSsh, statusDisplay, token)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault)
         results.push(result)
       }
     } else {
@@ -962,7 +1113,7 @@ async function main() {
             // Process repository asynchronously
             const processPromise = deleteMode
               ? deleteRepository(repo.name, targetDir, statusDisplay)
-              : processRepository(repo, targetDir, useSsh, statusDisplay, token)
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault)
             
             processPromise
               .then(result => {

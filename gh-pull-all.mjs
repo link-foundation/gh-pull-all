@@ -21,7 +21,7 @@ const { default: yargs } = await use('yargs@17.7.2')
 const { hideBin } = await use('yargs@17.7.2/helpers')
 
 // Get version from package.json or fallback
-let version = '1.3.3' // Fallback version
+let version = '1.4.0' // Fallback version
 
 try {
   const packagePath = path.join(__dirname, 'package.json')

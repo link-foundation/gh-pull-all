@@ -31,9 +31,9 @@ jobs:
             echo "should_publish=true" >> $GITHUB_OUTPUT
           fi
 
-      # - name: Run tests
-      #   if: steps.check_version.outputs.should_publish == 'true'
-      #   run: bun run test
+      - name: Run tests
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: bun run test:fast
 
       - name: Publish to NPM
         if: steps.check_version.outputs.should_publish == 'true'

@@ -9,6 +9,9 @@
   },
   "scripts": {
     "test": "(cd tests && ./test-all.mjs)",
+    "test:bun": "bun test",
+    "test:fast": "(cd tests && ./test-all.mjs)",
+    "test:all": "(cd tests && ./test-all.mjs --include-slow)",
     "version:patch": "./version.mjs patch",
     "version:minor": "./version.mjs minor",
     "version:major": "./version.mjs major"

@@ -64,8 +64,21 @@ async function discoverTests() {
   // Find all test files (excluding test-all.mjs)
   const files = await fs.readdir('.')
   const testFilePattern = /^test-.*\.mjs$/
+  
+  // Skip slow tests by default (run with --include-slow to include them)
+  const slowTests = ['test-integration-slow.mjs', 'test-issue-11-integration.mjs']
+  const includeSlowTests = process.argv.includes('--include-slow')
+  
   return files
-    .filter(file => testFilePattern.test(file) && file !== 'test-all.mjs')
+    .filter(file => {
+      if (!testFilePattern.test(file) || file === 'test-all.mjs') {
+        return false
+      }
+      if (!includeSlowTests && slowTests.includes(file)) {
+        return false
+      }
+      return true
+    })
     .sort()
 }
 
@@ -85,7 +98,11 @@ async function runAllTests() {
     return
   }
   
+  const includeSlowTests = process.argv.includes('--include-slow')
   log('cyan', `Running ${testFiles.length} test suites...`)
+  if (!includeSlowTests) {
+    log('yellow', '⚡ Running fast tests only (use --include-slow to include slow integration tests)')
+  }
   log('cyan', `Found test files: ${testFiles.join(', ')}`)
   log('dim', '─'.repeat(80))
   

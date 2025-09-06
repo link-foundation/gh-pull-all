@@ -11,6 +11,7 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 - 🚀 **Parallel Processing**: Configure concurrent operations with `--threads` option (default: 8)
 - 📊 **Real-time Status**: In-place updating display shows progress for each repository
 - 🔄 **Smart Updates**: Automatically pulls existing repos and clones new ones
+- 🍴 **Fork Sync**: Automatically sync forked repositories with their upstream (parent) repositories using `--pull-changes-to-fork`
 - 🔐 **SSH Support**: Use SSH URLs for cloning with `--ssh` flag
 - ⚡ **Flexible Threading**: Use `--single-thread` for sequential processing or customize with `--threads N`
 - 🎯 **Comprehensive**: Works with both organizations and user accounts
@@ -166,6 +167,12 @@ gh-pull-all --org myorg --threads 20
 
 # Disable live updates for terminal history preservation
 gh-pull-all --user octocat --no-live-updates
+
+# Sync forked repositories with their upstream (parent) repositories
+gh-pull-all --user your-username --pull-changes-to-fork
+
+# Only process forks and sync with SSH
+gh-pull-all --user your-username --pull-changes-to-fork --ssh
 ```
 
 ## Status Display
@@ -193,6 +200,40 @@ In multi-thread mode with live updates, the script displays a color-coded progre
 - **Live Updates Mode** (default): Dynamic in-place updates with progress bar and windowed display
 - **Append-Only Mode** (`--no-live-updates`): Traditional line-by-line output for terminal history preservation
 - **Windowed Display**: Automatically adjusts visible repositories based on terminal height to prevent scrolling
+
+## Fork Synchronization
+
+The `--pull-changes-to-fork` option enables automatic synchronization of forked repositories with their upstream (parent) repositories. This feature is particularly useful for keeping your personal forks up to date with the latest changes from the original repositories.
+
+### How It Works
+
+1. **Fork Detection**: The script automatically detects which repositories are forks using GitHub API metadata
+2. **Upstream Remote**: Adds the parent repository as an "upstream" remote if it doesn't already exist
+3. **Fetch & Merge**: Fetches changes from the upstream repository's default branch and merges them into your current branch
+4. **Push Updates**: Pushes the merged changes back to your fork on GitHub
+5. **Conflict Handling**: Gracefully handles merge conflicts and reports them in the summary
+
+### Usage Examples
+
+```bash
+# Sync all your forked repositories with their upstream sources
+gh-pull-all --user your-username --pull-changes-to-fork
+
+# Use SSH for faster operations on forks
+gh-pull-all --user your-username --pull-changes-to-fork --ssh
+
+# Process forks with custom concurrency
+gh-pull-all --user your-username --pull-changes-to-fork --threads 4
+```
+
+### Behavior Notes
+
+- **Non-forks are skipped**: Repositories that are not forks will be skipped with a "Not a fork" message
+- **Uncommitted changes**: Repositories with uncommitted changes are skipped to prevent data loss
+- **Merge conflicts**: When conflicts occur, the repository is marked as failed with a detailed error message
+- **Already up-to-date**: If no changes are needed, the repository is marked as "Already up to date with upstream"
+
+This option cannot be combined with `--pull-from-default` or `--switch-to-default` as they serve different purposes.
 
 ## Requirements
 

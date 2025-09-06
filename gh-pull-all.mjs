@@ -167,7 +167,7 @@ class StatusDisplay {
     
     let displayMessage = repo.message
     if (repo.status === 'failed' && repo.errorNumber) {
-      displayMessage = `Failed with error #${repo.errorNumber}`
+      displayMessage = `Error #${repo.errorNumber}`
     } else {
       displayMessage = this.truncateMessage(repo.message, availableWidth)
     }
@@ -269,7 +269,7 @@ class StatusDisplay {
       
       let displayMessage = repo.message
       if (repo.status === 'failed' && repo.errorNumber) {
-        displayMessage = `Failed with error #${repo.errorNumber}`
+        displayMessage = `Error #${repo.errorNumber}`
       } else {
         displayMessage = this.truncateMessage(repo.message, availableWidth)
       }

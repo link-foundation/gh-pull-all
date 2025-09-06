@@ -10,6 +10,39 @@ import readline from 'readline'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// Early version check for compatibility with all runtimes (Node, Bun, etc.)
+// Only exit early if --version is requested AND not --help to avoid breaking help functionality
+const isVersionOnly = (process.argv.includes('--version') || process.argv.includes('-v')) && !process.argv.includes('--help') && !process.argv.includes('-h')
+
+if (isVersionOnly) {
+  // Get version from package.json or fallback
+  let version = '1.4.0' // Fallback version
+  
+  try {
+    // Use native fs module for basic JSON reading to avoid dependency issues
+    const { readFileSync, existsSync } = await import('fs')
+    const packagePath = path.join(__dirname, 'package.json')
+    
+    if (existsSync(packagePath)) {
+      const packageContent = readFileSync(packagePath, 'utf8')
+      const packageJson = JSON.parse(packageContent)
+      if (packageJson && packageJson.version) {
+        version = packageJson.version
+      }
+    }
+  } catch (error) {
+    // Use fallback version if package.json can't be read
+  }
+  
+  // Ensure version is always a valid string
+  if (!version || typeof version !== 'string' || version.trim() === '') {
+    version = '1.4.0'
+  }
+  
+  console.log(version)
+  process.exit(0)
+}
+
 // Download use-m dynamically
 const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
 
@@ -20,17 +53,24 @@ const fs = await use('fs-extra@11.3.0')
 const { default: yargs } = await use('yargs@17.7.2')
 const { hideBin } = await use('yargs@17.7.2/helpers')
 
-// Get version from package.json or fallback
+// Get version from package.json or fallback (for yargs configuration)
 let version = '1.4.0' // Fallback version
 
 try {
   const packagePath = path.join(__dirname, 'package.json')
   if (await fs.pathExists(packagePath)) {
     const packageJson = await fs.readJson(packagePath)
-    version = packageJson.version
+    if (packageJson && packageJson.version) {
+      version = packageJson.version
+    }
   }
 } catch (error) {
   // Use fallback version if package.json can't be read
+}
+
+// Ensure version is always a valid string to prevent yargs from defaulting to 'unknown'
+if (!version || typeof version !== 'string' || version.trim() === '') {
+  version = '1.4.0'
 }
 
 // Helper function for confirmation prompt

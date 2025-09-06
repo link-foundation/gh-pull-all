@@ -47,7 +47,8 @@ const testDescriptions = {
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
-  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option'
+  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',
+  'test-pull-changes-to-fork-cli.mjs': 'Tests CLI argument validation and help text for --pull-changes-to-fork option'
 }
 
 function getTestDisplayName(filename) {

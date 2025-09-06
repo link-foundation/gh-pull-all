@@ -10,13 +10,14 @@ const assert = await use('uvu@0.5.6/assert')
 function validateArgs(args) {
   const hasOrg = args.includes('--org') || args.includes('-o')
   const hasUser = args.includes('--user') || args.includes('-u')
+  const hasAuto = args.includes('--auto') || args.includes('-a')
   
-  if (!hasOrg && !hasUser) {
-    throw new Error('You must specify either --org or --user')
+  if (!hasOrg && !hasUser && !hasAuto) {
+    throw new Error('You must specify either --org, --user, or --auto')
   }
   
-  if (hasOrg && hasUser) {
-    throw new Error('You cannot specify both --org and --user')
+  if ((hasOrg && hasUser) || (hasOrg && hasAuto) || (hasUser && hasAuto)) {
+    throw new Error('You can only specify one of --org, --user, or --auto')
   }
   
   // Check thread options
@@ -52,7 +53,7 @@ test('validateArgs should reject missing arguments', () => {
     validateArgs([])
     assert.unreachable('Should have thrown validation error')
   } catch (error) {
-    assert.match(error.message, /You must specify either --org or --user/)
+    assert.match(error.message, /You must specify either --org, --user, or --auto/)
   }
 })
 
@@ -61,15 +62,17 @@ test('validateArgs should reject both org and user', () => {
     validateArgs(['--org', 'test-org', '--user', 'test-user'])
     assert.unreachable('Should have thrown validation error')
   } catch (error) {
-    assert.match(error.message, /You cannot specify both --org and --user/)
+    assert.match(error.message, /You can only specify one of --org, --user, or --auto/)
   }
 })
 
 test('validateArgs should accept aliases', () => {
   const result1 = validateArgs(['-o', 'test-org'])
   const result2 = validateArgs(['-u', 'test-user'])
+  const result3 = validateArgs(['-a'])
   assert.ok(result1)
   assert.ok(result2)
+  assert.ok(result3)
 })
 
 test('validateArgs should accept threads option', () => {
@@ -110,6 +113,38 @@ test('validateArgs should accept live-updates option', () => {
   const result2 = validateArgs(['--user', 'test-user', '--no-live-updates'])
   assert.ok(result1)
   assert.ok(result2)
+})
+
+test('validateArgs should accept auto flag', () => {
+  const result = validateArgs(['--auto'])
+  assert.ok(result)
+})
+
+test('validateArgs should reject auto with org', () => {
+  try {
+    validateArgs(['--auto', '--org', 'test-org'])
+    assert.unreachable('Should have thrown validation error')
+  } catch (error) {
+    assert.match(error.message, /You can only specify one of --org, --user, or --auto/)
+  }
+})
+
+test('validateArgs should reject auto with user', () => {
+  try {
+    validateArgs(['--auto', '--user', 'test-user'])
+    assert.unreachable('Should have thrown validation error')
+  } catch (error) {
+    assert.match(error.message, /You can only specify one of --org, --user, or --auto/)
+  }
+})
+
+test('validateArgs should reject all three flags', () => {
+  try {
+    validateArgs(['--auto', '--org', 'test-org', '--user', 'test-user'])
+    assert.unreachable('Should have thrown validation error')
+  } catch (error) {
+    assert.match(error.message, /You can only specify one of --org, --user, or --auto/)
+  }
 })
 
 test.run()

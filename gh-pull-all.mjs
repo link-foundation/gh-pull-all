@@ -637,6 +637,11 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Switch to the default branch (main/master) in each repository',
     default: false
   })
+  .option('pull-changes-to-fork', {
+    type: 'boolean',
+    describe: 'Update forks with changes from their parent repositories (upstream sync)',
+    default: false
+  })
   .check((argv) => {
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
@@ -667,6 +672,7 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
   .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
   .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
+  .example('$0 --user konard --pull-changes-to-fork', 'Sync forks with their upstream repositories')
   .argv
 
 async function getOrganizationRepos(org, token) {
@@ -695,7 +701,15 @@ async function getOrganizationRepos(org, token) {
       ssh_url: repo.ssh_url,
       html_url: repo.html_url,
       updated_at: repo.updated_at,
-      private: repo.private
+      private: repo.private,
+      fork: repo.fork,
+      parent: repo.parent ? {
+        name: repo.parent.name,
+        full_name: repo.parent.full_name,
+        clone_url: repo.parent.clone_url,
+        ssh_url: repo.parent.ssh_url,
+        default_branch: repo.parent.default_branch
+      } : null
     }))
   } catch (error) {
     const apiUrl = `https://api.github.com/orgs/${org}/repos`
@@ -747,7 +761,15 @@ async function getUserRepos(username, token) {
       ssh_url: repo.ssh_url,
       html_url: repo.html_url,
       updated_at: repo.updated_at,
-      private: repo.private
+      private: repo.private,
+      fork: repo.fork,
+      parent: repo.parent ? {
+        name: repo.parent.name,
+        full_name: repo.parent.full_name,
+        clone_url: repo.parent.clone_url,
+        ssh_url: repo.parent.ssh_url,
+        default_branch: repo.parent.default_branch
+      } : null
     }))
   } catch (error) {
     const apiUrl = `https://api.github.com/users/${username}/repos`
@@ -1050,8 +1072,114 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
   }
 }
 
+// Synchronize fork with upstream repository
+async function syncForkWithUpstream(repoName, targetDir, repo, useSsh, statusDisplay) {
+  try {
+    statusDisplay.updateRepo(repoName, 'pulling', 'Checking fork status...')
+    const repoPath = path.join(targetDir, repoName)
+    const simpleGit = git(repoPath)
+    
+    // Check if this is actually a fork
+    if (!repo.fork || !repo.parent) {
+      statusDisplay.updateRepo(repoName, 'skipped', 'Not a fork, skipped sync')
+      return { success: true, type: 'not_fork' }
+    }
+    
+    // Check for uncommitted changes
+    const status = await simpleGit.status()
+    if (status.files.length > 0) {
+      statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped sync')
+      return { success: true, type: 'uncommitted' }
+    }
+    
+    statusDisplay.updateRepo(repoName, 'pulling', 'Setting up upstream remote...')
+    
+    // Get current remotes
+    const remotes = await simpleGit.getRemotes(true)
+    const upstreamRemote = remotes.find(remote => remote.name === 'upstream')
+    
+    // Add or update upstream remote
+    const upstreamUrl = useSsh ? repo.parent.ssh_url : repo.parent.clone_url
+    if (upstreamRemote) {
+      // Update existing upstream remote
+      await simpleGit.removeRemote('upstream')
+    }
+    await simpleGit.addRemote('upstream', upstreamUrl)
+    
+    statusDisplay.updateRepo(repoName, 'pulling', 'Fetching upstream changes...')
+    
+    // Fetch from upstream
+    await simpleGit.fetch(['upstream'])
+    
+    // Get the default branch from parent or fall back to main/master
+    const defaultBranch = repo.parent.default_branch || 'main'
+    const upstreamBranch = `upstream/${defaultBranch}`
+    
+    // Check if upstream branch exists
+    const branches = await simpleGit.branch(['-r'])
+    const hasUpstreamBranch = branches.all.some(branch => branch.includes(upstreamBranch))
+    
+    if (!hasUpstreamBranch) {
+      // Try master as fallback
+      const masterBranch = 'upstream/master'
+      const hasMaster = branches.all.some(branch => branch.includes(masterBranch))
+      if (hasMaster) {
+        statusDisplay.updateRepo(repoName, 'pulling', 'Syncing with upstream/master...')
+        await syncWithUpstreamBranch(simpleGit, 'master', statusDisplay, repoName)
+      } else {
+        statusDisplay.updateRepo(repoName, 'failed', 'No upstream default branch found')
+        return { success: false, type: 'no_upstream_branch' }
+      }
+    } else {
+      statusDisplay.updateRepo(repoName, 'pulling', `Syncing with upstream/${defaultBranch}...`)
+      await syncWithUpstreamBranch(simpleGit, defaultBranch, statusDisplay, repoName)
+    }
+    
+    statusDisplay.updateRepo(repoName, 'success', 'Fork synchronized with upstream')
+    return { success: true, type: 'fork_synced', details: { upstream: repo.parent.full_name } }
+    
+  } catch (error) {
+    statusDisplay.updateRepo(repoName, 'failed', `Sync failed: ${error.message}`)
+    return { success: false, type: 'sync_error', error: error.message }
+  }
+}
+
+// Helper function to sync with upstream branch
+async function syncWithUpstreamBranch(simpleGit, branchName, statusDisplay, repoName) {
+  // Get current branch
+  const currentBranch = await simpleGit.revparse(['--abbrev-ref', 'HEAD'])
+  const currentBranchName = currentBranch.trim()
+  
+  // If we're not on the target branch, switch to it
+  if (currentBranchName !== branchName) {
+    try {
+      await simpleGit.checkout(branchName)
+    } catch (error) {
+      // Branch might not exist locally, create it
+      await simpleGit.checkoutBranch(branchName, `origin/${branchName}`)
+    }
+  }
+  
+  // Merge upstream changes
+  try {
+    const upstreamRef = `upstream/${branchName}`
+    await simpleGit.merge([upstreamRef])
+    
+    // Push the changes to origin
+    statusDisplay.updateRepo(repoName, 'pulling', 'Pushing synchronized changes...')
+    await simpleGit.push('origin', branchName)
+    
+  } catch (error) {
+    // If merge fails due to conflicts, we should inform the user
+    if (error.message.includes('conflict') || error.message.includes('CONFLICT')) {
+      throw new Error(`Merge conflicts detected. Manual resolution required.`)
+    }
+    throw error
+  }
+}
+
 // Process repository (either pull or clone)
-async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false) {
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false, pullChangesToFork = false) {
   const repoPath = path.join(targetDir, repo.name)
   const exists = await directoryExists(repoPath)
   
@@ -1062,7 +1190,9 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
   }
   
   if (exists) {
-    if (switchToDefault) {
+    if (pullChangesToFork) {
+      return await syncForkWithUpstream(repo.name, targetDir, repo, useSsh, statusDisplay)
+    } else if (switchToDefault) {
       return await switchToDefaultBranch(repo.name, targetDir, statusDisplay)
     } else {
       return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
@@ -1073,7 +1203,7 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault, 'pull-changes-to-fork': pullChangesToFork } = argv
   
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {
@@ -1158,7 +1288,7 @@ async function main() {
       for (const repo of repos) {
         const result = deleteMode 
           ? await deleteRepository(repo.name, targetDir, statusDisplay)
-          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
         results.push(result)
       }
     } else {
@@ -1186,7 +1316,7 @@ async function main() {
             // Process repository asynchronously
             const processPromise = deleteMode
               ? deleteRepository(repo.name, targetDir, statusDisplay)
-              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
             
             processPromise
               .then(result => {

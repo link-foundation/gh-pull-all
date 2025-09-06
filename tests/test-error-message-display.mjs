@@ -70,9 +70,9 @@ async function testErrorMessageDisplay() {
           throw new Error(`Status line contains full error message: ${line}`)
         }
         
-        // Should contain short error format like "Failed with error #1"
-        if (!line.includes('Failed with error #')) {
-          throw new Error(`Status line should contain 'Failed with error #X' format: ${line}`)
+        // Should contain short error format like "Error #1"
+        if (!line.includes('Error #')) {
+          throw new Error(`Status line should contain 'Error #X' format: ${line}`)
         }
       }
     }

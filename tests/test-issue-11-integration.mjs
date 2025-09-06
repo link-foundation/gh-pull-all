@@ -67,7 +67,7 @@ async function testIssue11Integration() {
       let hasShortErrorFormat = false
       
       for (const line of statusLines) {
-        if (line.includes('Failed with error #')) {
+        if (line.includes('Error #')) {
           hasShortErrorFormat = true
           
           // Ensure it doesn't contain full error details
@@ -124,8 +124,8 @@ async function testIssue11Integration() {
       throw new Error('No successful operations found in clean test')
     }
     
-    // Should not contain "Failed with error" in success cases
-    if (successResult.includes('Failed with error #')) {
+    // Should not contain "Error #" in success cases
+    if (successResult.includes('Error #')) {
       throw new Error('Success case should not contain error messages')
     }
     

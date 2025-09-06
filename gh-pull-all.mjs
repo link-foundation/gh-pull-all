@@ -570,9 +570,94 @@ async function getReposFromGhCli(org, user) {
   }
 }
 
+// Check for help flag early (workaround for bun compatibility issue)
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  // Create a yargs instance just for showing help
+  const helpCli = yargs(hideBin(process.argv))
+    .scriptName(path.basename(process.argv[1]))
+    .version(version)
+    .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
+    .option('org', {
+      alias: 'o',
+      type: 'string',
+      describe: 'GitHub organization name',
+      example: 'deep-assistant'
+    })
+    .option('user', {
+      alias: 'u',
+      type: 'string',
+      describe: 'GitHub username',
+      example: 'konard'
+    })
+    .option('token', {
+      alias: 't',
+      type: 'string',
+      describe: 'GitHub personal access token (optional for public repos)',
+      default: process.env.GITHUB_TOKEN
+    })
+    .option('ssh', {
+      alias: 's',
+      type: 'boolean',
+      describe: 'Use SSH URLs for cloning (requires SSH key setup)',
+      default: false
+    })
+    .option('dir', {
+      alias: 'd',
+      type: 'string',
+      describe: 'Target directory for repositories',
+      default: process.cwd()
+    })
+    .option('threads', {
+      alias: 'j',
+      type: 'number',
+      describe: 'Number of concurrent operations (default: 8)',
+      default: 8
+    })
+    .option('single-thread', {
+      type: 'boolean',
+      describe: 'Run operations sequentially (equivalent to --threads 1)',
+      default: false
+    })
+    .option('live-updates', {
+      type: 'boolean',
+      describe: 'Enable live in-place status updates (default: true, use --no-live-updates to disable)',
+      default: true
+    })
+    .option('delete', {
+      type: 'boolean',
+      describe: 'Delete all cloned repositories (skips repos with uncommitted changes)',
+      default: false
+    })
+    .option('pull-from-default', {
+      type: 'boolean',
+      describe: 'Pull changes from the default branch (main/master) into the current branch if behind',
+      default: false
+    })
+    .option('switch-to-default', {
+      type: 'boolean',
+      describe: 'Switch to the default branch (main/master) in each repository',
+      default: false
+    })
+    .help('h')
+    .alias('h', 'help')
+    .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
+    .example('$0 --user konard', 'Sync all repositories from konard user account')
+    .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')
+    .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
+    .example('$0 --user konard --single-thread', 'Run operations sequentially')
+    .example('$0 --user konard -j 16', 'Use 16 concurrent operations (alias for --threads)')
+    .example('$0 --user konard --no-live-updates', 'Disable live updates for terminal history preservation')
+    .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
+    .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
+    .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
+    
+  helpCli.showHelp()
+  process.exit(0)
+}
+
 // Configure CLI arguments
 const scriptName = path.basename(process.argv[1])
-const argv = yargs(hideBin(process.argv))
+const cli = yargs(hideBin(process.argv))
   .scriptName(scriptName)
   .version(version)
   .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
@@ -638,6 +723,10 @@ const argv = yargs(hideBin(process.argv))
     default: false
   })
   .check((argv) => {
+    // Skip validation when help or version is requested
+    if (argv.help || argv.version) {
+      return true
+    }
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
     }

@@ -20,18 +20,68 @@ const fs = await use('fs-extra@11.3.0')
 const { default: yargs } = await use('yargs@17.7.2')
 const { hideBin } = await use('yargs@17.7.2/helpers')
 
-// Get version from package.json or fallback
-let version = '1.4.0' // Fallback version
 
-try {
-  const packagePath = path.join(__dirname, 'package.json')
-  if (await fs.pathExists(packagePath)) {
-    const packageJson = await fs.readJson(packagePath)
-    version = packageJson.version
+// Import Node.js built-in fs for version detection
+import { readFileSync, existsSync } from 'fs'
+
+// Get version with robust fallback strategy
+function getVersionSync() {
+  try {
+    // Strategy 1: Try package.json in script directory
+    const packagePath = path.join(__dirname, 'package.json')
+    if (existsSync(packagePath)) {
+      const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'))
+      if (packageJson.version) {
+        return packageJson.version
+      }
+    }
+  } catch (error) {
+    // Continue to next strategy
   }
-} catch (error) {
-  // Use fallback version if package.json can't be read
+  
+  try {
+    // Strategy 2: Look for node_modules structure (global installation)
+    let dir = path.dirname(__filename)
+    for (let i = 0; i < 10; i++) {
+      const nodeModulesPath = path.join(dir, 'node_modules', 'gh-pull-all', 'package.json')
+      if (existsSync(nodeModulesPath)) {
+        const packageJson = JSON.parse(readFileSync(nodeModulesPath, 'utf8'))
+        if (packageJson.version) {
+          return packageJson.version
+        }
+      }
+      const parentDir = path.dirname(dir)
+      if (parentDir === dir) break
+      dir = parentDir
+    }
+  } catch (error) {
+    // Continue to next strategy
+  }
+  
+  try {
+    // Strategy 3: Check parent directories for package.json
+    let currentDir = __dirname
+    for (let i = 0; i < 5; i++) {
+      const packagePath = path.join(currentDir, 'package.json')
+      if (existsSync(packagePath)) {
+        const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'))
+        if (packageJson.name === 'gh-pull-all' && packageJson.version) {
+          return packageJson.version
+        }
+      }
+      const parentDir = path.dirname(currentDir)
+      if (parentDir === currentDir) break
+      currentDir = parentDir
+    }
+  } catch (error) {
+    // Continue to final fallback
+  }
+  
+  // Final fallback to hardcoded version
+  return '1.4.0'
 }
+
+const version = getVersionSync()
 
 // Helper function for confirmation prompt
 async function askConfirmation(question) {
@@ -570,7 +620,7 @@ async function getReposFromGhCli(org, user) {
   }
 }
 
-// Configure CLI arguments
+// Configure CLI arguments - this must be done after version detection
 const scriptName = path.basename(process.argv[1])
 const argv = yargs(hideBin(process.argv))
   .scriptName(scriptName)

@@ -8,7 +8,9 @@
     "gh-pull-all": "./gh-pull-all.mjs"
   },
   "scripts": {
-    "test": "(cd tests && ./test-all.mjs)",
+    "test": "(cd tests && ./run-tests.mjs)",
+    "test:all": "(cd tests && ./test-all.mjs)",
+    "test:unit": "(cd tests && bun test unit.test.mjs)",
     "version:patch": "./version.mjs patch",
     "version:minor": "./version.mjs minor",
     "version:major": "./version.mjs major"

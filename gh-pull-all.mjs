@@ -1073,7 +1073,12 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, j, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  
+  // Fix for -j alias: use j value if provided, otherwise use threads
+  if (j !== undefined) {
+    threads = j
+  }
   
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {

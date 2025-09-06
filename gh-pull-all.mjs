@@ -575,6 +575,8 @@ const scriptName = path.basename(process.argv[1])
 const argv = yargs(hideBin(process.argv))
   .scriptName(scriptName)
   .version(version)
+  .help()
+  .alias('help', 'h')
   .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
   .option('org', {
     alias: 'o',
@@ -638,6 +640,10 @@ const argv = yargs(hideBin(process.argv))
     default: false
   })
   .check((argv) => {
+    // Skip validation when help or version is requested
+    if (argv.help || argv.version) {
+      return true
+    }
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
     }
@@ -655,8 +661,6 @@ const argv = yargs(hideBin(process.argv))
     }
     return true
   })
-  .help('h')
-  .alias('h', 'help')
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
   .example('$0 --user konard', 'Sync all repositories from konard user account')
   .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')

@@ -5,6 +5,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 import readline from 'readline'
+import { promises as nodeFs } from 'fs'
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -570,12 +571,83 @@ async function getReposFromGhCli(org, user) {
   }
 }
 
+// Auto-detection and preferences handling
+async function getPreferencesPath(targetDir) {
+  return path.join(targetDir, '.gh-pull-all', 'preferences.json')
+}
+
+async function loadPreferences(targetDir) {
+  try {
+    const preferencesPath = await getPreferencesPath(targetDir)
+    if (await fs.pathExists(preferencesPath)) {
+      const data = await nodeFs.readFile(preferencesPath, 'utf8')
+      const preferences = JSON.parse(data)
+      log('cyan', '📋 Loaded saved preferences from .gh-pull-all/preferences.json')
+      return preferences
+    }
+  } catch (error) {
+    // Ignore errors when loading preferences
+  }
+  return {}
+}
+
+async function savePreferences(targetDir, preferences) {
+  try {
+    const preferencesPath = await getPreferencesPath(targetDir)
+    await fs.ensureDir(path.dirname(preferencesPath))
+    await nodeFs.writeFile(preferencesPath, JSON.stringify(preferences, null, 2))
+    log('cyan', '💾 Saved preferences to .gh-pull-all/preferences.json')
+  } catch (error) {
+    log('yellow', `⚠️  Failed to save preferences: ${error.message}`)
+  }
+}
+
+async function detectFromFolderName(targetDir) {
+  // Get the parent directory name
+  const parentDir = path.basename(path.resolve(targetDir, '..'))
+  const currentDir = path.basename(targetDir)
+  
+  // Check if current directory looks like a user/org name, otherwise use parent
+  const candidateName = currentDir.match(/^[a-zA-Z0-9-._]+$/) && currentDir !== '.' ? currentDir : parentDir
+  
+  if (candidateName && candidateName.match(/^[a-zA-Z0-9-._]+$/) && candidateName !== '.') {
+    log('cyan', `🔍 Auto-detected "${candidateName}" from folder structure`)
+    return candidateName
+  }
+  
+  return null
+}
+
+async function autoDetectTarget(targetDir, preferences) {
+  // First check saved preferences
+  if (preferences.org) {
+    log('cyan', `🔍 Using saved organization: ${preferences.org}`)
+    return { org: preferences.org, user: null }
+  }
+  
+  if (preferences.user) {
+    log('cyan', `🔍 Using saved user: ${preferences.user}`)
+    return { org: null, user: preferences.user }
+  }
+  
+  // Try to detect from folder name
+  const detected = await detectFromFolderName(targetDir)
+  if (detected) {
+    // We don't know if it's a user or org yet, so we'll try both
+    // For now, assume it's a user (most common case)
+    log('cyan', `🔍 Auto-detected target: ${detected} (assuming user)`)
+    return { org: null, user: detected, autoDetected: true }
+  }
+  
+  throw new Error('Unable to auto-detect user/org. Please specify --org or --user explicitly, or run from a folder with a recognizable name.')
+}
+
 // Configure CLI arguments
 const scriptName = path.basename(process.argv[1])
 const argv = yargs(hideBin(process.argv))
   .scriptName(scriptName)
   .version(version)
-  .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
+  .usage('Usage: $0 [--org <organization> | --user <username> | --auto] [options]')
   .option('org', {
     alias: 'o',
     type: 'string',
@@ -587,6 +659,12 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     describe: 'GitHub username',
     example: 'konard'
+  })
+  .option('auto', {
+    alias: 'a',
+    type: 'boolean',
+    describe: 'Auto-detect user/org from parent folder name or saved preferences',
+    default: false
   })
   .option('token', {
     alias: 't',
@@ -638,11 +716,11 @@ const argv = yargs(hideBin(process.argv))
     default: false
   })
   .check((argv) => {
-    if (!argv.org && !argv.user) {
-      throw new Error('You must specify either --org or --user')
+    if (!argv.org && !argv.user && !argv.auto) {
+      throw new Error('You must specify either --org, --user, or --auto')
     }
-    if (argv.org && argv.user) {
-      throw new Error('You cannot specify both --org and --user')
+    if ((argv.org && argv.user) || (argv.org && argv.auto) || (argv.user && argv.auto)) {
+      throw new Error('You can only specify one of --org, --user, or --auto')
     }
     if (argv.threads < 1) {
       throw new Error('Thread count must be at least 1')
@@ -659,6 +737,7 @@ const argv = yargs(hideBin(process.argv))
   .alias('h', 'help')
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
   .example('$0 --user konard', 'Sync all repositories from konard user account')
+  .example('$0 --auto', 'Auto-detect user/org from parent folder or saved preferences')
   .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')
   .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
   .example('$0 --user konard --single-thread', 'Run operations sequentially')
@@ -1073,7 +1152,21 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  let { org, user, auto, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  
+  // Handle auto mode
+  if (auto) {
+    const preferences = await loadPreferences(targetDir)
+    const autoTarget = await autoDetectTarget(targetDir, preferences)
+    org = autoTarget.org
+    user = autoTarget.user
+    
+    // Save preferences if this was auto-detected (not from saved preferences)
+    if (autoTarget.autoDetected) {
+      const newPreferences = user ? { user } : { org }
+      await savePreferences(targetDir, newPreferences)
+    }
+  }
   
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {

@@ -10,6 +10,20 @@ import readline from 'readline'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// Check for --help or --version before loading dependencies
+const args = process.argv.slice(2)
+const needsHelp = args.includes('--help') || args.includes('-h')
+const needsVersion = args.includes('--version') || args.includes('-v')
+
+// If only help/version requested, show basic info without loading dependencies
+if ((needsHelp || needsVersion) && args.length === 1) {
+  if (needsVersion) {
+    console.log('1.4.0')
+    process.exit(0)
+  }
+  // For help, continue to load yargs for proper help formatting
+}
+
 // Download use-m dynamically with error handling
 let use
 try {
@@ -34,12 +48,13 @@ try {
   process.exit(1)
 }
 
-// Import modern npm libraries using use-m
-const { Octokit } = await use('@octokit/rest@22.0.0')
-const { default: git } = await use('simple-git@3.28.0')
+// Load minimal dependencies for CLI setup (yargs and fs-extra for version reading)
 const fs = await use('fs-extra@11.3.0')
 const { default: yargs } = await use('yargs@17.7.2')
 const { hideBin } = await use('yargs@17.7.2/helpers')
+
+// Defer loading of heavy dependencies until after arg parsing
+let Octokit, git
 
 // Constants for magic numbers
 const DEFAULTS = {
@@ -727,6 +742,20 @@ const argv = yargs(hideBin(process.argv))
   .argv
 
 /**
+ * Load heavy dependencies (deferred until after CLI argument parsing)
+ */
+async function loadDependencies() {
+  if (!Octokit) {
+    const octokitModule = await use('@octokit/rest@22.0.0')
+    Octokit = octokitModule.Octokit
+  }
+  if (!git) {
+    const gitModule = await use('simple-git@3.28.0')
+    git = gitModule.default
+  }
+}
+
+/**
  * Handle GitHub API errors with consistent messaging
  * @param {Error} error - The error object
  * @param {string} apiUrl - The API URL that failed
@@ -1176,8 +1205,11 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 }
 
 async function main() {
+  // Load heavy dependencies now that args are parsed
+  await loadDependencies()
+
   let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
-  
+
   // If no token provided, try to get it from gh CLI
   if (!token) {
     const ghToken = await getGhToken()

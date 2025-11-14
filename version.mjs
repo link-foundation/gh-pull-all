@@ -8,6 +8,19 @@ import { execSync } from 'child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Check for --help before loading dependencies
+const args = process.argv.slice(2)
+if (args.includes('--help') || args.includes('-h') || args.length === 0) {
+  console.log('Usage: ./version.mjs <patch|minor|major>')
+  console.log('Examples:')
+  console.log('  ./version.mjs patch   # 1.0.3 → 1.0.4')
+  console.log('  ./version.mjs minor   # 1.0.3 → 1.1.0')
+  console.log('  ./version.mjs major   # 1.0.3 → 2.0.0')
+  if (args.includes('--help') || args.includes('-h')) {
+    process.exit(0)
+  }
+}
+
 // Download use-m dynamically with error handling
 let use
 try {

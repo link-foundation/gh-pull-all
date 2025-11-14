@@ -10,8 +10,29 @@ import readline from 'readline'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+// Download use-m dynamically with error handling
+let use
+try {
+  const response = await fetch('https://unpkg.com/use-m/use.js')
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  }
+  const code = await response.text()
+  if (!code || code.length < 100) {
+    throw new Error('Invalid response from unpkg.com')
+  }
+  const result = eval(code)
+  use = result.use
+  if (typeof use !== 'function') {
+    throw new Error('use-m loaded but use function not found')
+  }
+} catch (error) {
+  console.error('\x1b[31m❌ Failed to load use-m from unpkg.com\x1b[0m')
+  console.error(`   Error: ${error.message}`)
+  console.error('\x1b[33m💡 Please check your internet connection\x1b[0m')
+  console.error('   This tool requires internet access to download dependencies')
+  process.exit(1)
+}
 
 // Import modern npm libraries using use-m
 const { Octokit } = await use('@octokit/rest@22.0.0')
@@ -19,6 +40,22 @@ const { default: git } = await use('simple-git@3.28.0')
 const fs = await use('fs-extra@11.3.0')
 const { default: yargs } = await use('yargs@17.7.2')
 const { hideBin } = await use('yargs@17.7.2/helpers')
+
+// Constants for magic numbers
+const DEFAULTS = {
+  TERMINAL_WIDTH: 80,
+  TERMINAL_HEIGHT: 24,
+  RENDER_FPS: 10,
+  RENDER_INTERVAL_MS: 100,
+  MIN_MESSAGE_WIDTH: 20,
+  SAFETY_MARGIN: 10,
+  DURATION_PADDING: 6,
+  HEADER_LINES: 3,
+  PROGRESS_BAR_WIDTH: 50,
+  PROGRESS_BAR_RESERVED_SPACE: 40,
+  GIT_TIMEOUT_MS: 30000, // 30 seconds
+  RESIZE_DEBOUNCE_MS: 150,
+}
 
 // Get version from package.json or fallback
 let version = '1.4.0' // Fallback version
@@ -31,6 +68,9 @@ try {
   }
 } catch (error) {
   // Use fallback version if package.json can't be read
+  if (error.code !== 'ENOENT') {
+    console.warn(`Warning: Could not read package.json: ${error.message}`)
+  }
 }
 
 // Helper function for confirmation prompt
@@ -76,25 +116,33 @@ class StatusDisplay {
     this.headerPrinted = false
     this.renderedOnce = false
     this.maxNameLength = 0
-    this.terminalWidth = process.stdout.columns || 80
-    this.terminalHeight = process.stdout.rows || 24
+    this.terminalWidth = process.stdout.columns || DEFAULTS.TERMINAL_WIDTH
+    this.terminalHeight = process.stdout.rows || DEFAULTS.TERMINAL_HEIGHT
     this.errors = []
     this.errorCounter = 0
-    this.headerLines = 3 // Header + separator line + blank line
+    this.headerLines = DEFAULTS.HEADER_LINES
     this.completedRepos = [] // Store completed repos for persistent display
     this.currentBatchStart = 0
     this.lastRenderedCount = 0
     this.batchDisplayMode = true // New mode for batch-based display
-    
-    // Listen for terminal resize
+    this.isDirty = false // Track if render is needed
+    this.resizeTimeout = null // For debouncing resize events
+
+    // Listen for terminal resize with debouncing
     if (this.isInteractive) {
       process.stdout.on('resize', () => {
-        this.terminalWidth = process.stdout.columns || 80
-        this.terminalHeight = process.stdout.rows || 24
-        // Keep render on resize for immediate response
-        if (this.useInPlaceUpdates) {
-          this.render()
+        this.terminalWidth = process.stdout.columns || DEFAULTS.TERMINAL_WIDTH
+        this.terminalHeight = process.stdout.rows || DEFAULTS.TERMINAL_HEIGHT
+        // Debounce resize events
+        if (this.resizeTimeout) {
+          clearTimeout(this.resizeTimeout)
         }
+        this.resizeTimeout = setTimeout(() => {
+          if (this.useInPlaceUpdates) {
+            this.isDirty = true
+            this.render()
+          }
+        }, DEFAULTS.RESIZE_DEBOUNCE_MS)
       })
     }
   }
@@ -121,7 +169,7 @@ class StatusDisplay {
       if (status !== 'pending') {
         repo.endTime = Date.now()
       }
-      
+
       // Handle error tracking
       if (status === 'failed' && !repo.errorNumber) {
         this.errorCounter++
@@ -132,11 +180,13 @@ class StatusDisplay {
           message: message
         })
       }
-      
+
       if (!this.useInPlaceUpdates) {
         this.logStatusChange(repo, oldStatus)
+      } else {
+        // Mark as dirty for next render
+        this.isDirty = true
       }
-      // Render is now handled by the main loop at 10 FPS
     }
   }
 
@@ -162,8 +212,8 @@ class StatusDisplay {
       : `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
     
     // Calculate available space for message
-    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
-    const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
+    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + DEFAULTS.DURATION_PADDING + 1 // icon + space + name + space + duration + space
+    const availableWidth = Math.max(DEFAULTS.MIN_MESSAGE_WIDTH, this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN)
     
     let displayMessage = repo.message
     if (repo.status === 'failed' && repo.errorNumber) {
@@ -191,10 +241,16 @@ class StatusDisplay {
       return // Use append-only mode by default
     }
 
+    // Skip render if nothing changed (optimization)
+    if (!this.isDirty && this.renderedOnce) {
+      return
+    }
+    this.isDirty = false
+
     if (!this.headerPrinted) {
       console.log(`\n${colors.bold}Repository Status${colors.reset}`)
-      console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
-      this.headerLines = 3 // Don't include legend in header lines
+      console.log(`${colors.dim}${'─'.repeat(Math.min(DEFAULTS.TERMINAL_WIDTH, this.terminalWidth))}${colors.reset}`)
+      this.headerLines = DEFAULTS.HEADER_LINES
       this.headerPrinted = true
     }
 
@@ -368,8 +424,9 @@ class StatusDisplay {
   }
 
   getVisibleLength(str) {
-    // Remove ANSI escape codes to calculate visible length
-    return str.replace(/\x1b\[[0-9;]*m/g, '').length
+    // Remove all ANSI escape codes to calculate visible length
+    // This handles colors, cursor movement, and other ANSI sequences
+    return str.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').length
   }
 
   createProgressBar() {
@@ -396,34 +453,29 @@ class StatusDisplay {
     }
     
     // Calculate bar width (reserve space for text)
-    const barWidth = Math.min(50, this.terminalWidth - 40)
+    const barWidth = Math.min(DEFAULTS.PROGRESS_BAR_WIDTH, this.terminalWidth - DEFAULTS.PROGRESS_BAR_RESERVED_SPACE)
     const completed = statusCounts.success + statusCounts.failed + statusCounts.skipped + statusCounts.uncommitted
     const inProgress = statusCounts.pulling + statusCounts.cloning + statusCounts.checking + statusCounts.deleting
     const pending = statusCounts.pending
-    
+
     // Create bar segments - ensure they sum to barWidth
-    const successWidth = Math.round((statusCounts.success / repoCount) * barWidth)
+    let successWidth = Math.round((statusCounts.success / repoCount) * barWidth)
     const failedWidth = Math.round((statusCounts.failed / repoCount) * barWidth)
     const skippedWidth = Math.round(((statusCounts.skipped + statusCounts.uncommitted) / repoCount) * barWidth)
     const inProgressWidth = Math.round((inProgress / repoCount) * barWidth)
     let pendingWidth = barWidth - successWidth - failedWidth - skippedWidth - inProgressWidth
-    
+
     // Adjust for rounding errors
     if (pendingWidth < 0) pendingWidth = 0
     const totalWidth = successWidth + failedWidth + skippedWidth + inProgressWidth + pendingWidth
     if (totalWidth < barWidth && completed === repoCount) {
       // If all done but bar not full due to rounding, extend success segment
-      const diff = barWidth - totalWidth
-      return this.createProgressBar.call(this, { 
-        ...arguments[0], 
-        _successWidth: successWidth + diff 
-      })
+      successWidth += barWidth - totalWidth
     }
-    
+
     // Build the bar
     let bar = ''
-    const finalSuccessWidth = arguments[0]?._successWidth || successWidth
-    bar += colors.green + '█'.repeat(finalSuccessWidth)
+    bar += colors.green + '█'.repeat(successWidth)
     bar += colors.red + '█'.repeat(failedWidth)
     bar += colors.yellow + '█'.repeat(skippedWidth)
     bar += colors.cyan + '█'.repeat(inProgressWidth)
@@ -447,7 +499,7 @@ class StatusDisplay {
 
     console.log() // Add spacing
     log('red', `${colors.bold}❌ Errors:${colors.reset}`)
-    console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
+    console.log(`${colors.dim}${'─'.repeat(Math.min(DEFAULTS.TERMINAL_WIDTH, this.terminalWidth))}${colors.reset}`)
     
     for (const error of this.errors) {
       console.log(`${colors.red}#${error.number.toString().padStart(2)} ${colors.yellow}${error.repo}${colors.reset}: ${error.message}`)
@@ -647,7 +699,12 @@ const argv = yargs(hideBin(process.argv))
     if (argv.threads < 1) {
       throw new Error('Thread count must be at least 1')
     }
-    if (argv['single-thread'] && argv.threads !== 8) {
+    // Check if both single-thread and threads were explicitly provided
+    // We need to check if threads was explicitly set (not just the default)
+    const threadsExplicitlySet = process.argv.some(arg =>
+      arg === '--threads' || arg === '-j'
+    )
+    if (argv['single-thread'] && threadsExplicitlySet) {
       throw new Error('Cannot specify both --single-thread and --threads')
     }
     if (argv['pull-from-default'] && argv['switch-to-default']) {
@@ -669,6 +726,40 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
   .argv
 
+/**
+ * Handle GitHub API errors with consistent messaging
+ * @param {Error} error - The error object
+ * @param {string} apiUrl - The API URL that failed
+ * @param {string|null} token - GitHub token (if provided)
+ */
+function handleGitHubAPIError(error, apiUrl, token) {
+  if (error.status === 404) {
+    log('red', `❌ Resource not found or not accessible`)
+    log('yellow', `   API URL: ${apiUrl}`)
+  } else if (error.status === 401) {
+    log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
+    log('yellow', `   API URL: ${apiUrl}`)
+  } else {
+    log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
+    log('red', `   Error: ${error.message}`)
+    if (error.message.includes('Unable to connect')) {
+      log('yellow', '💡 Please check your internet connection')
+      log('yellow', `   You can test by visiting: ${apiUrl}`)
+    }
+  }
+  if (!token) {
+    log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
+    log('yellow', '   Visit: https://github.com/settings/tokens')
+  }
+  process.exit(1)
+}
+
+/**
+ * Get all repositories from a GitHub organization
+ * @param {string} org - Organization name
+ * @param {string|null} token - GitHub token
+ * @returns {Promise<Array>} Array of repository objects
+ */
 async function getOrganizationRepos(org, token) {
   try {
     log('blue', `🔍 Fetching repositories from ${org} organization...`)
@@ -699,38 +790,26 @@ async function getOrganizationRepos(org, token) {
     }))
   } catch (error) {
     const apiUrl = `https://api.github.com/orgs/${org}/repos`
-    if (error.status === 404) {
-      log('red', `❌ Organization '${org}' not found or not accessible`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else if (error.status === 401) {
-      log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else {
-      log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
-      log('red', `   Error: ${error.message}`)
-      if (error.message.includes('Unable to connect')) {
-        log('yellow', '💡 Please check your internet connection')
-        log('yellow', `   You can test by visiting: ${apiUrl}`)
-      }
-    }
-    if (!token) {
-      log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
-      log('yellow', '   Visit: https://github.com/settings/tokens')
-    }
-    process.exit(1)
+    handleGitHubAPIError(error, apiUrl, token)
   }
 }
 
+/**
+ * Get all repositories from a GitHub user
+ * @param {string} username - GitHub username
+ * @param {string|null} token - GitHub token
+ * @returns {Promise<Array>} Array of repository objects
+ */
 async function getUserRepos(username, token) {
   try {
     log('blue', `🔍 Fetching repositories from ${username} user account...`)
-    
+
     // Create Octokit instance
     const octokit = new Octokit({
       auth: token,
       baseUrl: 'https://api.github.com'
     })
-    
+
     // Get all repositories for the user
     const { data: repos } = await octokit.rest.repos.listForUser({
       username: username,
@@ -739,7 +818,7 @@ async function getUserRepos(username, token) {
       sort: 'updated',
       direction: 'desc'
     })
-    
+
     log('green', `✅ Found ${repos.length} repositories`)
     return repos.map(repo => ({
       name: repo.name,
@@ -751,34 +830,26 @@ async function getUserRepos(username, token) {
     }))
   } catch (error) {
     const apiUrl = `https://api.github.com/users/${username}/repos`
-    if (error.status === 404) {
-      log('red', `❌ User '${username}' not found or not accessible`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else if (error.status === 401) {
-      log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else {
-      log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
-      log('red', `   Error: ${error.message}`)
-      if (error.message.includes('Unable to connect')) {
-        log('yellow', '💡 Please check your internet connection')
-        log('yellow', `   You can test by visiting: ${apiUrl}`)
-      }
-    }
-    if (!token) {
-      log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
-      log('yellow', '   Visit: https://github.com/settings/tokens')
-    }
-    process.exit(1)
+    handleGitHubAPIError(error, apiUrl, token)
   }
 }
 
+/**
+ * Check if a directory exists
+ * @param {string} dirPath - Path to check
+ * @returns {Promise<boolean>} True if directory exists and is accessible
+ */
 async function directoryExists(dirPath) {
   try {
     const stats = await fs.stat(dirPath)
     return stats.isDirectory()
-  } catch {
-    return false
+  } catch (error) {
+    // Only return false for "not found" errors
+    // Let permission and other errors bubble up
+    if (error.code === 'ENOENT') {
+      return false
+    }
+    throw error
   }
 }
 
@@ -839,11 +910,18 @@ async function getDefaultBranch(simpleGit) {
   }
 }
 
+/**
+ * Switch repository to its default branch
+ * @param {string} repoName - Name of the repository
+ * @param {string} targetDir - Target directory containing repositories
+ * @param {StatusDisplay} statusDisplay - Status display instance
+ * @returns {Promise<{success: boolean, type: string, error?: string, details?: Object}>}
+ */
 async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
   try {
     statusDisplay.updateRepo(repoName, 'checking', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath)
+    const simpleGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
     
     const status = await simpleGit.status()
     if (status.files.length > 0) {
@@ -891,11 +969,19 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
   }
 }
 
+/**
+ * Pull updates for a repository
+ * @param {string} repoName - Name of the repository
+ * @param {string} targetDir - Target directory containing repositories
+ * @param {StatusDisplay} statusDisplay - Status display instance
+ * @param {boolean} pullFromDefault - Whether to pull from default branch
+ * @returns {Promise<{success: boolean, type: string, error?: string, details?: Object}>}
+ */
 async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefault = false) {
   try {
     statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath)
+    const simpleGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
     
     const status = await simpleGit.status()
     if (status.files.length > 0) {
@@ -919,7 +1005,9 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
         // Attempt to merge from default branch
         statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
         try {
-          const remoteName = 'origin' // Assume origin for now
+          // Get remote name dynamically
+          const remotes = await simpleGit.getRemotes()
+          const remoteName = remotes.length > 0 ? remotes[0].name : 'origin'
           const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
           
           // Check if remote branch exists
@@ -991,18 +1079,26 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
   }
 }
 
+/**
+ * Clone a repository
+ * @param {Object} repo - Repository object with name, clone_url, ssh_url
+ * @param {string} targetDir - Target directory for cloning
+ * @param {boolean} useSsh - Whether to use SSH for cloning
+ * @param {StatusDisplay} statusDisplay - Status display instance
+ * @returns {Promise<{success: boolean, type: string, error?: string}>}
+ */
 async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   try {
     statusDisplay.updateRepo(repo.name, 'cloning', 'Cloning...')
-    const simpleGit = git(targetDir)
-    
+    const simpleGit = git(targetDir).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
+
     // Use SSH if requested and available, fallback to HTTPS
     const cloneUrl = useSsh && repo.ssh_url ? repo.ssh_url : repo.clone_url
     await simpleGit.clone(cloneUrl, repo.name)
-    
+
     statusDisplay.updateRepo(repo.name, 'cloning', 'Fetching all branches...')
     const repoPath = path.join(targetDir, repo.name)
-    const repoGit = git(repoPath)
+    const repoGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
     await repoGit.fetch(['--all'])
     
     statusDisplay.updateRepo(repo.name, 'success', 'Successfully cloned')
@@ -1013,19 +1109,26 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   }
 }
 
+/**
+ * Delete a repository directory
+ * @param {string} repoName - Name of the repository
+ * @param {string} targetDir - Target directory containing repositories
+ * @param {StatusDisplay} statusDisplay - Status display instance
+ * @returns {Promise<{success: boolean, type: string, error?: string}>}
+ */
 async function deleteRepository(repoName, targetDir, statusDisplay) {
   try {
     const repoPath = path.join(targetDir, repoName)
-    
+
     // Check if directory exists
     if (!(await directoryExists(repoPath))) {
       statusDisplay.updateRepo(repoName, 'skipped', 'Not found locally')
       return { success: true, type: 'skipped' }
     }
-    
+
     // Check for uncommitted changes
     statusDisplay.updateRepo(repoName, 'checking', 'Checking for uncommitted changes...')
-    const simpleGit = git(repoPath)
+    const simpleGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
     
     try {
       const status = await simpleGit.status()
@@ -1076,7 +1179,7 @@ async function main() {
   let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
   
   // If no token provided, try to get it from gh CLI
-  if (!token || token === undefined) {
+  if (!token) {
     const ghToken = await getGhToken()
     if (ghToken) {
       token = ghToken
@@ -1144,12 +1247,12 @@ async function main() {
   // Process all repositories with configurable concurrency
   const results = []
   
-  // Start render loop at 10 FPS for dynamic updates
+  // Start render loop for dynamic updates
   let renderInterval
   if (statusDisplay.useInPlaceUpdates) {
     renderInterval = setInterval(() => {
       statusDisplay.render()
-    }, 100) // 100ms = 10 FPS
+    }, DEFAULTS.RENDER_INTERVAL_MS) // 100ms = 10 FPS
   }
   
   try {

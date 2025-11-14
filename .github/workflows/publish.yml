@@ -1,11 +1,13 @@
-name: Publish to NPM
+name: CI/CD
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  publish:
+  test-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -16,12 +18,16 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Run tests
+        run: bun run test
+
       - name: Check if version is already published
         id: check_version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           PACKAGE_NAME=$(bun -p "require('./package.json').name")
           PACKAGE_VERSION=$(bun -p "require('./package.json').version")
-          
+
           # Check if this version exists on npm
           if bun pm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null; then
             echo "Version ${PACKAGE_VERSION} already published"
@@ -31,12 +37,8 @@ jobs:
             echo "should_publish=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run tests
-        if: steps.check_version.outputs.should_publish == 'true'
-        run: bun run test
-
       - name: Publish to NPM
-        if: steps.check_version.outputs.should_publish == 'true'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.check_version.outputs.should_publish == 'true'
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: bun publish -p --access public

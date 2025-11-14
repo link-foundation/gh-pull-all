@@ -10,18 +10,71 @@ import readline from 'readline'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// Standalone help text (works without loading any dependencies)
+const HELP_TEXT = `
+Usage: gh-pull-all [--org <organization> | --user <username>] [options]
+
+Options:
+  -o, --org <name>         GitHub organization name
+  -u, --user <name>        GitHub username
+  -t, --token <token>      GitHub personal access token (optional for public repos)
+  -s, --ssh                Use SSH URLs for cloning (requires SSH key setup)
+  -d, --dir <path>         Target directory for repositories (default: current directory)
+  -j, --threads <number>   Number of concurrent operations (default: 8)
+      --single-thread      Run operations sequentially (equivalent to --threads 1)
+      --live-updates       Enable live in-place status updates (default: true)
+      --no-live-updates    Disable live updates for terminal history preservation
+      --delete             Delete all cloned repositories (with confirmation)
+      --pull-from-default  Pull changes from default branch into current branch when behind
+      --switch-to-default  Switch to the default branch (main/master) in each repository
+  -h, --help               Show help
+  -v, --version            Show version number
+
+Examples:
+  gh-pull-all --org deep-assistant
+    Sync all repositories from deep-assistant organization
+
+  gh-pull-all --user konard
+    Sync all repositories from konard user account
+
+  gh-pull-all --org myorg --ssh --dir ./repos
+    Clone using SSH to ./repos directory
+
+  gh-pull-all --user konard --threads 5
+    Use 5 concurrent operations
+
+  gh-pull-all --user konard --single-thread
+    Run operations sequentially
+
+  gh-pull-all --user konard -j 16
+    Use 16 concurrent operations (alias for --threads)
+
+  gh-pull-all --user konard --no-live-updates
+    Disable live updates for terminal history preservation
+
+  gh-pull-all --user konard --delete
+    Delete all cloned repositories (with confirmation)
+
+  gh-pull-all --user konard --pull-from-default
+    Pull from default branch to current branch when behind
+
+  gh-pull-all --user konard --switch-to-default
+    Switch all repositories to their default branch
+`
+
 // Check for --help or --version before loading dependencies
 const args = process.argv.slice(2)
 const needsHelp = args.includes('--help') || args.includes('-h')
 const needsVersion = args.includes('--version') || args.includes('-v')
 
-// If only help/version requested, show basic info without loading dependencies
-if ((needsHelp || needsVersion) && args.length === 1) {
+// If only help/version requested, show without loading dependencies
+if (args.length === 1 && (needsHelp || needsVersion)) {
   if (needsVersion) {
     console.log('1.4.0')
-    process.exit(0)
+  } else {
+    console.log(HELP_TEXT.trim())
   }
-  // For help, continue to load yargs for proper help formatting
+  process.exit(0)
 }
 
 // Download use-m dynamically with error handling

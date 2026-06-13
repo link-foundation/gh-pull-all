@@ -10,8 +10,12 @@ import readline from 'readline'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+// Download use-m dynamically (robustly, with CDN fallback and clear errors).
+// A bare `eval(await (await fetch(...)).text())` crashes with a cryptic
+// SyntaxError when a CDN returns an error body instead of the module source.
+// See https://github.com/link-foundation/gh-pull-all/issues/35.
+import { loadUseM } from './load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 const { Octokit } = await use('@octokit/rest@22.0.0')
@@ -21,7 +25,7 @@ const { default: yargs } = await use('yargs@17.7.2')
 const { hideBin } = await use('yargs@17.7.2/helpers')
 
 // Get version from package.json or fallback
-let version = '1.4.0' // Fallback version
+let version = '1.4.1' // Fallback version
 
 try {
   const packagePath = path.join(__dirname, 'package.json')

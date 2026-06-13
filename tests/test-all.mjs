@@ -2,7 +2,8 @@
 
 // Master test runner for all gh-pull-all.mjs tests
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
@@ -47,7 +48,8 @@ const testDescriptions = {
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
-  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option'
+  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',
+  'test-use-m-loader.mjs': 'Tests robust use-m loading with CDN fallback and clear errors (issue #35)'
 }
 
 function getTestDisplayName(filename) {

@@ -2,7 +2,8 @@
 ':' //# ; exec "$(command -v bun || command -v node)" "$0" "$@"
 
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import simple-git using use-m
 const { default: git } = await use('simple-git@3.28.0')

@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 // Test GitHub API functionality
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')

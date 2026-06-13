@@ -3,7 +3,8 @@
 
 // Test CLI argument validation for --switch-to-default functionality
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import dependencies
 const { execSync } = await import('child_process')

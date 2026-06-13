@@ -4,7 +4,8 @@ import path from 'path'
 
 // Test terminal width handling and message truncation
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'

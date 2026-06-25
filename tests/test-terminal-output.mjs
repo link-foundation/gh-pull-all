@@ -10,7 +10,7 @@ const { spawn } = await import('child_process')
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn('bun', ['../gh-pull-all.mjs', ...args], {
+    const child = spawn(process.execPath, ['../gh-pull-all.mjs', ...args], {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: process.cwd()
     })

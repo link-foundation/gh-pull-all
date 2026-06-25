@@ -8,7 +8,7 @@ const { use } = await loadUseM()
 
 // Import dependencies
 const { default: git } = await use('simple-git@3.28.0')
-const fs = await use('fs-extra@11.3.0')
+import { promises as fs } from 'fs'
 const path = await import('path')
 const { execSync } = await import('child_process')
 
@@ -28,7 +28,7 @@ const log = (color, message) => console.log(`${colors[color]}${message}${colors.
 
 async function createTestRepo(repoName, tempDir, initialBranch = 'main', currentBranch = 'feature') {
   const repoPath = path.join(tempDir, repoName)
-  await fs.ensureDir(repoPath)
+  await fs.mkdir(repoPath, { recursive: true })
   
   const simpleGit = git(repoPath)
   
@@ -74,8 +74,8 @@ async function testSwitchToDefault() {
   
   try {
     // Clean up any existing test directory
-    await fs.remove(testDir)
-    await fs.ensureDir(testDir)
+    await fs.rm(testDir, { recursive: true, force: true })
+    await fs.mkdir(testDir, { recursive: true })
     
     log('blue', '🧪 Testing switch-to-default functionality...')
     
@@ -207,7 +207,7 @@ async function testSwitchToDefault() {
   } finally {
     // Clean up test directory
     try {
-      await fs.remove(testDir)
+      await fs.rm(testDir, { recursive: true, force: true })
     } catch (cleanupError) {
       log('yellow', `⚠️  Failed to clean up test directory: ${cleanupError.message}`)
     }

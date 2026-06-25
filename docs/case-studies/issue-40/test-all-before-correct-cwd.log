@@ -1,0 +1,293 @@
+[34m[1m🧪 GH-Pull-All Test Suite[0m[0m
+[36mRunning 29 test suites...[0m
+[36mFound test files: test-cli-simple.mjs, test-concurrent-processing.mjs, test-empty-repository.mjs, test-error-handling.mjs, test-error-message-display.mjs, test-file-operations.mjs, test-fixed-rendering.mjs, test-gh-cli.mjs, test-github-api.mjs, test-integration.mjs, test-issue-11-integration.mjs, test-line-padding.mjs, test-merge-result.mjs, test-multithread-live.mjs, test-multithread-no-live.mjs, test-parallel.mjs, test-progress-bar.mjs, test-single-repo.mjs, test-single-thread.mjs, test-sorting.mjs, test-switch-to-default-cli.mjs, test-switch-to-default.mjs, test-terminal-output.mjs, test-terminal-rendering.mjs, test-terminal-width.mjs, test-threading.mjs, test-uncommitted-changes.mjs, test-use-m-loader.mjs, test-windowed-display.mjs[0m
+[2m────────────────────────────────────────────────────────────────────────────────[0m
+[36m
+🔍 Running: Cli Simple[0m
+[2m   File: test-cli-simple.mjs[0m
+[2m   Tests basic CLI functionality and argument parsing[0m
+[32m✅ Cli Simple passed (2.7s)[0m
+[36m
+🔍 Running: Concurrent Processing[0m
+[2m   File: test-concurrent-processing.mjs[0m
+[2m   Tests concurrent repository processing with worker pool pattern[0m
+[31m❌ Concurrent Processing failed (5.5s)[0m
+[31m   Error: Command failed: ./test-concurrent-processing.mjs[0m
+[2m   Output: ✘ • •   (2 / 3)
+
+   FAIL  "concurrent processing should handle multiple threads gracefully"
+    Expected value to match `/Concurrency: 4 threads \(parallel\)/` pattern  (match)
+
+    at assert (/home/b...[0m
+[36m
+🔍 Running: Empty Repository[0m
+[2m   File: test-empty-repository.mjs[0m
+[2m   Tests empty repository pull handling and first default branch detection[0m
+[32m✅ Empty Repository passed (11.6s)[0m
+[36m
+🔍 Running: Error Handling[0m
+[2m   File: test-error-handling.mjs[0m
+[2m   Tests error numbering system and error list display[0m
+[31m❌ Error Handling failed (0.3s)[0m
+[31m   Error: Command failed: ./test-error-handling.mjs[0m
+[2m   Output: [34m🧪 Testing error handling and numbering system...[0m
+[36m🔧 Created conflicting files to trigger errors[0m
+[32m✅ Error handling test completed[0m
+[31m❌ Error handling test failed: Expected ...[0m
+[36m
+🔍 Running: Error Message Display[0m
+[2m   File: test-error-message-display.mjs[0m
+[2m   Test suite[0m
+[32m✅ Error Message Display passed (6.3s)[0m
+[36m
+🔍 Running: File Operations[0m
+[2m   File: test-file-operations.mjs[0m
+[2m   Tests file system operations and directory handling[0m
+[32m✅ File Operations passed (1.4s)[0m
+[36m
+🔍 Running: Fixed Rendering[0m
+[2m   File: test-fixed-rendering.mjs[0m
+[2m   Tests fixed terminal rendering functionality[0m
+[32m✅ Fixed Rendering passed (0.1s)[0m
+[36m
+🔍 Running: Gh Cli[0m
+[2m   File: test-gh-cli.mjs[0m
+[2m   Tests GitHub CLI integration and fallback behavior[0m
+[32m✅ Gh Cli passed (3.4s)[0m
+[36m
+🔍 Running: Github Api[0m
+[2m   File: test-github-api.mjs[0m
+[2m   Tests GitHub API integration and error handling[0m
+[31m❌ Github Api failed (0.4s)[0m
+[31m   Error: Command failed: ./test-github-api.mjs
+error: Failed to import module from '/home/box/.bun/install/global/node_modules/octokit-rest-v-latest/dist-src/index.js'.
+      at <anonymous> (file:///tmp/gh-issue-solver-1782400949399/load-use-m.mjs:954:11)
+
+23 |   GraphqlResponseError: () => GraphqlResponseError,
+24 |   graphql: () => graphql2,
+25 |   withCustomRequest: () => withCustomRequest
+26 | });
+27 | module.exports = __toCommonJS(index_exports);
+28 | var import_request3 = require("@octokit/request");
+         ^
+TypeError: require() async module "/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/request/dist-bundle/index.js" is unsupported. use "await import()" instead.
+      at <anonymous> (/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/graphql/dist-node/index.js:28:5)
+
+Bun v1.3.14 (Linux x64)
+[0m
+[36m
+🔍 Running: Integration[0m
+[2m   File: test-integration.mjs[0m
+[2m   Tests all functionality together in complex scenarios[0m
+[31m❌ Integration failed (24.7s)[0m
+[31m   Error: Command failed: ./test-integration.mjs[0m
+[2m   Output: [34m🧪 Running comprehensive integration test...[0m
+[36m🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width[0m
+[36m🔧 Phase 1: Setting up mixed sce...[0m
+[36m
+🔍 Running: Issue 11 Integration[0m
+[2m   File: test-issue-11-integration.mjs[0m
+[2m   Test suite[0m
+[31m❌ Issue 11 Integration failed (9.6s)[0m
+[31m   Error: Command failed: ./test-issue-11-integration.mjs[0m
+[2m   Output: [34m🧪 Testing Issue #11 integration (short error messages)...[0m
+[36m🔧 Created conflicting files to trigger errors[0m
+[36m🔧 Testing: Multi-threaded with live updates[0m
+[32m✅ Multi-threaded ...[0m
+[36m
+🔍 Running: Line Padding[0m
+[2m   File: test-line-padding.mjs[0m
+[2m   Tests line padding to prevent truncation issues like "Successfully pulledes..."[0m
+[32m✅ Line Padding passed (10.2s)[0m
+[36m
+🔍 Running: Merge Result[0m
+[2m   File: test-merge-result.mjs[0m
+[2m   Test suite[0m
+[32m✅ Merge Result passed (1.0s)[0m
+[36m
+🔍 Running: Multithread Live[0m
+[2m   File: test-multithread-live.mjs[0m
+[2m   Tests multi-thread mode with live in-place updates[0m
+[31m❌ Multithread Live failed (0.2s)[0m
+[31m   Error: Command failed: ./test-multithread-live.mjs[0m
+[2m   Output: [34m🧪 Testing multi-thread mode with live updates...[0m
+[31m❌ Multi-thread live updates test failed: Command failed: ../gh-pull-all.mjs --user octocat --threads 4 --live-updates --dir /tmp/gh-pull...[0m
+[36m
+🔍 Running: Multithread No Live[0m
+[2m   File: test-multithread-no-live.mjs[0m
+[2m   Tests multi-thread mode with append-only final status[0m
+[32m✅ Multithread No Live passed (5.6s)[0m
+[36m
+🔍 Running: Parallel[0m
+[2m   File: test-parallel.mjs[0m
+[2m   Tests parallel processing functionality[0m
+[32m✅ Parallel passed (5.0s)[0m
+[36m
+🔍 Running: Progress Bar[0m
+[2m   File: test-progress-bar.mjs[0m
+[2m   Tests progress bar functionality and display[0m
+[32m✅ Progress Bar passed (0.2s)[0m
+[36m
+🔍 Running: Single Repo[0m
+[2m   File: test-single-repo.mjs[0m
+[2m   Test suite[0m
+[32m✅ Single Repo passed (1.0s)[0m
+[36m
+🔍 Running: Single Thread[0m
+[2m   File: test-single-thread.mjs[0m
+[2m   Tests single-thread mode with live updates and append-only behavior[0m
+[31m❌ Single Thread failed (0.3s)[0m
+[31m   Error: Command failed: ./test-single-thread.mjs[0m
+[2m   Output: [34m🧪 Testing single-thread mode with live updates...[0m
+[31m❌ Single-thread test failed: Command failed: ../gh-pull-all.mjs --user octocat --single-thread --dir /tmp/gh-pull-all-test-single-threa...[0m
+[36m
+🔍 Running: Sorting[0m
+[2m   File: test-sorting.mjs[0m
+[2m   Tests alphabetical sorting of repositories[0m
+[31m❌ Sorting failed (0.2s)[0m
+[31m   Error: Command failed: ./test-sorting.mjs
+❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+error: Failed to import module from '/home/box/.bun/install/global/node_modules/octokit-rest-v-22.0.0/dist-src/index.js'.
+      at <anonymous> (file:///tmp/gh-issue-solver-1782400949399/load-use-m.mjs:954:11)
+
+23 |   GraphqlResponseError: () => GraphqlResponseError,
+24 |   graphql: () => graphql2,
+25 |   withCustomRequest: () => withCustomRequest
+26 | });
+27 | module.exports = __toCommonJS(index_exports);
+28 | var import_request3 = require("@octokit/request");
+         ^
+TypeError: require() async module "/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/request/dist-bundle/index.js" is unsupported. use "await import()" instead.
+      at <anonymous> (/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/graphql/dist-node/index.js:28:5)
+
+Bun v1.3.14 (Linux x64)
+
+[0m
+[2m   Output: 🧪 Testing repository sorting...
+...[0m
+[36m
+🔍 Running: Switch To Default Cli[0m
+[2m   File: test-switch-to-default-cli.mjs[0m
+[2m   Tests CLI argument validation and help text for --switch-to-default option[0m
+[32m✅ Switch To Default Cli passed (4.6s)[0m
+[36m
+🔍 Running: Switch To Default[0m
+[2m   File: test-switch-to-default.mjs[0m
+[2m   Tests --switch-to-default functionality for switching repositories to default branch[0m
+[32m✅ Switch To Default passed (1.9s)[0m
+[36m
+🔍 Running: Terminal Output[0m
+[2m   File: test-terminal-output.mjs[0m
+[2m   Tests terminal output formatting and colors[0m
+[31m❌ Terminal Output failed (1.6s)[0m
+[31m   Error: Command failed: ./test-terminal-output.mjs[0m
+[2m   Output: • ✘ ✘   (1 / 3)
+
+   FAIL  "help should show both live-updates options"
+    Expected values to be deeply equal:  (equal)
+
+        ++0    (Expected)
+        --1    (Actual)
+
+    at assert (/home...[0m
+[36m
+🔍 Running: Terminal Rendering[0m
+[2m   File: test-terminal-rendering.mjs[0m
+[2m   Tests terminal rendering output and formatting[0m
+[32m✅ Terminal Rendering passed (0.8s)[0m
+[36m
+🔍 Running: Terminal Width[0m
+[2m   File: test-terminal-width.mjs[0m
+[2m   Tests terminal width handling and message truncation[0m
+[31m❌ Terminal Width failed (0.3s)[0m
+[31m   Error: Command failed: ./test-terminal-width.mjs[0m
+[2m   Output: [34m🧪 Testing terminal width handling and message truncation...[0m
+[36m🔧 Created conflicting file to generate longer error message[0m
+[32m✅ Terminal width test completed[0m
+[31m❌ Terminal wid...[0m
+[36m
+🔍 Running: Threading[0m
+[2m   File: test-threading.mjs[0m
+[2m   Tests threading and concurrency management[0m
+[31m❌ Threading failed (6.0s)[0m
+[31m   Error: Command failed: ./test-threading.mjs[0m
+[2m   Output: • ✘ • • • • ✘   (5 / 7)
+
+   FAIL  "should show custom thread count"
+    Expected value to match `/Concurrency: 5 threads \(parallel\)/` pattern  (match)
+
+    at assert (/home/box/.bun/install/global/n...[0m
+[36m
+🔍 Running: Uncommitted Changes[0m
+[2m   File: test-uncommitted-changes.mjs[0m
+[2m   Tests handling of repositories with uncommitted changes[0m
+[31m❌ Uncommitted Changes failed (0.3s)[0m
+[31m   Error: Command failed: ./test-uncommitted-changes.mjs[0m
+[2m   Output: [34m🧪 Testing uncommitted changes handling...[0m
+[36m🔧 Step 1: Cloning repositories initially...[0m
+[31m❌ Initial clone failed: Command failed: ../gh-pull-all.mjs --org deep-assistant --threads...[0m
+[36m
+🔍 Running: Use M Loader[0m
+[2m   File: test-use-m-loader.mjs[0m
+[2m   Tests robust use-m loading with CDN fallback and clear errors (issue #35)[0m
+[32m✅ Use M Loader passed (0.2s)[0m
+[36m
+🔍 Running: Windowed Display[0m
+[2m   File: test-windowed-display.mjs[0m
+[2m   Tests windowed display mode for terminal output[0m
+[32m✅ Windowed Display passed (2.5s)[0m
+[2m
+────────────────────────────────────────────────────────────────────────────────[0m
+[34m
+[1m📊 Test Suite Summary[0m[0m
+[32m✅ Passed: 17/29 tests[0m
+[31m❌ Failed: 12/29 tests[0m
+[31m
+Failed Tests:[0m
+[31m  • Concurrent Processing (test-concurrent-processing.mjs): Command failed: ./test-concurrent-processing.mjs[0m
+[31m  • Error Handling (test-error-handling.mjs): Command failed: ./test-error-handling.mjs[0m
+[31m  • Github Api (test-github-api.mjs): Command failed: ./test-github-api.mjs
+error: Failed to import module from '/home/box/.bun/install/global/node_modules/octokit-rest-v-latest/dist-src/index.js'.
+      at <anonymous> (file:///tmp/gh-issue-solver-1782400949399/load-use-m.mjs:954:11)
+
+23 |   GraphqlResponseError: () => GraphqlResponseError,
+24 |   graphql: () => graphql2,
+25 |   withCustomRequest: () => withCustomRequest
+26 | });
+27 | module.exports = __toCommonJS(index_exports);
+28 | var import_request3 = require("@octokit/request");
+         ^
+TypeError: require() async module "/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/request/dist-bundle/index.js" is unsupported. use "await import()" instead.
+      at <anonymous> (/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/graphql/dist-node/index.js:28:5)
+
+Bun v1.3.14 (Linux x64)
+[0m
+[31m  • Integration (test-integration.mjs): Command failed: ./test-integration.mjs[0m
+[31m  • Issue 11 Integration (test-issue-11-integration.mjs): Command failed: ./test-issue-11-integration.mjs[0m
+[31m  • Multithread Live (test-multithread-live.mjs): Command failed: ./test-multithread-live.mjs[0m
+[31m  • Single Thread (test-single-thread.mjs): Command failed: ./test-single-thread.mjs[0m
+[31m  • Sorting (test-sorting.mjs): Command failed: ./test-sorting.mjs
+❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+error: Failed to import module from '/home/box/.bun/install/global/node_modules/octokit-rest-v-22.0.0/dist-src/index.js'.
+      at <anonymous> (file:///tmp/gh-issue-solver-1782400949399/load-use-m.mjs:954:11)
+
+23 |   GraphqlResponseError: () => GraphqlResponseError,
+24 |   graphql: () => graphql2,
+25 |   withCustomRequest: () => withCustomRequest
+26 | });
+27 | module.exports = __toCommonJS(index_exports);
+28 | var import_request3 = require("@octokit/request");
+         ^
+TypeError: require() async module "/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/request/dist-bundle/index.js" is unsupported. use "await import()" instead.
+      at <anonymous> (/home/box/.bun/install/global/node_modules/@octokit/core/node_modules/@octokit/graphql/dist-node/index.js:28:5)
+
+Bun v1.3.14 (Linux x64)
+
+[0m
+[31m  • Terminal Output (test-terminal-output.mjs): Command failed: ./test-terminal-output.mjs[0m
+[31m  • Terminal Width (test-terminal-width.mjs): Command failed: ./test-terminal-width.mjs[0m
+[31m  • Threading (test-threading.mjs): Command failed: ./test-threading.mjs[0m
+[31m  • Uncommitted Changes (test-uncommitted-changes.mjs): Command failed: ./test-uncommitted-changes.mjs[0m
+[34m⏱️  Total time: 108.0s[0m
+[31m
+💥 12 test(s) failed. Please review and fix the issues.[0m

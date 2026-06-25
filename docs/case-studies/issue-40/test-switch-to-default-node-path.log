@@ -1,0 +1,30 @@
+[34m🧪 Testing switch-to-default functionality...[0m
+[36m
+📋 Test 1: Switch from feature branch to main[0m
+[36m📋 Test 2: Already on default branch (main)[0m
+[36m📋 Test 3: Switch from feature branch to master[0m
+[36m📋 Test 4: Repository with uncommitted changes[0m
+[36m
+🚀 Running gh-pull-all with --switch-to-default...[0m
+[36m
+📋 Testing switch logic directly...[0m
+[34mRepo 1 current branch before: feature[0m
+[32m✅ Repo 1 switched to: main[0m
+[32m✅ Repo 2 already on: main[0m
+[34mRepo 3 current branch before: feature[0m
+[32m✅ Repo 3 switched to: master[0m
+[33m⚠️  Repo 4 has uncommitted changes: 1 files[0m
+[32m
+✅ Switch-to-default functionality tests completed successfully![0m
+[36m
+📊 Final verification:[0m
+[34mRepo 1 final branch: main (expected: main)[0m
+[34mRepo 2 final branch: main (expected: main)[0m
+[34mRepo 3 final branch: master (expected: master)[0m
+[34mRepo 4 final branch: feature (expected: feature - unchanged due to uncommitted changes)[0m
+[32m✅ Repo 1 should be on main branch[0m
+[32m✅ Repo 2 should remain on main branch[0m
+[32m✅ Repo 3 should be on master branch[0m
+[32m✅ Repo 4 should remain on feature branch due to uncommitted changes[0m
+[32m
+🎉 All switch-to-default tests passed![0m

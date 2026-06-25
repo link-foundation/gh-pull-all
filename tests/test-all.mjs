@@ -7,7 +7,11 @@ const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
-const { execSync } = await import('child_process')
+import path from 'path'
+import { fileURLToPath } from 'url'
+const { execFileSync } = await import('child_process')
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Colors for console output
 const colors = {
@@ -47,6 +51,7 @@ const testDescriptions = {
   'test-progress-bar.mjs': 'Tests progress bar functionality and display',
   'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior',
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',
+  'test-detect-code-changes.mjs': 'Tests CI change detection for code and non-code commits',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
   'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',
@@ -65,7 +70,7 @@ function getTestDisplayName(filename) {
 
 async function discoverTests() {
   // Find all test files (excluding test-all.mjs)
-  const files = await fs.readdir('.')
+  const files = await fs.readdir(__dirname)
   const testFilePattern = /^test-.*\.mjs$/
   return files
     .filter(file => testFilePattern.test(file) && file !== 'test-all.mjs')
@@ -102,7 +107,8 @@ async function runAllTests() {
     log('dim', `   ${description}`)
     
     try {
-      const result = execSync(`./${testFile}`, {
+      const result = execFileSync(process.execPath, [path.join(__dirname, testFile)], {
+        cwd: __dirname,
         encoding: 'utf8',
         stdio: 'pipe'
       })

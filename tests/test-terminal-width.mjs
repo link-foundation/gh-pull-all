@@ -58,7 +58,7 @@ async function testTerminalWidth() {
     
     // Check that error messages are truncated in status lines
     const lines = result.split('\n')
-    const errorStatusLines = lines.filter(line => line.includes('Error #') && line.includes('❌'))
+    const errorStatusLines = lines.filter(line => line.includes('Failed with error #') && line.includes('❌'))
     
     if (errorStatusLines.length > 0) {
       log('green', `✅ Found ${errorStatusLines.length} error status line(s)`)

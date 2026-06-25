@@ -30,6 +30,7 @@ const testDescriptions = {
   'test-multithread-live.mjs': 'Tests multi-thread mode with live in-place updates',
   'test-multithread-no-live.mjs': 'Tests multi-thread mode with append-only final status',
   'test-error-handling.mjs': 'Tests error numbering system and error list display',
+  'test-empty-repository.mjs': 'Tests empty repository pull handling and first default branch detection',
   'test-terminal-width.mjs': 'Tests terminal width handling and message truncation',
   'test-uncommitted-changes.mjs': 'Tests handling of repositories with uncommitted changes',
   'test-integration.mjs': 'Tests all functionality together in complex scenarios',

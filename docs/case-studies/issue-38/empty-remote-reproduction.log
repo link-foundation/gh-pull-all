@@ -1,0 +1,21 @@
+git version 2.43.0
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+Initialized empty Git repository in /tmp/tmp.GNPQ3yGWl6/empty-repo.git/
+Cloning into '/tmp/tmp.GNPQ3yGWl6/empty-repo'...
+warning: You appear to have cloned an empty repository.
+done.
+## No commits yet on main...origin/main [gone]
+branch.main.remote origin
+branch.main.merge refs/heads/main
+Your configuration specifies to merge with the ref 'refs/heads/main'
+from the remote, but no such ref was fetched.
+git pull exit code: 1

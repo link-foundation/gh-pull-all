@@ -8,6 +8,8 @@ Pull request: https://github.com/link-foundation/gh-pull-all/pull/43
 
 - `gh-data/run-28197242012.json`: metadata for the failed `Checks and release` run referenced by the issue.
 - `ci-logs/run-28197242012.log`: full log for failed run `28197242012`.
+- `gh-data/run-28199089598.json`: metadata for the first PR CI run after the initial fix.
+- `ci-logs/run-28199089598.log`: full log for PR run `28199089598`, which exposed the live-clone timeout false positive.
 - `gh-data/recent-runs-issue-branch.json`: recent CI runs for branch `issue-42-065c709658c4`.
 - `gh-data/issue-42-comments.json`: issue comments, empty at investigation time.
 - `templates/*-repo.json`: repository metadata for the four referenced CI/CD templates.
@@ -19,6 +21,7 @@ Pull request: https://github.com/link-foundation/gh-pull-all/pull/43
 - `ci-logs/local-test-issue-11-runner-cwd-before.log`: CI-cwd local comparison before the fix.
 - `ci-logs/local-node24-test-issue-11-runner-cwd-before.log`: Node 24 local comparison before the fix.
 - `ci-logs/local-test-issue-11-*-after*.log`: local verification logs after the fixes.
+- `ci-logs/local-*-after-local-gh-fixture.log`: final verification logs after replacing live GitHub clone dependencies with a local `gh` fixture.
 
 ## Timeline
 
@@ -29,6 +32,9 @@ Pull request: https://github.com/link-foundation/gh-pull-all/pull/43
 - 2026-06-25 20:13:01 UTC: the test suite reported `Passed: 30/31 tests` and `Failed: 1/31 tests`.
 - 2026-06-25 20:13:04 UTC: the `Release` job was skipped because `Test` failed.
 - 2026-06-25 20:22:00 UTC: the prepared PR branch ran CI on placeholder commit `525c43f91e41617e06086970842601c915e95c3e`; `Detect Changes` passed and `Test` was skipped because no code changed.
+- 2026-06-25 20:39:58 UTC: PR run `28199089598` started for commit `d059c25b2f8aa9eeb9f33a0cc2600198143f28b9`.
+- 2026-06-25 20:43:03 UTC: the issue-11 success scenario timed out while cloning live `octocat` repositories from GitHub.
+- 2026-06-25 20:45:05 UTC: PR run `28199089598` failed with `Passed: 30/31 tests`.
 
 ## Requirements extracted from the issue
 
@@ -97,6 +103,12 @@ Success case should not contain error messages
 
 Fix: the test now creates a unique temp root with `fs.mkdtemp(path.join(os.tmpdir(), 'gh-pull-all-test-issue-11-'))` and keeps both integration and clean directories under that root.
 
+### 4. Issue 11 success scenario depended on live GitHub clone timing
+
+PR run `28199089598` proved that the clean success scenario still depended on external state. It ran `gh-pull-all.mjs --user octocat --threads 1` against live GitHub data. In CI, `octocat` resolved to 100 repositories and the child command hit the test's 30 second timeout while cloning. The product command was still doing real work; the test failed because it used live repository count, network speed, and GitHub availability as success criteria.
+
+Fix: the test now builds two local bare repositories and puts a fake `gh` executable at the front of `PATH`. The fake `gh repo list` returns only those local repositories. The integration test still exercises the real `gh-pull-all.mjs` CLI, GitHub CLI discovery path, clone path, short status errors, and success status output, but it no longer relies on live GitHub repository state.
+
 ## Template comparison findings
 
 All four referenced templates use a single `release.yml` style workflow with explicit job timeouts and change detection. This repository already has the issue-relevant parts that prevented the earlier issue 40 release failures:
@@ -120,6 +132,7 @@ No matching template issue was opened because the reproduced problems are specif
    - Resolve the CLI script path from the test file location, not cwd.
    - Use `execFileSync` with `process.execPath` and argument arrays instead of shell command strings.
    - Allocate unique temp directories per invocation.
+   - Create local bare repositories and a fake `gh` CLI fixture for deterministic repository lists.
    - Include command output in assertion failures when expected short error formatting is missing.
 
 2. `tests/test-all.mjs`
@@ -149,3 +162,15 @@ node test-issue-11-integration.mjs > ../docs/case-studies/issue-42/ci-logs/local
 Result: both passed when run concurrently.
 
 Full final check commands and PR CI results are recorded in the pull request description after verification.
+
+After replacing the live GitHub dependency with the local fixture:
+
+```bash
+node tests/test-issue-11-integration.mjs > docs/case-studies/issue-42/ci-logs/local-test-issue-11-after-local-gh-fixture.log 2>&1
+npx -y node@24 tests/test-issue-11-integration.mjs > docs/case-studies/issue-42/ci-logs/local-node24-test-issue-11-after-local-gh-fixture.log 2>&1
+npm run check:syntax > docs/case-studies/issue-42/ci-logs/local-check-syntax-after-local-gh-fixture.log 2>&1
+npm run check:line-limits > docs/case-studies/issue-42/ci-logs/local-check-line-limits-after-local-gh-fixture.log 2>&1
+node tests/test-all.mjs > docs/case-studies/issue-42/ci-logs/local-test-all-after-local-gh-fixture.log 2>&1
+```
+
+Result: all commands passed locally. The full suite reported `Passed: 31/31 tests`.

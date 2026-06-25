@@ -8,7 +8,7 @@ const { use } = await loadUseM()
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 const os = await import('os')
 const { execFileSync } = await import('child_process')
 
@@ -64,6 +64,75 @@ function getDiagnosticOutput(output) {
   return output.length > maxLength ? `${output.slice(0, maxLength)}\n...<truncated>` : output
 }
 
+function runGit(args, options = {}) {
+  execFileSync('git', args, {
+    stdio: 'pipe',
+    ...options
+  })
+}
+
+async function createBareRepository(remoteRoot, repoName) {
+  const repoPath = path.join(remoteRoot, `${repoName}.git`)
+  await fs.mkdir(path.dirname(repoPath), { recursive: true })
+  runGit(['init', '--bare', repoPath])
+  return pathToFileURL(path.join(remoteRoot, repoName)).href
+}
+
+async function setupLocalGhFixture(testRoot) {
+  const remoteRoot = path.join(testRoot, 'remotes')
+  const fakeBinDir = path.join(testRoot, 'bin')
+  await fs.mkdir(fakeBinDir, { recursive: true })
+
+  const repos = [
+    {
+      name: 'Spoon-Knife',
+      isPrivate: false,
+      url: await createBareRepository(remoteRoot, 'Spoon-Knife'),
+      sshUrl: '',
+      updatedAt: '2026-01-01T00:00:00Z'
+    },
+    {
+      name: 'Hello-World',
+      isPrivate: false,
+      url: await createBareRepository(remoteRoot, 'Hello-World'),
+      sshUrl: '',
+      updatedAt: '2026-01-01T00:00:00Z'
+    }
+  ]
+
+  const fakeGhPath = path.join(fakeBinDir, 'gh')
+  const fakeGhScript = `#!/usr/bin/env node
+const repos = ${JSON.stringify(repos, null, 2)}
+const args = process.argv.slice(2)
+
+if (args[0] === '--version') {
+  console.log('gh version 2.0.0-test')
+  process.exit(0)
+}
+
+if (args[0] === 'auth' && args[1] === 'token') {
+  console.log('test-token')
+  process.exit(0)
+}
+
+if (args[0] === 'repo' && args[1] === 'list') {
+  console.log(JSON.stringify(repos))
+  process.exit(0)
+}
+
+console.error(\`unsupported fake gh command: \${args.join(' ')}\`)
+process.exit(1)
+`
+
+  await fs.writeFile(fakeGhPath, fakeGhScript, { mode: 0o755 })
+
+  return {
+    ...process.env,
+    PATH: `${fakeBinDir}${path.delimiter}${process.env.PATH || ''}`,
+    GITHUB_TOKEN: 'test-token'
+  }
+}
+
 async function testIssue11Integration() {
   let testRoot
   
@@ -71,6 +140,7 @@ async function testIssue11Integration() {
     log('blue', '🧪 Testing Issue #11 integration (short error messages)...')
     
     testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'gh-pull-all-test-issue-11-'))
+    const testEnv = await setupLocalGhFixture(testRoot)
     const testDir = path.join(testRoot, 'integration')
     await fs.mkdir(testDir, {recursive: true})
     
@@ -97,7 +167,7 @@ async function testIssue11Integration() {
         ...testCase.args.split(' '),
         '--dir',
         testDir
-      ], { allowFailure: true })
+      ], { allowFailure: true, env: testEnv })
       
       // Validate the short error format in status display
       const statusLines = result.split('\n').filter(line => line.includes('❌'))
@@ -156,7 +226,7 @@ async function testIssue11Integration() {
       '1',
       '--dir',
       cleanTestDir
-    ], { timeout: 30000 })
+    ], { timeout: 30000, env: testEnv })
     
     // Should have successful clones without error messages
     const successLines = successResult.split('\n').filter(line => line.includes('✅'))

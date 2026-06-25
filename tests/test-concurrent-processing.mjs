@@ -11,19 +11,30 @@ import os from 'os'
 import path from 'path'
 const { spawn } = await import('child_process')
 
-// Use OS temporary directory
-const testDir = path.join(os.tmpdir(), 'test-concurrent-processing')
+let testDir
 
 test.before(async () => {
-  // Clean up any existing test directory
-  await fs.rm(testDir, {recursive: true, force: true})
-  await fs.mkdir(testDir, { recursive: true })
+  testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-concurrent-processing-'))
 })
 
 test.after(async () => {
-  // Clean up test directory
-  await fs.rm(testDir, {recursive: true, force: true})
+  await fs.rm(testDir, {recursive: true, force: true, maxRetries: 10, retryDelay: 200})
 })
+
+function terminateChildTree(child) {
+  if (process.platform !== 'win32' && child.pid) {
+    try {
+      process.kill(-child.pid, 'SIGTERM')
+      return
+    } catch (error) {
+      if (error.code !== 'ESRCH') {
+        throw error
+      }
+    }
+  }
+
+  child.kill('SIGTERM')
+}
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
@@ -73,7 +84,8 @@ test('concurrent processing with valid user should initialize properly', async (
   // Test with 'github' user which exists and should start processing before timing out
   const child = spawn(process.execPath, ['../gh-pull-all.mjs', '--user', 'github', '--dir', testDir, '--threads', '3'], {
     stdio: ['pipe', 'pipe', 'pipe'],
-    cwd: process.cwd()
+    cwd: process.cwd(),
+    detached: process.platform !== 'win32'
   })
   
   let stdout = ''
@@ -83,7 +95,7 @@ test('concurrent processing with valid user should initialize properly', async (
   
   // Let it run for a bit then kill to test initialization
   await new Promise(resolve => setTimeout(resolve, 3000))
-  child.kill('SIGTERM')
+  terminateChildTree(child)
   
   const result = await new Promise((resolve) => {
     child.on('close', (code) => {

@@ -6,7 +6,12 @@ Issue: https://github.com/link-foundation/gh-pull-all/issues/40
 
 Pull request: https://github.com/link-foundation/gh-pull-all/pull/41
 
-Template compared: https://github.com/link-foundation/js-ai-driven-development-pipeline-template
+Templates compared:
+
+- https://github.com/link-foundation/js-ai-driven-development-pipeline-template
+- https://github.com/link-foundation/rust-ai-driven-development-pipeline-template
+- https://github.com/link-foundation/python-ai-driven-development-pipeline-template
+- https://github.com/link-foundation/csharp-ai-driven-development-pipeline-template
 
 The issue asked to replace the broken npm publishing workflow with current CI/CD best practices, reuse the relevant parts of the template repository, support npm trusted publishing, create GitHub releases, add badges, download related evidence into this repository, and preserve a deep root-cause analysis.
 
@@ -24,6 +29,11 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 - `ci-checks-and-release-28184079481.log`: first PR CI run after replacing the workflow, kept because it exposed a Node 24/use-m export-shape difference not visible in the local Node 20 run.
 - `ci-checks-and-release-28184580314.log`: second PR CI run, kept because it exposed a CI cleanup race in `test-parallel.mjs`.
 - `final4-npm-test.log`: final full local test run after hardening `test-parallel.mjs` cleanup.
+- `recent-runs-after-pr-comment.json`: run list collected after the 2026-06-25 PR comment about non-code changes.
+- `ci-checks-and-release-28186347760.json`: failed run metadata for the `.gitkeep`-only latest PR commit.
+- `ci-checks-and-release-28186347760.log`: failed run log from the `.gitkeep`-only latest PR commit.
+- `template-file-tree-all-2026-06-25.txt`: full file-tree snapshots for all four referenced templates.
+- `template-ci-file-tree-all-2026-06-25.txt`: CI/CD-relevant file-tree snapshots for all four referenced templates.
 
 ## Timeline
 
@@ -32,6 +42,9 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 - 2026-06-25 11:31:00 UTC: npm publishing failed with `404 Not Found: https://registry.npmjs.org/gh-pull-all` and `gh-pull-all@1.4.2 does not exist in this registry`.
 - 2026-06-25 15:21:41 UTC: issue #40 was opened and stated that npm trusted publishing had been configured.
 - 2026-06-25 15:22:39 UTC: draft PR #41 was opened from `issue-40-5461509fea36`.
+- 2026-06-25 16:51:15 UTC: PR run `28186347760` started for SHA `1c54eab5d7da9196ea3d5c2b14fb88c1440e4120`.
+- 2026-06-25 19:28:27 UTC: the PR received a review comment noting that tests should not be triggered by non-code changes and asking for comparison against the JavaScript, Rust, Python, and C# AI-driven development pipeline templates.
+- 2026-06-25 19:34:20 UTC: run `28186347760` finished with a failed `Test` job even though the latest commit only removed `.gitkeep`.
 
 ## Requirements From The Issue
 
@@ -84,6 +97,10 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 
    The second PR CI run failed with `ENOTEMPTY: directory not empty, rmdir '/tmp/test-parallel-demo/accessibility-alt-text-bot/.git/objects/pack'`. The test intentionally starts a real `github` user sync, waits briefly, and terminates it after verifying initialization output. On GitHub runners, killing only the direct Node process could leave a descendant `git` process writing `.git/objects/pack` while the after-hook removed the shared temp directory. The test now uses a unique temp directory, terminates the process group on POSIX systems, and uses retrying recursive cleanup.
 
+8. The new `release.yml` initially ran the full `test` job for every pull request synchronization, including a latest commit that changed no code.
+
+   Run `28186347760` was created after SHA `1c54eab5d7da9196ea3d5c2b14fb88c1440e4120`, whose diff only deleted `.gitkeep`. Because the workflow had no template-style change detector, that non-code-only update still ran the full test suite. The run then exposed a separate cleanup race in `test-concurrent-processing.mjs`, which used a shared `/tmp/test-concurrent-processing` directory and could attempt to remove it while descendant clone work was still completing.
+
 ## Template Comparison
 
 Relevant template practices applied:
@@ -99,12 +116,23 @@ Relevant template practices applied:
 - GitHub release creation with npm and workflow badges in release notes.
 - README workflow/release badges.
 - Syntax and file-line-limit checks.
+- Dedicated change-detection before expensive CI jobs.
+- Job-level `if:` gates that skip tests for pull request updates where the latest commit only changes non-code files.
 
 Template practices intentionally not applied:
 
 - Changesets, because this repository already has a simple version script and the issue did not request a versioning-system migration.
 - Docker publishing, Deno publishing, example app workflows, preview image generation, and web archive checks because this repository is a single npm CLI package.
 - ESLint/Prettier/jscpd template setup because introducing a new formatting/lint stack would expand the scope beyond the CI/CD publishing failure.
+
+Follow-up template comparison from the 2026-06-25 PR comment:
+
+- JavaScript template: already uses `scripts/detect-code-changes.mjs` and gates release workflow jobs from change outputs.
+- Rust template: already uses a `detect-changes` job and gates expensive jobs from source/config/workflow outputs.
+- Python template: already uses a `detect-changes` job and path-category outputs before running test/release jobs.
+- C# template: already uses change detection in the release workflow before expensive validation jobs.
+
+The same issue was not found in the referenced templates, so no template issue was opened.
 
 ## Implemented Solution
 
@@ -131,6 +159,10 @@ Template practices intentionally not applied:
 - Fixed help/version flow so `--help` and `--version` do not enter repository-processing logic.
 - Normalized `-j` thread option parsing so the short alias behaves consistently.
 - Hardened `test-parallel.mjs` cleanup so CI does not fail on a transient temp-directory removal race after terminating a real sync process.
+- Added `scripts/detect-code-changes.mjs` and a `detect-changes` workflow job.
+- Gated the PR `test` job so non-code-only latest PR commits, such as `.gitkeep` removal or documentation-only updates, do not trigger the full test suite.
+- Added `tests/test-detect-code-changes.mjs` to reproduce the `.gitkeep`-only case and the synthetic pull request merge-commit case.
+- Hardened `test-concurrent-processing.mjs` cleanup with unique temp directories, process-group termination on POSIX systems, and retrying recursive removal.
 
 ## Verification
 
@@ -151,6 +183,19 @@ Final successful checks:
 - `npm test`
   - Log: `final4-npm-test.log`
   - Result: `Passed: 30/30 tests`
+- `npm run check:syntax`
+  - Log: `final5-check-syntax.log`
+- `npm run check:line-limits`
+  - Log: `final5-check-line-limits.log`
+- `node tests/test-detect-code-changes.mjs`
+  - Log: `final5-test-detect-code-changes.log`
+- `node tests/test-release-workflow.mjs`
+  - Log: `final5-test-release-workflow.log`
+- `node test-concurrent-processing.mjs` from `tests/`
+  - Log: `final5-test-concurrent-processing.log`
+- `npm test`
+  - Log: `final5-npm-test.log`
+  - Result: `Passed: 31/31 tests`
 
 Intermediate failing logs are intentionally preserved in this folder because they show the investigation path and distinguish the original CI failure from local runtime/test brittleness encountered during the fix.
 

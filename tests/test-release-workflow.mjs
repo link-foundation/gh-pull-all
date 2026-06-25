@@ -32,6 +32,17 @@ assert.match(workflow, /^name: Checks and release/m);
 assert.match(workflow, /^\s+pull_request:/m);
 assert.match(workflow, /^\s+workflow_dispatch:/m);
 assert.match(workflow, /branches:\s*\n\s+- main/);
+assert.match(workflow, /^\s+detect-changes:/m);
+assert.match(workflow, /run: node scripts\/detect-code-changes\.mjs/);
+assert.match(workflow, /fetch-depth:\s*0/);
+assert.match(workflow, /mjs-changed:\s*\$\{\{ steps\.changes\.outputs\.mjs-changed \}\}/);
+assert.match(workflow, /shell-changed:\s*\$\{\{ steps\.changes\.outputs\.shell-changed \}\}/);
+assert.match(workflow, /any-code-changed:\s*\$\{\{ steps\.changes\.outputs\.any-code-changed \}\}/);
+assert.match(workflow, /^\s+needs: \[detect-changes\]/m);
+assert.match(workflow, /always\(\) &&\n\s+!cancelled\(\)/);
+assert.match(workflow, /needs\.detect-changes\.outputs\.any-code-changed == 'true'/);
+assert.match(workflow, /needs\.detect-changes\.outputs\.workflow-changed == 'true'/);
+assert.doesNotMatch(workflow, /needs\.detect-changes\.outputs\.docs-changed == 'true'/);
 assert.match(workflow, /id-token:\s*write/);
 assert.match(workflow, /contents:\s*write/);
 assert.match(workflow, /node-version:\s*'24\.x'/);
@@ -48,6 +59,7 @@ for (const script of [
   'scripts/check-mjs-syntax.sh',
   'scripts/check-release-needed.mjs',
   'scripts/create-github-release.mjs',
+  'scripts/detect-code-changes.mjs',
   'scripts/package-info.mjs',
   'scripts/publish-to-npm.mjs',
   'scripts/setup-npm.mjs',

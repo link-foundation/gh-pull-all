@@ -23,7 +23,8 @@ const { Octokit } = await use('@octokit/rest@22.0.0')
 const { default: git } = await use('simple-git@3.28.0')
 const fs = await use('fs-extra@11.3.0')
 const { default: yargs } = await use('yargs@17.7.2')
-const { hideBin } = await use('yargs@17.7.2/helpers')
+const yargsHelpers = await use('yargs@17.7.2/helpers')
+const hideBin = yargsHelpers.hideBin || yargsHelpers.default?.hideBin || ((argv) => argv.slice(2))
 
 // Get version from package.json or fallback
 let version = '1.4.2' // Fallback version

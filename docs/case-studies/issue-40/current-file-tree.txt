@@ -33,7 +33,6 @@ tests/test-error-message-display.mjs
 tests/test-issue-11-integration.mjs
 tests/test-empty-repository.mjs
 version.mjs
-README.md
 docs/case-studies/issue-40/template-release.yml
 docs/case-studies/issue-40/pr-41-reviews.json
 docs/case-studies/issue-40/template-file-tree.txt
@@ -47,13 +46,6 @@ docs/case-studies/issue-40/pr-41-review-comments.json
 docs/case-studies/issue-40/issue-comments.json
 docs/case-studies/issue-40/template-package.json
 docs/case-studies/issue-40/current-file-tree.txt
-load-use-m.mjs
-LICENSE
-demos/ink-list-demo.mjs
-demos/demo-progress-bar.mjs
-demos/demonstrate-bug.mjs
-demos/terminal-simulator.mjs
-gh-pull-all.mjs
 docs/case-studies/issue-38/pr-39-conversation-comments.json
 docs/case-studies/issue-38/pr-39-review-comments.json
 docs/case-studies/issue-38/analysis.md
@@ -61,8 +53,11 @@ docs/case-studies/issue-38/issue.json
 docs/case-studies/issue-38/pr-39.json
 docs/case-studies/issue-38/pr-39-reviews.json
 docs/case-studies/issue-38/issue-comments.json
-experiments/use-m-loader-failure.mjs
-experiments/issue-38-empty-remote-reproduction.sh
+demos/ink-list-demo.mjs
+demos/demo-progress-bar.mjs
+demos/demonstrate-bug.mjs
+demos/terminal-simulator.mjs
+gh-pull-all.mjs
 scripts/setup-npm.mjs
 scripts/check-release-needed.mjs
 scripts/publish-to-npm.mjs
@@ -71,3 +66,8 @@ scripts/package-info.mjs
 scripts/check-mjs-syntax.sh
 scripts/create-github-release.mjs
 scripts/check-file-line-limits.sh
+LICENSE
+README.md
+load-use-m.mjs
+experiments/use-m-loader-failure.mjs
+experiments/issue-38-empty-remote-reproduction.sh

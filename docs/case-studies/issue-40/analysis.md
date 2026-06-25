@@ -20,7 +20,8 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 - `trusted-publishing-settings.png`: screenshot from the issue, downloaded and verified as a PNG before visual inspection.
 - `template-file-tree.txt`, `template-release.yml`, `template-package.json`: local snapshot of the CI/CD template inputs used for comparison.
 - `current-file-tree.txt`: local repository file tree after applying the relevant CI/CD changes.
-- `final-npm-test-after-help-clean.log`: final full local test run.
+- `final3-npm-test.log`: final full local test run after the Node 24 helper import fix.
+- `ci-checks-and-release-28184079481.log`: first PR CI run after replacing the workflow, kept because it exposed a Node 24/use-m export-shape difference not visible in the local Node 20 run.
 
 ## Timeline
 
@@ -72,6 +73,10 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 5. Local executable tests could prefer Bun when Bun was installed.
 
    The CLI launcher selected Bun before Node. In this environment Bun failed to load the current Octokit dependency graph. The package and CI now use Node as the primary runtime, so the launcher now prefers Node and only falls back to Bun when Node is unavailable.
+
+6. The Node 24 GitHub runner exposed a different `yargs/helpers` module shape through `use-m`.
+
+   The first PR CI run for this branch failed with `TypeError: hideBin is not a function`. Local Node 20 exposed `hideBin` as a named export, while the runner path did not. The CLI now accepts named-export, default-export, and minimal fallback forms for `hideBin`.
 
 ## Template Comparison
 
@@ -125,17 +130,17 @@ Template practices intentionally not applied:
 Final successful checks:
 
 - `node tests/test-release-workflow.mjs`
-  - Log: `final2-test-release-workflow.log`
+  - Log: `final3-test-release-workflow.log`
 - `npm run check:syntax`
-  - Log: `final2-check-syntax.log`
+  - Log: `final3-check-syntax.log`
 - `npm run check:line-limits`
-  - Log: `final2-check-line-limits.log`
+  - Log: `final3-check-line-limits.log`
 - `npm run release:needed`
   - Log: `final-release-needed.log`
 - `npm pack --dry-run`
   - Log: `final-npm-pack-dry-run.log`
 - `npm test`
-  - Log: `final-npm-test-after-help-clean.log`
+  - Log: `final3-npm-test.log`
   - Result: `Passed: 30/30 tests`
 
 Intermediate failing logs are intentionally preserved in this folder because they show the investigation path and distinguish the original CI failure from local runtime/test brittleness encountered during the fix.

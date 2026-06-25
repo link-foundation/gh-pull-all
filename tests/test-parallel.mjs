@@ -7,19 +7,35 @@ const { use } = await loadUseM()
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
 import { promises as fs } from 'fs'
+import os from 'os'
+import path from 'path'
 const { spawn } = await import('child_process')
 
-const testDir = '/tmp/test-parallel-demo'
+let testDir
 
 test.before(async () => {
-  // Clean up any existing test directory
-  await fs.rm(testDir, {recursive: true, force: true})
+  testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-parallel-demo-'))
 })
 
 test.after(async () => {
   // Clean up test directory
-  await fs.rm(testDir, {recursive: true, force: true})
+  await fs.rm(testDir, {recursive: true, force: true, maxRetries: 10, retryDelay: 200})
 })
+
+function terminateChildTree(child) {
+  if (process.platform !== 'win32' && child.pid) {
+    try {
+      process.kill(-child.pid, 'SIGTERM')
+      return
+    } catch (error) {
+      if (error.code !== 'ESRCH') {
+        throw error
+      }
+    }
+  }
+
+  child.kill('SIGTERM')
+}
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
@@ -62,7 +78,8 @@ test('parallel processing should initialize status display', async () => {
   // Test with a very simple case that will start the parallel processing
   const child = spawn(process.execPath, ['../gh-pull-all.mjs', '--user', 'github', '--dir', testDir], {
     stdio: ['pipe', 'pipe', 'pipe'],
-    cwd: process.cwd()
+    cwd: process.cwd(),
+    detached: process.platform !== 'win32'
   })
   
   let stdout = ''
@@ -72,7 +89,7 @@ test('parallel processing should initialize status display', async () => {
   
   // Let it run for a bit then kill to test initialization
   await new Promise(resolve => setTimeout(resolve, 3000))
-  child.kill('SIGTERM')
+  terminateChildTree(child)
   
   const result = await new Promise((resolve) => {
     child.on('close', (code) => {

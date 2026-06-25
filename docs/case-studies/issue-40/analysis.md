@@ -22,6 +22,8 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 - `current-file-tree.txt`: local repository file tree after applying the relevant CI/CD changes.
 - `final3-npm-test.log`: final full local test run after the Node 24 helper import fix.
 - `ci-checks-and-release-28184079481.log`: first PR CI run after replacing the workflow, kept because it exposed a Node 24/use-m export-shape difference not visible in the local Node 20 run.
+- `ci-checks-and-release-28184580314.log`: second PR CI run, kept because it exposed a CI cleanup race in `test-parallel.mjs`.
+- `final4-npm-test.log`: final full local test run after hardening `test-parallel.mjs` cleanup.
 
 ## Timeline
 
@@ -78,6 +80,10 @@ The issue asked to replace the broken npm publishing workflow with current CI/CD
 
    The first PR CI run for this branch failed with `TypeError: hideBin is not a function`. Local Node 20 exposed `hideBin` as a named export, while the runner path did not. The CLI now accepts named-export, default-export, and minimal fallback forms for `hideBin`.
 
+7. `test-parallel.mjs` could leave a nested `git` process writing pack files after the test killed the direct CLI child.
+
+   The second PR CI run failed with `ENOTEMPTY: directory not empty, rmdir '/tmp/test-parallel-demo/accessibility-alt-text-bot/.git/objects/pack'`. The test intentionally starts a real `github` user sync, waits briefly, and terminates it after verifying initialization output. On GitHub runners, killing only the direct Node process could leave a descendant `git` process writing `.git/objects/pack` while the after-hook removed the shared temp directory. The test now uses a unique temp directory, terminates the process group on POSIX systems, and uses retrying recursive cleanup.
+
 ## Template Comparison
 
 Relevant template practices applied:
@@ -124,6 +130,7 @@ Template practices intentionally not applied:
 - Updated the CLI launcher to prefer Node before Bun.
 - Fixed help/version flow so `--help` and `--version` do not enter repository-processing logic.
 - Normalized `-j` thread option parsing so the short alias behaves consistently.
+- Hardened `test-parallel.mjs` cleanup so CI does not fail on a transient temp-directory removal race after terminating a real sync process.
 
 ## Verification
 
@@ -132,15 +139,17 @@ Final successful checks:
 - `node tests/test-release-workflow.mjs`
   - Log: `final3-test-release-workflow.log`
 - `npm run check:syntax`
-  - Log: `final3-check-syntax.log`
+  - Log: `final4-check-syntax.log`
 - `npm run check:line-limits`
-  - Log: `final3-check-line-limits.log`
+  - Log: `final4-check-line-limits.log`
+- `node test-parallel.mjs` from `tests/`
+  - Log: `final4-test-parallel.log`
 - `npm run release:needed`
   - Log: `final-release-needed.log`
 - `npm pack --dry-run`
   - Log: `final-npm-pack-dry-run.log`
 - `npm test`
-  - Log: `final3-npm-test.log`
+  - Log: `final4-npm-test.log`
   - Result: `Passed: 30/30 tests`
 
 Intermediate failing logs are intentionally preserved in this folder because they show the investigation path and distinguish the original CI failure from local runtime/test brittleness encountered during the fix.

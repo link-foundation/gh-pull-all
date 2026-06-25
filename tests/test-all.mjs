@@ -38,6 +38,7 @@ const testDescriptions = {
   'test-terminal-width.mjs': 'Tests terminal width handling and message truncation',
   'test-uncommitted-changes.mjs': 'Tests handling of repositories with uncommitted changes',
   'test-integration.mjs': 'Tests all functionality together in complex scenarios',
+  'test-issue-11-integration.mjs': 'Tests short status errors with full details in the errors section',
   'test-cli-simple.mjs': 'Tests basic CLI functionality and argument parsing',
   'test-file-operations.mjs': 'Tests file system operations and directory handling',
   'test-github-api.mjs': 'Tests GitHub API integration and error handling',
@@ -66,6 +67,19 @@ function getTestDisplayName(filename) {
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+}
+
+function formatChildOutput(label, output, maxLength = 4000) {
+  if (!output) {
+    return ''
+  }
+
+  const normalizedOutput = output.toString()
+  const displayOutput = normalizedOutput.length > maxLength
+    ? `${normalizedOutput.slice(0, maxLength)}\n...<truncated>`
+    : normalizedOutput
+
+  return `   ${label}:\n${displayOutput}`
 }
 
 async function discoverTests() {
@@ -129,9 +143,10 @@ async function runAllTests() {
       const testDuration = ((Date.now() - testStartTime) / 1000).toFixed(1)
       log('red', `❌ ${displayName} failed (${testDuration}s)`)
       log('red', `   Error: ${error.message}`)
-      if (error.stdout) {
-        log('dim', `   Output: ${error.stdout.slice(0, 200)}...`)
-      }
+      const stdout = formatChildOutput('stdout', error.stdout)
+      const stderr = formatChildOutput('stderr', error.stderr)
+      if (stdout) log('dim', stdout)
+      if (stderr) log('dim', stderr)
       failedTests++
       
       results.push({

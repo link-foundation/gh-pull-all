@@ -1,0 +1,10 @@
+[34m🧪 Testing terminal width handling and message truncation...[0m
+[36m🔧 Created conflicting file to generate longer error message[0m
+[32m✅ Terminal width test completed[0m
+[32m✅ Found 1 error status line(s)[0m
+[33m⚠️ No truncation found (may be normal if messages are short)[0m
+[32m✅ Full error details preserved in errors section[0m
+[32m✅ Maximum status line length: 79 characters[0m
+[32m✅ Status line lengths are reasonable[0m
+[32m🎉 Terminal width test passed![0m
+[36m🧹 Cleaned up test directory[0m

@@ -7,7 +7,11 @@ const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
-const { execSync } = await import('child_process')
+import path from 'path'
+import { fileURLToPath } from 'url'
+const { execFileSync } = await import('child_process')
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Colors for console output
 const colors = {
@@ -65,7 +69,7 @@ function getTestDisplayName(filename) {
 
 async function discoverTests() {
   // Find all test files (excluding test-all.mjs)
-  const files = await fs.readdir('.')
+  const files = await fs.readdir(__dirname)
   const testFilePattern = /^test-.*\.mjs$/
   return files
     .filter(file => testFilePattern.test(file) && file !== 'test-all.mjs')
@@ -102,7 +106,8 @@ async function runAllTests() {
     log('dim', `   ${description}`)
     
     try {
-      const result = execSync(`./${testFile}`, {
+      const result = execFileSync(process.execPath, [path.join(__dirname, testFile)], {
+        cwd: __dirname,
         encoding: 'utf8',
         stdio: 'pipe'
       })

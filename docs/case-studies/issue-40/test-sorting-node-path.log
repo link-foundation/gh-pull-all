@@ -1,0 +1,54 @@
+🧪 Testing repository sorting...
+❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+Usage: gh-pull-all.mjs [--org <organization> | --user <username>] [options]
+
+Options:
+      --version            Show version number                         [boolean]
+  -o, --org                GitHub organization name                     [string]
+  -u, --user               GitHub username                              [string]
+  -t, --token              GitHub personal access token (optional for public
+                           repos)                                       [string]
+  -s, --ssh                Use SSH URLs for cloning (requires SSH key setup)
+                                                      [boolean] [default: false]
+  -d, --dir                Target directory for repositories
+                  [string] [default: "/tmp/gh-issue-solver-1782400949399/tests"]
+  -j, --threads            Number of concurrent operations (default: 8)
+                                                           [number] [default: 8]
+      --single-thread      Run operations sequentially (equivalent to --threads
+                           1)                         [boolean] [default: false]
+      --live-updates       Enable live in-place status updates (default: true,
+                           use --no-live-updates to disable)
+                                                       [boolean] [default: true]
+      --delete             Delete all cloned repositories (skips repos with
+                           uncommitted changes)       [boolean] [default: false]
+      --pull-from-default  Pull changes from the default branch (main/master)
+                           into the current branch if behind
+                                                      [boolean] [default: false]
+      --switch-to-default  Switch to the default branch (main/master) in each
+                           repository                 [boolean] [default: false]
+  -h, --help               Show help                                   [boolean]
+      ----help
+
+Examples:
+  gh-pull-all.mjs --org deep-assistant      Sync all repositories from
+                                            deep-assistant organization
+  gh-pull-all.mjs --user konard             Sync all repositories from konard
+                                            user account
+  gh-pull-all.mjs --org myorg --ssh --dir   Clone using SSH to ./repos directory
+  ./repos
+  gh-pull-all.mjs --user konard --threads   Use 5 concurrent operations
+  5
+  gh-pull-all.mjs --user konard             Run operations sequentially
+  --single-thread
+  gh-pull-all.mjs --user konard -j 16       Use 16 concurrent operations (alias
+                                            for --threads)
+  gh-pull-all.mjs --user konard             Disable live updates for terminal
+  --no-live-updates                         history preservation
+  gh-pull-all.mjs --user konard --delete    Delete all cloned repositories (with
+                                            confirmation)
+  gh-pull-all.mjs --user konard             Pull from default branch to current
+  --pull-from-default                       branch when behind
+  gh-pull-all.mjs --user konard             Switch all repositories to their
+  --switch-to-default                       default branch
+
+You must specify either --org or --user

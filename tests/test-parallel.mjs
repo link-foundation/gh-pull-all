@@ -23,7 +23,7 @@ test.after(async () => {
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn('bun', ['../gh-pull-all.mjs', ...args], {
+    const child = spawn(process.execPath, ['../gh-pull-all.mjs', ...args], {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: process.cwd()
     })
@@ -60,7 +60,7 @@ test('parallel processing should handle invalid user gracefully', async () => {
 
 test('parallel processing should initialize status display', async () => {
   // Test with a very simple case that will start the parallel processing
-  const child = spawn('bun', ['../gh-pull-all.mjs', '--user', 'github', '--dir', testDir], {
+  const child = spawn(process.execPath, ['../gh-pull-all.mjs', '--user', 'github', '--dir', testDir], {
     stdio: ['pipe', 'pipe', 'pipe'],
     cwd: process.cwd()
   })

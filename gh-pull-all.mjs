@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-':' //# ; exec "$(command -v bun || command -v node)" "$0" "$@"
+':' //# ; exec "$(command -v node || command -v bun)" "$0" "$@"
 
 // Import built-in Node.js modules
 import path from 'path'
@@ -577,7 +577,32 @@ async function getReposFromGhCli(org, user) {
 
 // Configure CLI arguments
 const scriptName = path.basename(process.argv[1])
-const argv = yargs(hideBin(process.argv))
+const rawArgs = hideBin(process.argv)
+const isHelpRequest = rawArgs.some(arg => arg === '--help' || arg === '-h')
+const isVersionRequest = rawArgs.some(arg => arg === '--version')
+const isHelpOrVersionRequest = isHelpRequest || isVersionRequest
+const yargsInput = isHelpRequest ? [] : rawArgs
+
+function readThreadOption(args) {
+  let value
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+
+    if (arg === '--threads' || arg === '-j') {
+      value = args[i + 1]
+      i++
+    } else if (arg.startsWith('--threads=')) {
+      value = arg.slice('--threads='.length)
+    } else if (arg.startsWith('-j') && arg.length > 2) {
+      value = arg.slice(2)
+    }
+  }
+
+  return value === undefined ? undefined : Number(value)
+}
+
+const cli = yargs(yargsInput)
   .scriptName(scriptName)
   .version(version)
   .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
@@ -643,16 +668,26 @@ const argv = yargs(hideBin(process.argv))
     default: false
   })
   .check((argv) => {
+    if (isHelpOrVersionRequest) {
+      return true
+    }
+
+    const explicitThreads = readThreadOption(rawArgs)
+    const threads = explicitThreads === undefined ? argv.threads : explicitThreads
+
     if (!argv.org && !argv.user) {
       throw new Error('You must specify either --org or --user')
     }
     if (argv.org && argv.user) {
       throw new Error('You cannot specify both --org and --user')
     }
-    if (argv.threads < 1) {
+    if (!Number.isFinite(threads)) {
+      throw new Error('Thread count must be a number')
+    }
+    if (threads < 1) {
       throw new Error('Thread count must be at least 1')
     }
-    if (argv['single-thread'] && argv.threads !== 8) {
+    if (argv['single-thread'] && explicitThreads !== undefined) {
       throw new Error('Cannot specify both --single-thread and --threads')
     }
     if (argv['pull-from-default'] && argv['switch-to-default']) {
@@ -672,7 +707,17 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
   .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
   .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
-  .argv
+
+const argv = cli.argv
+const explicitThreads = readThreadOption(rawArgs)
+
+if (explicitThreads !== undefined) {
+  argv.threads = explicitThreads
+}
+
+if (isHelpRequest) {
+  console.log(await cli.getHelp())
+}
 
 async function getOrganizationRepos(org, token) {
   try {
@@ -1297,7 +1342,9 @@ async function main() {
   statusDisplay.printSummary()
 }
 
-main().catch(error => {
-  log('red', `💥 Script failed: ${error.message}`)
-  process.exit(1)
-})
+if (!isHelpOrVersionRequest) {
+  main().catch(error => {
+    log('red', `💥 Script failed: ${error.message}`)
+    process.exit(1)
+  })
+}

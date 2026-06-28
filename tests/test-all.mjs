@@ -61,6 +61,7 @@ const testDescriptions = {
   'test-file-line-limits.mjs': 'Tests CI line-limit warnings and hard failures',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
+  'test-switch-to-default-pull.mjs': 'Tests --switch-to-default fetches before switching and pulls after switching',
   'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',
   'test-use-m-loader.mjs': 'Tests robust use-m loading with CDN fallback and clear errors (issue #35)'
 }

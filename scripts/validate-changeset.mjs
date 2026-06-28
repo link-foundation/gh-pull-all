@@ -21,6 +21,10 @@ function runGit(args, { allowFailure = false } = {}) {
   }
 }
 
+function isGitWorktree() {
+  return runGit(['rev-parse', '--is-inside-work-tree'], { allowFailure: true }) === 'true';
+}
+
 function parseAddedChangesets(diffOutput, changesetDir) {
   const prefix = changesetDir.replace(/\\/g, '/').replace(/^\.\//, '');
   return diffOutput
@@ -64,6 +68,15 @@ function getAddedChangesets(changesetDir) {
     console.log(`Comparing origin/${baseRef}...HEAD`);
     const diff = runGit(['diff', '--name-status', `origin/${baseRef}...HEAD`]);
     return parseAddedChangesets(diff, changesetDir);
+  }
+
+  if (isGitWorktree()) {
+    runGit(['fetch', 'origin', 'main'], { allowFailure: true });
+    if (runGit(['rev-parse', '--verify', 'origin/main'], { allowFailure: true })) {
+      console.log('No PR base context found; comparing origin/main...HEAD.');
+      const diff = runGit(['diff', '--name-status', 'origin/main...HEAD']);
+      return parseAddedChangesets(diff, changesetDir);
+    }
   }
 
   console.log('No PR base context found; validating all local changesets.');

@@ -105,10 +105,7 @@ const { normalizeExplicitTarget, resolveAutoTarget } = await import('./auto-dete
 const { loadUseM } = await import('./load-use-m.mjs')
 const { use } = await loadUseM()
 
-// Import modern npm libraries using use-m
-const { Octokit } = await use('@octokit/rest@22.0.0')
-const { default: git } = await use('simple-git@3.28.0')
-const fs = await use('fs-extra@11.3.0')
+// Import CLI parsing before heavier sync dependencies so help can print quickly.
 const { default: yargs } = await use('yargs@17.7.2')
 const yargsHelpers = await use('yargs@17.7.2/helpers')
 const hideBin = yargsHelpers.hideBin || yargsHelpers.default?.hideBin || ((argv) => argv.slice(2))
@@ -812,7 +809,13 @@ if (explicitThreads !== undefined) {
 
 if (isHelpRequest) {
   console.log(await cli.getHelp())
+  process.exit(0)
 }
+
+// Import sync dependencies only after standalone CLI requests are handled.
+const { Octokit } = await use('@octokit/rest@22.0.0')
+const { default: git } = await use('simple-git@3.28.0')
+const fs = await use('fs-extra@11.3.0')
 
 async function getOrganizationRepos(org, token) {
   try {

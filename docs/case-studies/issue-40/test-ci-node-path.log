@@ -1,0 +1,461 @@
+
+> gh-pull-all@1.4.2 test:ci
+> node tests/test-all.mjs
+
+[34m[1m🧪 GH-Pull-All Test Suite[0m[0m
+[36mRunning 30 test suites...[0m
+[36mFound test files: test-cli-simple.mjs, test-concurrent-processing.mjs, test-empty-repository.mjs, test-error-handling.mjs, test-error-message-display.mjs, test-file-operations.mjs, test-fixed-rendering.mjs, test-gh-cli.mjs, test-github-api.mjs, test-integration.mjs, test-issue-11-integration.mjs, test-line-padding.mjs, test-merge-result.mjs, test-multithread-live.mjs, test-multithread-no-live.mjs, test-parallel.mjs, test-progress-bar.mjs, test-release-workflow.mjs, test-single-repo.mjs, test-single-thread.mjs, test-sorting.mjs, test-switch-to-default-cli.mjs, test-switch-to-default.mjs, test-terminal-output.mjs, test-terminal-rendering.mjs, test-terminal-width.mjs, test-threading.mjs, test-uncommitted-changes.mjs, test-use-m-loader.mjs, test-windowed-display.mjs[0m
+[2m────────────────────────────────────────────────────────────────────────────────[0m
+[36m
+🔍 Running: Cli Simple[0m
+[2m   File: test-cli-simple.mjs[0m
+[2m   Tests basic CLI functionality and argument parsing[0m
+[32m✅ Cli Simple passed (1.9s)[0m
+[36m
+🔍 Running: Concurrent Processing[0m
+[2m   File: test-concurrent-processing.mjs[0m
+[2m   Tests concurrent repository processing with worker pool pattern[0m
+[31m❌ Concurrent Processing failed (0.9s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-concurrent-processing.mjs
+Exiting early before testing is finished.
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: spawn bun ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+Emitted 'error' event on ChildProcess instance at:
+    at ChildProcess._handle.onexit (node:internal/child_process:291:12)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn bun',
+  path: 'bun',
+  spawnargs: [
+    '../gh-pull-all.mjs',
+    '--user',
+    'github',
+    '--dir',
+    '/tmp/test-concurrent-processing',
+    '--threads',
+    '3'
+  ]
+}
+
+Node.js v20.20.2
+[0m
+[2m   Output: ✘ ...[0m
+[36m
+🔍 Running: Empty Repository[0m
+[2m   File: test-empty-repository.mjs[0m
+[2m   Tests empty repository pull handling and first default branch detection[0m
+[32m✅ Empty Repository passed (11.4s)[0m
+[36m
+🔍 Running: Error Handling[0m
+[2m   File: test-error-handling.mjs[0m
+[2m   Tests error numbering system and error list display[0m
+[32m✅ Error Handling passed (8.0s)[0m
+[36m
+🔍 Running: Error Message Display[0m
+[2m   File: test-error-message-display.mjs[0m
+[2m   Test suite[0m
+[32m✅ Error Message Display passed (7.4s)[0m
+[36m
+🔍 Running: File Operations[0m
+[2m   File: test-file-operations.mjs[0m
+[2m   Tests file system operations and directory handling[0m
+[32m✅ File Operations passed (3.5s)[0m
+[36m
+🔍 Running: Fixed Rendering[0m
+[2m   File: test-fixed-rendering.mjs[0m
+[2m   Tests fixed terminal rendering functionality[0m
+[32m✅ Fixed Rendering passed (0.3s)[0m
+[36m
+🔍 Running: Gh Cli[0m
+[2m   File: test-gh-cli.mjs[0m
+[2m   Tests GitHub CLI integration and fallback behavior[0m
+[32m✅ Gh Cli passed (4.9s)[0m
+[36m
+🔍 Running: Github Api[0m
+[2m   File: test-github-api.mjs[0m
+[2m   Tests GitHub API integration and error handling[0m
+[32m✅ Github Api passed (10.2s)[0m
+[36m
+🔍 Running: Integration[0m
+[2m   File: test-integration.mjs[0m
+[2m   Tests all functionality together in complex scenarios[0m
+[31m❌ Integration failed (25.2s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-integration.mjs[0m
+[2m   Output: [34m🧪 Running comprehensive integration test...[0m
+[36m🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width[0m
+[36m🔧 Phase 1: Setting up mixed sce...[0m
+[36m
+🔍 Running: Issue 11 Integration[0m
+[2m   File: test-issue-11-integration.mjs[0m
+[2m   Test suite[0m
+[32m✅ Issue 11 Integration passed (33.1s)[0m
+[36m
+🔍 Running: Line Padding[0m
+[2m   File: test-line-padding.mjs[0m
+[2m   Tests line padding to prevent truncation issues like "Successfully pulledes..."[0m
+[32m✅ Line Padding passed (10.0s)[0m
+[36m
+🔍 Running: Merge Result[0m
+[2m   File: test-merge-result.mjs[0m
+[2m   Test suite[0m
+[32m✅ Merge Result passed (1.2s)[0m
+[36m
+🔍 Running: Multithread Live[0m
+[2m   File: test-multithread-live.mjs[0m
+[2m   Tests multi-thread mode with live in-place updates[0m
+[32m✅ Multithread Live passed (6.1s)[0m
+[36m
+🔍 Running: Multithread No Live[0m
+[2m   File: test-multithread-no-live.mjs[0m
+[2m   Tests multi-thread mode with append-only final status[0m
+[32m✅ Multithread No Live passed (5.8s)[0m
+[36m
+🔍 Running: Parallel[0m
+[2m   File: test-parallel.mjs[0m
+[2m   Tests parallel processing functionality[0m
+[31m❌ Parallel failed (0.5s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-parallel.mjs
+Exiting early before testing is finished.
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: spawn bun ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+Emitted 'error' event on ChildProcess instance at:
+    at ChildProcess._handle.onexit (node:internal/child_process:291:12)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn bun',
+  path: 'bun',
+  spawnargs: [
+    '../gh-pull-all.mjs',
+    '--user',
+    'github',
+    '--dir',
+    '/tmp/test-parallel-demo'
+  ]
+}
+
+Node.js v20.20.2
+[0m
+[2m   Output: ✘ ...[0m
+[36m
+🔍 Running: Progress Bar[0m
+[2m   File: test-progress-bar.mjs[0m
+[2m   Tests progress bar functionality and display[0m
+[32m✅ Progress Bar passed (0.5s)[0m
+[36m
+🔍 Running: Release Workflow[0m
+[2m   File: test-release-workflow.mjs[0m
+[2m   Test suite[0m
+[32m✅ Release Workflow passed (0.0s)[0m
+[36m
+🔍 Running: Single Repo[0m
+[2m   File: test-single-repo.mjs[0m
+[2m   Test suite[0m
+[32m✅ Single Repo passed (1.2s)[0m
+[36m
+🔍 Running: Single Thread[0m
+[2m   File: test-single-thread.mjs[0m
+[2m   Tests single-thread mode with live updates and append-only behavior[0m
+[32m✅ Single Thread passed (11.3s)[0m
+[36m
+🔍 Running: Sorting[0m
+[2m   File: test-sorting.mjs[0m
+[2m   Tests alphabetical sorting of repositories[0m
+[31m❌ Sorting failed (0.9s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-sorting.mjs
+❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+Usage: gh-pull-all.mjs [--org <organization> | --user <username>] [options]
+
+Options:
+      --version            Show version number                         [boolean]
+  -o, --org                GitHub organization name                     [string]
+  -u, --user               GitHub username                              [string]
+  -t, --token              GitHub personal access token (optional for public
+                           repos)                                       [string]
+  -s, --ssh                Use SSH URLs for cloning (requires SSH key setup)
+                                                      [boolean] [default: false]
+  -d, --dir                Target directory for repositories
+                  [string] [default: "/tmp/gh-issue-solver-1782400949399/tests"]
+  -j, --threads            Number of concurrent operations (default: 8)
+                                                           [number] [default: 8]
+      --single-thread      Run operations sequentially (equivalent to --threads
+                           1)                         [boolean] [default: false]
+      --live-updates       Enable live in-place status updates (default: true,
+                           use --no-live-updates to disable)
+                                                       [boolean] [default: true]
+      --delete             Delete all cloned repositories (skips repos with
+                           uncommitted changes)       [boolean] [default: false]
+      --pull-from-default  Pull changes from the default branch (main/master)
+                           into the current branch if behind
+                                                      [boolean] [default: false]
+      --switch-to-default  Switch to the default branch (main/master) in each
+                           repository                 [boolean] [default: false]
+  -h, --help               Show help                                   [boolean]
+      ----help
+
+Examples:
+  gh-pull-all.mjs --org deep-assistant      Sync all repositories from
+                                            deep-assistant organization
+  gh-pull-all.mjs --user konard             Sync all repositories from konard
+                                            user account
+  gh-pull-all.mjs --org myorg --ssh --dir   Clone using SSH to ./repos directory
+  ./repos
+  gh-pull-all.mjs --user konard --threads   Use 5 concurrent operations
+  5
+  gh-pull-all.mjs --user konard             Run operations sequentially
+  --single-thread
+  gh-pull-all.mjs --user konard -j 16       Use 16 concurrent operations (alias
+                                            for --threads)
+  gh-pull-all.mjs --user konard             Disable live updates for terminal
+  --no-live-updates                         history preservation
+  gh-pull-all.mjs --user konard --delete    Delete all cloned repositories (with
+                                            confirmation)
+  gh-pull-all.mjs --user konard             Pull from default branch to current
+  --pull-from-default                       branch when behind
+  gh-pull-all.mjs --user konard             Switch all repositories to their
+  --switch-to-default                       default branch
+
+You must specify either --org or --user
+
+[0m
+[2m   Output: 🧪 Testing repository sorting...
+...[0m
+[36m
+🔍 Running: Switch To Default Cli[0m
+[2m   File: test-switch-to-default-cli.mjs[0m
+[2m   Tests CLI argument validation and help text for --switch-to-default option[0m
+[32m✅ Switch To Default Cli passed (4.8s)[0m
+[36m
+🔍 Running: Switch To Default[0m
+[2m   File: test-switch-to-default.mjs[0m
+[2m   Tests --switch-to-default functionality for switching repositories to default branch[0m
+[31m❌ Switch To Default failed (0.6s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-switch-to-default.mjs
+TypeError: fs.writeFile is not a function
+    at createTestRepo (file:///tmp/gh-issue-solver-1782400949399/tests/test-switch-to-default.mjs:41:12)
+    at async testSwitchToDefault (file:///tmp/gh-issue-solver-1782400949399/tests/test-switch-to-default.mjs:84:19)
+[0m
+[2m   Output: [34m🧪 Testing switch-to-default functionality...[0m
+[36m
+📋 Test 1: Switch from feature branch to main[0m
+[31m💥 Test failed: fs.writeFile is not a function[0m
+...[0m
+[36m
+🔍 Running: Terminal Output[0m
+[2m   File: test-terminal-output.mjs[0m
+[2m   Tests terminal output formatting and colors[0m
+[31m❌ Terminal Output failed (0.5s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-terminal-output.mjs[0m
+[2m   Output: ✘ ✘ ✘   (0 / 3)
+
+   FAIL  "no-live-updates mode should not use cursor manipulation"
+    spawn bun ENOENT
+
+
+
+   FAIL  "help should show both live-updates options"
+    spawn bun ENOENT
+
+
+
+   FAIL  "defa...[0m
+[36m
+🔍 Running: Terminal Rendering[0m
+[2m   File: test-terminal-rendering.mjs[0m
+[2m   Tests terminal rendering output and formatting[0m
+[32m✅ Terminal Rendering passed (0.8s)[0m
+[36m
+🔍 Running: Terminal Width[0m
+[2m   File: test-terminal-width.mjs[0m
+[2m   Tests terminal width handling and message truncation[0m
+[31m❌ Terminal Width failed (6.8s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-terminal-width.mjs[0m
+[2m   Output: [34m🧪 Testing terminal width handling and message truncation...[0m
+[36m🔧 Created conflicting file to generate longer error message[0m
+[32m✅ Terminal width test completed[0m
+[31m❌ Terminal wid...[0m
+[36m
+🔍 Running: Threading[0m
+[2m   File: test-threading.mjs[0m
+[2m   Tests threading and concurrency management[0m
+[31m❌ Threading failed (0.5s)[0m
+[31m   Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-threading.mjs[0m
+[2m   Output: ✘ ✘ ✘ • • ✘ ✘   (2 / 7)
+
+   FAIL  "should show single-thread concurrency"
+    spawn bun ENOENT
+
+
+
+   FAIL  "should show custom thread count"
+    spawn bun ENOENT
+
+
+
+   FAIL  "should support -j alias f...[0m
+[36m
+🔍 Running: Uncommitted Changes[0m
+[2m   File: test-uncommitted-changes.mjs[0m
+[2m   Tests handling of repositories with uncommitted changes[0m
+[32m✅ Uncommitted Changes passed (22.8s)[0m
+[36m
+🔍 Running: Use M Loader[0m
+[2m   File: test-use-m-loader.mjs[0m
+[2m   Tests robust use-m loading with CDN fallback and clear errors (issue #35)[0m
+[32m✅ Use M Loader passed (0.5s)[0m
+[36m
+🔍 Running: Windowed Display[0m
+[2m   File: test-windowed-display.mjs[0m
+[2m   Tests windowed display mode for terminal output[0m
+[32m✅ Windowed Display passed (2.7s)[0m
+[2m
+────────────────────────────────────────────────────────────────────────────────[0m
+[34m
+[1m📊 Test Suite Summary[0m[0m
+[32m✅ Passed: 22/30 tests[0m
+[31m❌ Failed: 8/30 tests[0m
+[31m
+Failed Tests:[0m
+[31m  • Concurrent Processing (test-concurrent-processing.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-concurrent-processing.mjs
+Exiting early before testing is finished.
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: spawn bun ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+Emitted 'error' event on ChildProcess instance at:
+    at ChildProcess._handle.onexit (node:internal/child_process:291:12)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn bun',
+  path: 'bun',
+  spawnargs: [
+    '../gh-pull-all.mjs',
+    '--user',
+    'github',
+    '--dir',
+    '/tmp/test-concurrent-processing',
+    '--threads',
+    '3'
+  ]
+}
+
+Node.js v20.20.2
+[0m
+[31m  • Integration (test-integration.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-integration.mjs[0m
+[31m  • Parallel (test-parallel.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-parallel.mjs
+Exiting early before testing is finished.
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: spawn bun ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+Emitted 'error' event on ChildProcess instance at:
+    at ChildProcess._handle.onexit (node:internal/child_process:291:12)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn bun',
+  path: 'bun',
+  spawnargs: [
+    '../gh-pull-all.mjs',
+    '--user',
+    'github',
+    '--dir',
+    '/tmp/test-parallel-demo'
+  ]
+}
+
+Node.js v20.20.2
+[0m
+[31m  • Sorting (test-sorting.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-sorting.mjs
+❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+Usage: gh-pull-all.mjs [--org <organization> | --user <username>] [options]
+
+Options:
+      --version            Show version number                         [boolean]
+  -o, --org                GitHub organization name                     [string]
+  -u, --user               GitHub username                              [string]
+  -t, --token              GitHub personal access token (optional for public
+                           repos)                                       [string]
+  -s, --ssh                Use SSH URLs for cloning (requires SSH key setup)
+                                                      [boolean] [default: false]
+  -d, --dir                Target directory for repositories
+                  [string] [default: "/tmp/gh-issue-solver-1782400949399/tests"]
+  -j, --threads            Number of concurrent operations (default: 8)
+                                                           [number] [default: 8]
+      --single-thread      Run operations sequentially (equivalent to --threads
+                           1)                         [boolean] [default: false]
+      --live-updates       Enable live in-place status updates (default: true,
+                           use --no-live-updates to disable)
+                                                       [boolean] [default: true]
+      --delete             Delete all cloned repositories (skips repos with
+                           uncommitted changes)       [boolean] [default: false]
+      --pull-from-default  Pull changes from the default branch (main/master)
+                           into the current branch if behind
+                                                      [boolean] [default: false]
+      --switch-to-default  Switch to the default branch (main/master) in each
+                           repository                 [boolean] [default: false]
+  -h, --help               Show help                                   [boolean]
+      ----help
+
+Examples:
+  gh-pull-all.mjs --org deep-assistant      Sync all repositories from
+                                            deep-assistant organization
+  gh-pull-all.mjs --user konard             Sync all repositories from konard
+                                            user account
+  gh-pull-all.mjs --org myorg --ssh --dir   Clone using SSH to ./repos directory
+  ./repos
+  gh-pull-all.mjs --user konard --threads   Use 5 concurrent operations
+  5
+  gh-pull-all.mjs --user konard             Run operations sequentially
+  --single-thread
+  gh-pull-all.mjs --user konard -j 16       Use 16 concurrent operations (alias
+                                            for --threads)
+  gh-pull-all.mjs --user konard             Disable live updates for terminal
+  --no-live-updates                         history preservation
+  gh-pull-all.mjs --user konard --delete    Delete all cloned repositories (with
+                                            confirmation)
+  gh-pull-all.mjs --user konard             Pull from default branch to current
+  --pull-from-default                       branch when behind
+  gh-pull-all.mjs --user konard             Switch all repositories to their
+  --switch-to-default                       default branch
+
+You must specify either --org or --user
+
+[0m
+[31m  • Switch To Default (test-switch-to-default.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-switch-to-default.mjs
+TypeError: fs.writeFile is not a function
+    at createTestRepo (file:///tmp/gh-issue-solver-1782400949399/tests/test-switch-to-default.mjs:41:12)
+    at async testSwitchToDefault (file:///tmp/gh-issue-solver-1782400949399/tests/test-switch-to-default.mjs:84:19)
+[0m
+[31m  • Terminal Output (test-terminal-output.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-terminal-output.mjs[0m
+[31m  • Terminal Width (test-terminal-width.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-terminal-width.mjs[0m
+[31m  • Threading (test-threading.mjs): Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782400949399/tests/test-threading.mjs[0m
+[34m⏱️  Total time: 184.5s[0m
+[31m
+💥 8 test(s) failed. Please review and fix the issues.[0m

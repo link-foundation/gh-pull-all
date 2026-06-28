@@ -4,7 +4,8 @@ import path from 'path'
 
 // Comprehensive integration test covering all functionality
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs, statSync } from 'fs'
@@ -122,7 +123,7 @@ async function testIntegration() {
     const allResults = phase1Result + '\n' + phase3Result + '\n' + phase4Result
     
     // Test 1: Error numbering and handling
-    const errorNumbers = (allResults.match(/Error #\d+:/g) || []).length
+    const errorNumbers = (allResults.match(/Error #\d+/g) || []).length
     if (errorNumbers > 0) {
       log('green', `✅ Error numbering: Found ${errorNumbers} numbered errors`)
     } else {

@@ -1,0 +1,24 @@
+[34m🧪 Running comprehensive integration test...[0m
+[36m🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width[0m
+[36m🔧 Phase 1: Setting up mixed scenario environment...[0m
+[32m✅ Phase 1 completed: Initial clone with errors[0m
+[36m🔧 Phase 2: Adding uncommitted changes to successful clones...[0m
+[36m🔧 Added uncommitted changes to .github and GPTutor[0m
+[36m🔧 Phase 3: Running pull with mixed repository states...[0m
+[32m✅ Phase 3 completed: Pull with mixed states[0m
+[36m🔧 Phase 4: Testing single-thread mode behavior...[0m
+[32m✅ Phase 4 completed: Single-thread mode[0m
+[36m🔍 Validating all functionality...[0m
+[32m✅ Error numbering: Found 3 numbered errors[0m
+[32m✅ Error list: Errors section displayed[0m
+[32m✅ Uncommitted changes: Properly detected and handled[0m
+[32m✅ Threading modes: Both parallel and sequential tested[0m
+[32m✅ Status variety: Success(12), Failed(7), Uncommitted(3)[0m
+[32m✅ Summary sections: Present in all test runs[0m
+[32m✅ Message truncation: Found truncated messages[0m
+[32m✅ GitHub CLI integration: Successfully used gh CLI[0m
+[32m✅ Concurrency settings: Found 2 concurrency configurations[0m
+[32m✅ File system: 6 repositories successfully managed[0m
+[32m🎉 Comprehensive integration test passed![0m
+[35m✨ All major functionality validated successfully[0m
+[36m🧹 Cleaned up test directory[0m

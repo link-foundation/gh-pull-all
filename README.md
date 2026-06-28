@@ -1,10 +1,12 @@
 [![npm version](https://img.shields.io/npm/v/gh-pull-all)](https://www.npmjs.com/package/gh-pull-all)
+[![GitHub release](https://img.shields.io/github/v/release/link-foundation/gh-pull-all)](https://github.com/link-foundation/gh-pull-all/releases)
+[![Checks and release](https://github.com/link-foundation/gh-pull-all/actions/workflows/release.yml/badge.svg)](https://github.com/link-foundation/gh-pull-all/actions/workflows/release.yml)
 [![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/gh-pull-all)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/gh-pull-all)
 
 # gh-pull-all
 
-The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing and real-time status updates.
+The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing, auto-detection, and real-time status updates.
 
 ## Features
 
@@ -14,6 +16,7 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 - 🔐 **SSH Support**: Use SSH URLs for cloning with `--ssh` flag
 - ⚡ **Flexible Threading**: Use `--single-thread` for sequential processing or customize with `--threads N`
 - 🎯 **Comprehensive**: Works with both organizations and user accounts
+- 🔍 **Auto Detection**: Omit `--org` and `--user` to detect the GitHub owner from local repositories or an empty target directory name
 - 🔑 **Smart Authentication**: Automatic GitHub CLI integration for seamless private repo access
 - 🛡️ **Error Handling**: Graceful handling of rate limits, authentication, and network issues
 - 📈 **Visual Progress Bar**: Color-coded progress bar shows real-time status (green=success, red=failed, yellow=skipped, cyan=active, gray=pending)
@@ -25,11 +28,17 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 ## Quick Start
 
 ```bash
+# Auto-detect from local repository remotes or the current folder name
+gh-pull-all
+
 # Clone all repositories from a user account
 gh-pull-all --user octocat
 
 # Clone all repositories from an organization
 gh-pull-all --org github
+
+# Names can also be GitHub URLs
+gh-pull-all --user github.com/octocat
 
 # Use SSH for cloning with custom thread count
 gh-pull-all --user octocat --ssh --threads 16
@@ -84,11 +93,13 @@ chmod +x gh-pull-all.mjs
 ## Usage
 
 ```
-Usage: gh-pull-all [--org <organization> | --user <username>] [options]
+Usage: gh-pull-all [--org <organization-or-url> | --user <username-or-url>] [options]
+
+Omit --org and --user to auto-detect the GitHub owner from local repositories or the target directory name.
 
 Options:
-  -o, --org            GitHub organization name
-  -u, --user           GitHub username  
+  -o, --org            GitHub organization name or URL
+  -u, --user           GitHub username or URL
   -t, --token          GitHub personal access token (optional for public repos)
   -s, --ssh            Use SSH URLs for cloning (requires SSH key setup)
   -d, --dir            Target directory for repositories (default: current directory)
@@ -98,6 +109,18 @@ Options:
       --no-live-updates Disable live updates for terminal history preservation
   -h, --help           Show help
 ```
+
+## Auto Detection
+
+When neither `--org` nor `--user` is provided, `gh-pull-all` enables auto mode by default:
+
+1. It checks child folders in the current directory, or in the directory passed with `--dir`.
+2. It inspects child folders that are git repositories and reads their GitHub remotes.
+3. If all detected GitHub remotes belong to one owner, it validates whether that owner is a GitHub user or organization and asks for confirmation.
+4. If the target directory is empty, it tries the target directory name as a GitHub user or organization and asks for confirmation.
+5. If detection is ambiguous or invalid, it prompts for a GitHub name or URL such as `github.com/name`.
+
+No preferences are written to `.gh-pull-all`; pass `--user` or `--org` when you want to skip detection.
 
 ## Authentication
 
@@ -139,8 +162,14 @@ The script uses this fallback chain:
 ## Examples
 
 ```bash
+# Auto-detect owner from local git remotes or an empty directory name
+gh-pull-all
+
 # Basic usage - sync all public repos from a user
 gh-pull-all --user octocat
+
+# GitHub URL input
+gh-pull-all --org https://github.com/github
 
 # Sync all repos (including private) using GitHub CLI auth
 gh-pull-all --org myorg  # Automatically uses gh CLI if authenticated
@@ -209,15 +238,15 @@ The project includes a comprehensive test suite:
 
 ```bash
 # Run all tests
-./test-all.mjs
+npm test
 
 # Run specific test categories
-./test-cli-simple.mjs      # CLI validation tests
-./test-github-api.mjs      # GitHub API integration tests  
-./test-file-operations.mjs # File system and git operations
-./test-threading.mjs       # Thread configuration tests
-./test-parallel.mjs        # Parallel processing tests
-./test-integration.mjs     # End-to-end integration tests
+node tests/test-cli-simple.mjs      # CLI validation tests
+node tests/test-github-api.mjs      # GitHub API integration tests
+node tests/test-file-operations.mjs # File system and git operations
+node tests/test-threading.mjs       # Thread configuration tests
+node tests/test-parallel.mjs        # Parallel processing tests
+node tests/test-integration.mjs     # End-to-end integration tests
 ```
 
 ## Rate Limits

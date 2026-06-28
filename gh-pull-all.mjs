@@ -1063,9 +1063,13 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
     // Get default branch
     statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
     const defaultBranch = await getDefaultBranch(simpleGit)
+    const remoteName = (await simpleGit.getRemotes(true))[0]?.name || 'origin'
 
     if (currentBranchName === defaultBranch) {
-      statusDisplay.updateRepo(repoName, 'success', `Already on default branch: ${defaultBranch}`)
+      // Already on default branch, but still pull latest changes
+      statusDisplay.updateRepo(repoName, 'pulling', `Already on ${defaultBranch}, pulling latest changes...`)
+      await simpleGit.pull(remoteName, defaultBranch)
+      statusDisplay.updateRepo(repoName, 'success', `Already on default branch ${defaultBranch} and pulled latest changes`)
       return { success: true, type: 'already_on_default', details: { defaultBranch } }
     }
 
@@ -1073,20 +1077,22 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
     statusDisplay.updateRepo(repoName, 'pulling', `Switching to ${defaultBranch}...`)
     try {
       await simpleGit.checkout(defaultBranch)
-      statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch}`)
-      return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
     } catch (checkoutError) {
       // Try to create and checkout the branch if it doesn't exist locally
       statusDisplay.updateRepo(repoName, 'pulling', `Creating local ${defaultBranch} branch...`)
       try {
-        await simpleGit.checkoutBranch(defaultBranch, `origin/${defaultBranch}`)
-        statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch}`)
-        return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
+        await simpleGit.checkoutBranch(defaultBranch, `${remoteName}/${defaultBranch}`)
       } catch (createError) {
         statusDisplay.updateRepo(repoName, 'failed', `Could not switch to ${defaultBranch}: ${createError.message}`)
         return { success: false, type: 'switch_failed', error: createError.message, details: { defaultBranch } }
       }
     }
+
+    // After switching to default branch, always pull the latest changes.
+    statusDisplay.updateRepo(repoName, 'pulling', `Pulling latest changes from ${remoteName}/${defaultBranch}...`)
+    await simpleGit.pull(remoteName, defaultBranch)
+    statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch} and pulled latest changes`)
+    return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
   } catch (error) {
     statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
     return { success: false, type: 'switch', error: error.message }

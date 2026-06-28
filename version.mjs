@@ -8,41 +8,24 @@ import { execSync } from 'child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// Check for --help before loading dependencies
-const args = process.argv.slice(2)
-if (args.includes('--help') || args.includes('-h') || args.length === 0) {
-  console.log('Usage: ./version.mjs <patch|minor|major>')
-  console.log('Examples:')
-  console.log('  ./version.mjs patch   # 1.0.3 → 1.0.4')
-  console.log('  ./version.mjs minor   # 1.0.3 → 1.1.0')
-  console.log('  ./version.mjs major   # 1.0.3 → 2.0.0')
-  if (args.includes('--help') || args.includes('-h')) {
-    process.exit(0)
-  }
+function printUsage(write = console.error) {
+  write('Usage: ./version.mjs <patch|minor|major>')
+  write('Examples:')
+  write('  ./version.mjs patch   # 1.0.3 → 1.0.4')
+  write('  ./version.mjs minor   # 1.0.3 → 1.1.0')
+  write('  ./version.mjs major   # 1.0.3 → 2.0.0')
 }
 
-// Download use-m dynamically with error handling
-let use
-try {
-  const response = await fetch('https://unpkg.com/use-m/use.js')
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-  }
-  const code = await response.text()
-  if (!code || code.length < 100) {
-    throw new Error('Invalid response from unpkg.com')
-  }
-  const result = eval(code)
-  use = result.use
-  if (typeof use !== 'function') {
-    throw new Error('use-m loaded but use function not found')
-  }
-} catch (error) {
-  console.error('❌ Failed to load use-m from unpkg.com')
-  console.error(`   Error: ${error.message}`)
-  console.error('💡 Please check your internet connection')
-  process.exit(1)
+const startupArgs = process.argv.slice(2)
+if (startupArgs.includes('--help') || startupArgs.includes('-h')) {
+  printUsage(console.log)
+  process.exit(0)
 }
+
+// Download use-m dynamically (robustly, with CDN fallback and clear errors).
+// See https://github.com/link-foundation/gh-pull-all/issues/35.
+const { loadUseM } = await import('./load-use-m.mjs')
+const { use } = await loadUseM()
 
 // Import semver for version management
 const semver = await use('semver@7.7.2')
@@ -79,15 +62,10 @@ async function main() {
   const versionType = process.argv[2]
 
   if (!versionType || !['patch', 'minor', 'major'].includes(versionType)) {
-    console.error('Usage: ./version.mjs <patch|minor|major>')
-    console.error('Examples:')
-    console.error('  ./version.mjs patch   # 1.0.3 → 1.0.4')
-    console.error('  ./version.mjs minor   # 1.0.3 → 1.1.0')
-    console.error('  ./version.mjs major   # 1.0.3 → 2.0.0')
+    printUsage()
     process.exit(1)
   }
 
-  // Check git status first
   try {
     const status = execSync('git status --porcelain', { encoding: 'utf8', cwd: __dirname })
     if (status.trim()) {
@@ -126,14 +104,13 @@ async function main() {
     console.log(`   📄 gh-pull-all.mjs: ${newVersion}`)
     console.log('')
 
-    // Verify files were actually modified
     const diffStatus = execSync('git status --porcelain', { encoding: 'utf8', cwd: __dirname })
     if (!diffStatus.trim()) {
       console.error('❌ No changes detected. Version may already be set to', newVersion)
       process.exit(1)
     }
 
-    // Automatically commit and push changes - only add specific files
+    // Automatically commit and push only the versioned files.
     runGitCommand('git add package.json gh-pull-all.mjs', 'Adding version changes to git')
     runGitCommand(`git commit -m "${newVersion}"`, 'Committing changes')
     runGitCommand('git push', 'Pushing to remote repository')

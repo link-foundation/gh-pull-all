@@ -1,159 +1,154 @@
 #!/usr/bin/env sh
-':' //# ; exec "$(command -v bun || command -v node)" "$0" "$@"
+':' //# ; exec "$(command -v node || command -v bun)" "$0" "$@"
 
 // Import built-in Node.js modules
 import path from 'path'
 import { fileURLToPath } from 'url'
 import readline from 'readline'
+import { existsSync, readFileSync, realpathSync } from 'fs'
+import { stat as statPath } from 'fs/promises'
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Standalone help text (works without loading any dependencies)
-const HELP_TEXT = `
-Usage: gh-pull-all [--org <organization> | --user <username>] [options]
+const PACKAGE_NAME = 'gh-pull-all'
+let version = '1.4.3' // Fallback version
 
-Options:
-  -o, --org <name>         GitHub organization name
-  -u, --user <name>        GitHub username
-  -t, --token <token>      GitHub personal access token (optional for public repos)
-  -s, --ssh                Use SSH URLs for cloning (requires SSH key setup)
-  -d, --dir <path>         Target directory for repositories (default: current directory)
-  -j, --threads <number>   Number of concurrent operations (default: 8)
-      --single-thread      Run operations sequentially (equivalent to --threads 1)
-      --live-updates       Enable live in-place status updates (default: true)
-      --no-live-updates    Disable live updates for terminal history preservation
-      --delete             Delete all cloned repositories (with confirmation)
-      --pull-from-default  Pull changes from default branch into current branch when behind
-      --switch-to-default  Switch to the default branch (main/master) in each repository
-  -h, --help               Show help
-  -v, --version            Show version number
+function normalizeVersion(value) {
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null
+}
 
-Examples:
-  gh-pull-all --org deep-assistant
-    Sync all repositories from deep-assistant organization
+function readPackageVersion(packagePath) {
+  try {
+    if (!existsSync(packagePath)) {
+      return null
+    }
 
-  gh-pull-all --user konard
-    Sync all repositories from konard user account
+    const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'))
+    if (packageJson.name !== PACKAGE_NAME) {
+      return null
+    }
 
-  gh-pull-all --org myorg --ssh --dir ./repos
-    Clone using SSH to ./repos directory
-
-  gh-pull-all --user konard --threads 5
-    Use 5 concurrent operations
-
-  gh-pull-all --user konard --single-thread
-    Run operations sequentially
-
-  gh-pull-all --user konard -j 16
-    Use 16 concurrent operations (alias for --threads)
-
-  gh-pull-all --user konard --no-live-updates
-    Disable live updates for terminal history preservation
-
-  gh-pull-all --user konard --delete
-    Delete all cloned repositories (with confirmation)
-
-  gh-pull-all --user konard --pull-from-default
-    Pull from default branch to current branch when behind
-
-  gh-pull-all --user konard --switch-to-default
-    Switch all repositories to their default branch
-`
-
-// Check for --help or --version before loading dependencies
-const args = process.argv.slice(2)
-const needsHelp = args.includes('--help') || args.includes('-h')
-const needsVersion = args.includes('--version') || args.includes('-v')
-
-// If only help/version requested, show without loading dependencies
-if (args.length === 1 && (needsHelp || needsVersion)) {
-  if (needsVersion) {
-    console.log('1.4.0')
-  } else {
-    console.log(HELP_TEXT.trim())
+    return normalizeVersion(packageJson.version)
+  } catch (error) {
+    return null
   }
+}
+
+function getVersionFromDirectory(startDir) {
+  let currentDir = startDir
+
+  for (let depth = 0; depth < 10; depth++) {
+    for (const packagePath of [
+      path.join(currentDir, 'package.json'),
+      path.join(currentDir, 'node_modules', PACKAGE_NAME, 'package.json'),
+      path.join(currentDir, 'lib', 'node_modules', PACKAGE_NAME, 'package.json')
+    ]) {
+      const detectedVersion = readPackageVersion(packagePath)
+      if (detectedVersion) {
+        return detectedVersion
+      }
+    }
+
+    const parentDir = path.dirname(currentDir)
+    if (parentDir === currentDir) {
+      break
+    }
+    currentDir = parentDir
+  }
+
+  return null
+}
+
+function getVersionSync() {
+  const candidateDirs = new Set([__dirname])
+
+  for (const filename of [__filename, process.argv[1]]) {
+    if (!filename) {
+      continue
+    }
+
+    try {
+      candidateDirs.add(path.dirname(realpathSync(filename)))
+    } catch (error) {
+      // Ignore paths that are unavailable in the current runtime.
+    }
+  }
+
+  for (const candidateDir of candidateDirs) {
+    const detectedVersion = getVersionFromDirectory(candidateDir)
+    if (detectedVersion) {
+      return detectedVersion
+    }
+  }
+
+  return version
+}
+
+function hasAnyArg(args, names) {
+  return args.some(arg => names.includes(arg))
+}
+
+const startupArgs = process.argv.slice(2)
+if (hasAnyArg(startupArgs, ['--version', '-v']) && !hasAnyArg(startupArgs, ['--help', '-h'])) {
+  console.log(getVersionSync())
   process.exit(0)
 }
 
-// Download use-m dynamically with error handling
-let use
-try {
-  const response = await fetch('https://unpkg.com/use-m/use.js')
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-  }
-  const code = await response.text()
-  if (!code || code.length < 100) {
-    throw new Error('Invalid response from unpkg.com')
-  }
-  const result = eval(code)
-  use = result.use
-  if (typeof use !== 'function') {
-    throw new Error('use-m loaded but use function not found')
-  }
-} catch (error) {
-  console.error('\x1b[31m❌ Failed to load use-m from unpkg.com\x1b[0m')
-  console.error(`   Error: ${error.message}`)
-  console.error('\x1b[33m💡 Please check your internet connection\x1b[0m')
-  console.error('   This tool requires internet access to download dependencies')
-  process.exit(1)
+if (hasAnyArg(startupArgs, ['--help', '-h'])) {
+  const { HELP_TEXT } = await import('./help-text.mjs')
+  console.log(HELP_TEXT.trim())
+  process.exit(0)
 }
 
-// Load minimal dependencies for CLI setup (yargs and fs-extra for version reading)
-const fs = await use('fs-extra@11.3.0')
+const { normalizeExplicitTarget, resolveAutoTarget } = await import('./auto-detect.mjs')
+
+// Download use-m dynamically (robustly, with CDN fallback and clear errors).
+// A bare `eval(await (await fetch(...)).text())` crashes with a cryptic
+// SyntaxError when a CDN returns an error body instead of the module source.
+// See https://github.com/link-foundation/gh-pull-all/issues/35.
+const { loadUseM } = await import('./load-use-m.mjs')
+const { use } = await loadUseM()
+
+// Import CLI parsing before heavier sync dependencies so help can print quickly.
 const { default: yargs } = await use('yargs@17.7.2')
-const { hideBin } = await use('yargs@17.7.2/helpers')
+const yargsHelpers = await use('yargs@17.7.2/helpers')
+const hideBin = yargsHelpers.hideBin || yargsHelpers.default?.hideBin || ((argv) => argv.slice(2))
 
-// Defer loading of heavy dependencies until after arg parsing
-let Octokit, git
+version = getVersionSync()
 
-// Constants for magic numbers
-const DEFAULTS = {
-  TERMINAL_WIDTH: 80,
-  TERMINAL_HEIGHT: 24,
-  RENDER_FPS: 10,
-  RENDER_INTERVAL_MS: 100,
-  MIN_MESSAGE_WIDTH: 20,
-  SAFETY_MARGIN: 10,
-  DURATION_PADDING: 6,
-  HEADER_LINES: 3,
-  PROGRESS_BAR_WIDTH: 50,
-  PROGRESS_BAR_RESERVED_SPACE: 40,
-  GIT_TIMEOUT_MS: 30000, // 30 seconds
-  RESIZE_DEBOUNCE_MS: 150,
-}
-
-// Get version from package.json or fallback
-let version = '1.4.0' // Fallback version
-
-try {
-  const packagePath = path.join(__dirname, 'package.json')
-  if (await fs.pathExists(packagePath)) {
-    const packageJson = await fs.readJson(packagePath)
-    version = packageJson.version
-  }
-} catch (error) {
-  // Use fallback version if package.json can't be read
-  if (error.code !== 'ENOENT') {
-    console.warn(`Warning: Could not read package.json: ${error.message}`)
-  }
-}
-
-// Helper function for confirmation prompt
-async function askConfirmation(question) {
+async function askQuestion(question) {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
-  
+
   return new Promise((resolve) => {
+    let resolved = false
+
+    rl.on('close', () => {
+      if (!resolved) {
+        resolved = true
+        resolve('')
+      }
+    })
+
     rl.question(question, (answer) => {
+      resolved = true
       rl.close()
-      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes')
+      resolve(answer.trim())
     })
   })
+}
+
+async function askConfirmation(question, defaultValue = false) {
+  const answer = await askQuestion(question)
+  if (!answer) {
+    return defaultValue
+  }
+
+  return answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes'
 }
 
 // Colors for console output
@@ -170,6 +165,20 @@ const colors = {
 }
 
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
+
+const DEFAULTS = {
+  TERMINAL_WIDTH: 80,
+  TERMINAL_HEIGHT: 24,
+  HEADER_LINES: 3,
+  MIN_MESSAGE_WIDTH: 20,
+  SAFETY_MARGIN: 10,
+  DURATION_PADDING: 6,
+  PROGRESS_BAR_WIDTH: 50,
+  PROGRESS_BAR_RESERVED_SPACE: 40,
+  RENDER_INTERVAL_MS: 100,
+  RESIZE_DEBOUNCE_MS: 150,
+  GIT_TIMEOUT_MS: 30000
+}
 
 // Status display system with safe terminal output
 class StatusDisplay {
@@ -193,15 +202,14 @@ class StatusDisplay {
     this.currentBatchStart = 0
     this.lastRenderedCount = 0
     this.batchDisplayMode = true // New mode for batch-based display
-    this.isDirty = false // Track if render is needed
-    this.resizeTimeout = null // For debouncing resize events
+    this.isDirty = false
+    this.resizeTimeout = null
 
-    // Listen for terminal resize with debouncing
+    // Listen for terminal resize
     if (this.isInteractive) {
       process.stdout.on('resize', () => {
         this.terminalWidth = process.stdout.columns || DEFAULTS.TERMINAL_WIDTH
         this.terminalHeight = process.stdout.rows || DEFAULTS.TERMINAL_HEIGHT
-        // Debounce resize events
         if (this.resizeTimeout) {
           clearTimeout(this.resizeTimeout)
         }
@@ -226,6 +234,7 @@ class StatusDisplay {
     })
     // Update max name length for proper alignment
     this.maxNameLength = Math.max(this.maxNameLength, name.length)
+    this.isDirty = true
   }
 
   updateRepo(name, status, message = '') {
@@ -252,7 +261,6 @@ class StatusDisplay {
       if (!this.useInPlaceUpdates) {
         this.logStatusChange(repo, oldStatus)
       } else {
-        // Mark as dirty for next render
         this.isDirty = true
       }
     }
@@ -276,30 +284,28 @@ class StatusDisplay {
     const statusColor = this.getStatusColor(repo.status)
     // Only show static time for completed statuses in append-only mode
     const duration = (repo.status === 'success' || repo.status === 'failed' || repo.status === 'skipped' || repo.status === 'uncommitted') && repo.endTime
-      ? `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s` 
+      ? `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s`
       : `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
-    
+
     // Calculate available space for message
-    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + DEFAULTS.DURATION_PADDING + 1 // icon + space + name + space + duration + space
-    const availableWidth = Math.max(DEFAULTS.MIN_MESSAGE_WIDTH, this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN)
-    
-    let displayMessage = repo.message
-    if (repo.status === 'failed' && repo.errorNumber) {
-      displayMessage = `Failed with error #${repo.errorNumber}`
-    } else {
-      displayMessage = this.truncateMessage(repo.message, availableWidth)
-    }
-    
+    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + DEFAULTS.DURATION_PADDING + 1
+    const availableWidth = Math.max(
+      DEFAULTS.MIN_MESSAGE_WIDTH,
+      this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN
+    )
+
+    const displayMessage = this.formatStatusMessage(repo, repo.message, availableWidth)
+
     // Build the line with proper padding to ensure full width clearing
     const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
-    
+
     // Calculate the visible length of the line (excluding ANSI codes)
     const visibleLength = this.getVisibleLength(line)
-    
+
     // Pad the line to terminal width minus 1 to avoid wrapping
     const padding = Math.max(0, this.terminalWidth - visibleLength - 1)
     const paddedLine = line + ' '.repeat(padding)
-    
+
     console.log(paddedLine)
     repo.logged = true
   }
@@ -309,8 +315,7 @@ class StatusDisplay {
       return // Use append-only mode by default
     }
 
-    // Skip render if nothing changed (optimization)
-    if (!this.isDirty && this.renderedOnce) {
+    if (!this.isDirty && this.renderedOnce && !this.hasActiveRepos()) {
       return
     }
     this.isDirty = false
@@ -326,7 +331,7 @@ class StatusDisplay {
     const sortedRepos = Array.from(this.repos.entries()).sort((a, b) => a[0].localeCompare(b[0]))
     const activeRepos = []
     const newlyCompleted = []
-    
+
     // Separate active and completed repos
     for (const [name, repo] of sortedRepos) {
       if (repo.status === 'pending' || repo.status === 'pulling' || repo.status === 'cloning' || repo.status === 'checking' || repo.status === 'deleting') {
@@ -335,25 +340,28 @@ class StatusDisplay {
         newlyCompleted.push([name, repo])
       }
     }
-    
+
     // Add newly completed repos to the persistent list
     this.completedRepos.push(...newlyCompleted)
-    
+
     // Calculate display space
     const availableLines = Math.max(1, this.terminalHeight - this.headerLines - 5) // Reserve space for progress bar + legend
     const batchSize = Math.min(this.threads, availableLines)
-    
+
     // Determine current batch of active repos
     const currentBatch = activeRepos.slice(0, batchSize)
-    
+
     // Move cursor up only for the current batch
     if (this.renderedOnce && this.lastRenderedCount > 0) {
       process.stdout.write(`\x1b[${this.lastRenderedCount}A`)
     }
 
     // Calculate available space for message
-    const baseLength = 2 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
-    const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
+    const baseLength = 2 + this.maxNameLength + 1 + DEFAULTS.DURATION_PADDING + 1
+    const availableWidth = Math.max(
+      DEFAULTS.MIN_MESSAGE_WIDTH,
+      this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN
+    )
 
     // Print newly completed repos (these won't be updated again)
     for (const [name, repo] of newlyCompleted) {
@@ -361,70 +369,65 @@ class StatusDisplay {
       const statusColor = this.getStatusColor(repo.status)
       // Show static time for completed repos
       const duration = `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s`
-      
-      let displayMessage = repo.message || this.getStatusMessage(repo.status)
+
       const baseLength = name.length + this.maxNameLength + 15
-      const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10)
-      
-      if (displayMessage && displayMessage.length > availableWidth) {
-        displayMessage = this.truncateMessage(displayMessage, availableWidth)
-      }
-      
+      const availableWidth = Math.max(
+        DEFAULTS.MIN_MESSAGE_WIDTH,
+        this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN
+      )
+      const fallbackMessage = repo.message || this.getStatusMessage(repo.status)
+      const displayMessage = this.formatStatusMessage(repo, fallbackMessage, availableWidth)
+
       const line = `${statusColor}${statusIcon} ${name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
-      
+
       // Calculate the visible length of the line (excluding ANSI codes)
       const visibleLength = this.getVisibleLength(line)
-      
+
       // Pad the line to terminal width minus 1 to avoid wrapping
       const padding = Math.max(0, this.terminalWidth - visibleLength - 1)
       const paddedLine = line + ' '.repeat(padding)
-      
+
       console.log(paddedLine)
     }
-    
+
     // Render current batch of active repos with live updates
     let renderedCount = 0
     for (const [name, repo] of currentBatch) {
-      
+
       const statusIcon = this.getStatusIcon(repo.status)
       const statusColor = this.getStatusColor(repo.status)
       // Always show ticking time for active repos (no endTime)
       const duration = `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
-      
-      let displayMessage = repo.message
-      if (repo.status === 'failed' && repo.errorNumber) {
-        displayMessage = `Failed with error #${repo.errorNumber}`
-      } else {
-        displayMessage = this.truncateMessage(repo.message, availableWidth)
-      }
-      
+
+      const displayMessage = this.formatStatusMessage(repo, repo.message, availableWidth)
+
       const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
-      
+
       // Calculate the visible length of the line (excluding ANSI codes)
       const visibleLength = this.getVisibleLength(line)
-      
+
       // Pad the line to terminal width minus 1 to avoid wrapping
       const padding = Math.max(0, this.terminalWidth - visibleLength - 1)
       const paddedLine = line + ' '.repeat(padding)
-      
+
       // Clear the line and write new content
       process.stdout.write('\x1b[2K') // Clear entire line
       console.log(paddedLine)
       renderedCount++
     }
-    
+
     // Show progress bar and legend together
     if (this.isInteractive) {
       // Empty line before progress section
       process.stdout.write('\x1b[2K')
       console.log()
       renderedCount++
-      
+
       // Legend line (right above progress bar)
       process.stdout.write('\x1b[2K')
       console.log(`${colors.dim}Progress: ${colors.green}█${colors.dim}=success ${colors.red}█${colors.dim}=failed ${colors.yellow}█${colors.dim}=skipped ${colors.cyan}█${colors.dim}=in progress ${colors.dim}░=pending${colors.reset}`)
       renderedCount++
-      
+
       // Progress bar
       const progressBar = this.createProgressBar()
       if (progressBar) {
@@ -432,12 +435,25 @@ class StatusDisplay {
         console.log(progressBar)
         renderedCount++
       }
-      
+
       // No empty line after progress bar - it creates double spacing during process
     }
-    
+
     this.renderedOnce = true
     this.lastRenderedCount = renderedCount
+  }
+
+  hasActiveRepos() {
+    for (const repo of this.repos.values()) {
+      if (repo.status === 'pending' ||
+          repo.status === 'pulling' ||
+          repo.status === 'cloning' ||
+          repo.status === 'checking' ||
+          repo.status === 'deleting') {
+        return true
+      }
+    }
+    return false
   }
 
   getStatusIcon(status) {
@@ -473,7 +489,7 @@ class StatusDisplay {
     switch (status) {
       case 'pending': return colors.dim
       case 'cloning':
-      case 'pulling': 
+      case 'pulling':
       case 'checking':
       case 'deleting': return colors.cyan  // Changed to cyan to match progress bar "active"
       case 'success': return colors.green
@@ -484,6 +500,14 @@ class StatusDisplay {
     }
   }
 
+  formatStatusMessage(repo, message, availableWidth) {
+    if (repo.status === 'failed' && repo.errorNumber) {
+      return `Error #${repo.errorNumber}`
+    }
+
+    return this.truncateMessage(message, availableWidth)
+  }
+
   truncateMessage(message, maxLength) {
     if (!message || message.length <= maxLength) {
       return message
@@ -492,15 +516,14 @@ class StatusDisplay {
   }
 
   getVisibleLength(str) {
-    // Remove all ANSI escape codes to calculate visible length
-    // This handles colors, cursor movement, and other ANSI sequences
+    // Remove ANSI escape codes to calculate visible length.
     return str.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').length
   }
 
   createProgressBar() {
     const repoCount = this.repos.size
     if (repoCount === 0) return ''
-    
+
     // Count statuses
     const statusCounts = {
       success: 0,
@@ -513,15 +536,18 @@ class StatusDisplay {
       skipped: 0,
       uncommitted: 0
     }
-    
+
     for (const [_, repo] of this.repos) {
       if (statusCounts.hasOwnProperty(repo.status)) {
         statusCounts[repo.status]++
       }
     }
-    
+
     // Calculate bar width (reserve space for text)
-    const barWidth = Math.min(DEFAULTS.PROGRESS_BAR_WIDTH, this.terminalWidth - DEFAULTS.PROGRESS_BAR_RESERVED_SPACE)
+    const barWidth = Math.max(
+      0,
+      Math.min(DEFAULTS.PROGRESS_BAR_WIDTH, this.terminalWidth - DEFAULTS.PROGRESS_BAR_RESERVED_SPACE)
+    )
     const completed = statusCounts.success + statusCounts.failed + statusCounts.skipped + statusCounts.uncommitted
     const inProgress = statusCounts.pulling + statusCounts.cloning + statusCounts.checking + statusCounts.deleting
     const pending = statusCounts.pending
@@ -549,14 +575,14 @@ class StatusDisplay {
     bar += colors.cyan + '█'.repeat(inProgressWidth)
     bar += colors.dim + '░'.repeat(Math.max(0, pendingWidth))
     bar += colors.reset
-    
+
     // Create status text
     const percentage = Math.round((completed / repoCount) * 100)
     const statusText = `${completed}/${repoCount} (${percentage}%)`
-    
+
     // Add error count if any
     const errorText = statusCounts.failed > 0 ? ` ${colors.red}${statusCounts.failed} errors${colors.reset}` : ''
-    
+
     return `[${bar}] ${statusText}${errorText}`
   }
 
@@ -568,7 +594,7 @@ class StatusDisplay {
     console.log() // Add spacing
     log('red', `${colors.bold}❌ Errors:${colors.reset}`)
     console.log(`${colors.dim}${'─'.repeat(Math.min(DEFAULTS.TERMINAL_WIDTH, this.terminalWidth))}${colors.reset}`)
-    
+
     for (const error of this.errors) {
       console.log(`${colors.red}#${error.number.toString().padStart(2)} ${colors.yellow}${error.repo}${colors.reset}: ${error.message}`)
     }
@@ -582,11 +608,14 @@ class StatusDisplay {
       up_to_date_with_default: 0,
       switched_to_default: 0,
       already_on_default: 0,
+      synced_with_upstream: 0,
+      up_to_date_with_upstream: 0,
       deleted: 0,
       failed: 0,
       skipped: 0,
       uncommitted: 0,
-      merge_conflicts: 0
+      merge_conflicts: 0,
+      upstream_merge_conflicts: 0
     }
 
     for (const [name, repo] of this.repos) {
@@ -594,6 +623,8 @@ class StatusDisplay {
         case 'success':
           if (repo.message.includes('cloned')) summary.cloned++
           else if (repo.message.includes('merged') && repo.message.includes('into')) summary.merged_from_default++
+          else if (repo.message.includes('synced fork with upstream')) summary.synced_with_upstream++
+          else if (repo.message.includes('up to date with upstream')) summary.up_to_date_with_upstream++
           else if (repo.message.includes('up to date with')) summary.up_to_date_with_default++
           else if (repo.message.includes('Switched from')) summary.switched_to_default++
           else if (repo.message.includes('Already on default branch')) summary.already_on_default++
@@ -602,7 +633,8 @@ class StatusDisplay {
           else if (repo.message.includes('uncommitted')) summary.uncommitted++
           break
         case 'failed':
-          if (repo.message.includes('Merge conflict')) summary.merge_conflicts++
+          if (repo.message.includes('Merge conflict with upstream')) summary.upstream_merge_conflicts++
+          else if (repo.message.includes('Merge conflict')) summary.merge_conflicts++
           else summary.failed++
           break
         case 'skipped':
@@ -625,9 +657,12 @@ class StatusDisplay {
     if (summary.up_to_date_with_default > 0) log('green', `✅ Up to date with default: ${summary.up_to_date_with_default}`)
     if (summary.switched_to_default > 0) log('green', `🔄 Switched to default branch: ${summary.switched_to_default}`)
     if (summary.already_on_default > 0) log('green', `✅ Already on default branch: ${summary.already_on_default}`)
+    if (summary.synced_with_upstream > 0) log('green', `🍴 Synced forks with upstream: ${summary.synced_with_upstream}`)
+    if (summary.up_to_date_with_upstream > 0) log('green', `✅ Up to date with upstream: ${summary.up_to_date_with_upstream}`)
     if (summary.deleted > 0) log('green', `✅ Deleted: ${summary.deleted}`)
     if (summary.uncommitted > 0) log('yellow', `🔄 Uncommitted changes: ${summary.uncommitted}`)
     if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
+    if (summary.upstream_merge_conflicts > 0) log('red', `💥 Upstream merge conflicts: ${summary.upstream_merge_conflicts}`)
     if (summary.merge_conflicts > 0) log('red', `💥 Merge conflicts: ${summary.merge_conflicts}`)
     if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
 
@@ -637,76 +672,49 @@ class StatusDisplay {
   }
 }
 
-// Helper function to check if gh CLI is installed
-async function isGhInstalled() {
-  try {
-    const { execSync } = await import('child_process')
-    execSync('gh --version', { stdio: 'pipe' })
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-// Helper function to get GitHub token from gh CLI if available
-async function getGhToken() {
-  try {
-    if (!(await isGhInstalled())) {
-      return null
-    }
-    
-    const { execSync } = await import('child_process')
-    const token = execSync('gh auth token', { encoding: 'utf8', stdio: 'pipe' }).trim()
-    return token
-  } catch (error) {
-    return null
-  }
-}
-
-// Helper function to get repositories using gh CLI
-async function getReposFromGhCli(org, user) {
-  try {
-    if (!(await isGhInstalled())) {
-      return null
-    }
-    
-    const { execSync } = await import('child_process')
-    const target = org || user
-    
-    const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt --limit 1000`
-    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' })
-    const repos = JSON.parse(output)
-    
-    return repos.map(repo => ({
-      name: repo.name,
-      clone_url: repo.url + '.git',
-      ssh_url: repo.sshUrl,
-      html_url: repo.url,
-      updated_at: repo.updatedAt,
-      private: repo.isPrivate
-    }))
-  } catch (error) {
-    return null
-  }
-}
-
 // Configure CLI arguments
 const scriptName = path.basename(process.argv[1])
-const argv = yargs(hideBin(process.argv))
+const rawArgs = hideBin(process.argv)
+const isHelpRequest = rawArgs.some(arg => arg === '--help' || arg === '-h')
+const isVersionRequest = rawArgs.some(arg => arg === '--version' || arg === '-v')
+const isHelpOrVersionRequest = isHelpRequest || isVersionRequest
+const yargsInput = isHelpRequest ? [] : rawArgs
+
+function readThreadOption(args) {
+  let value
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+
+    if (arg === '--threads' || arg === '-j') {
+      value = args[i + 1]
+      i++
+    } else if (arg.startsWith('--threads=')) {
+      value = arg.slice('--threads='.length)
+    } else if (arg.startsWith('-j') && arg.length > 2) {
+      value = arg.slice(2)
+    }
+  }
+
+  return value === undefined ? undefined : Number(value)
+}
+
+const cli = yargs(yargsInput)
   .scriptName(scriptName)
   .version(version)
-  .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
+  .alias('version', 'v')
+  .usage('Usage: $0 [--org <organization> | --user <username>] [options]\n\nOmit --org and --user to auto-detect the GitHub owner from local repositories or the target directory name.')
   .option('org', {
     alias: 'o',
     type: 'string',
-    describe: 'GitHub organization name',
-    example: 'deep-assistant'
+    describe: 'GitHub organization name or URL',
+    example: 'github.com/deep-assistant'
   })
   .option('user', {
     alias: 'u',
     type: 'string',
-    describe: 'GitHub username',
-    example: 'konard'
+    describe: 'GitHub username or URL',
+    example: 'github.com/konard'
   })
   .option('token', {
     alias: 't',
@@ -757,33 +765,48 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Switch to the default branch (main/master) in each repository',
     default: false
   })
+  .option('pull-changes-to-fork', {
+    type: 'boolean',
+    describe: 'Update forks with changes from their parent repositories (upstream sync)',
+    default: false
+  })
   .check((argv) => {
-    if (!argv.org && !argv.user) {
-      throw new Error('You must specify either --org or --user')
+    if (isHelpOrVersionRequest) {
+      return true
     }
+
+    const explicitThreads = readThreadOption(rawArgs)
+    const threads = explicitThreads === undefined ? argv.threads : explicitThreads
+
     if (argv.org && argv.user) {
       throw new Error('You cannot specify both --org and --user')
     }
-    if (argv.threads < 1) {
+    if (!Number.isFinite(threads)) {
+      throw new Error('Thread count must be a number')
+    }
+    if (threads < 1) {
       throw new Error('Thread count must be at least 1')
     }
-    // Check if both single-thread and threads were explicitly provided
-    // We need to check if threads was explicitly set (not just the default)
-    const threadsExplicitlySet = process.argv.some(arg =>
-      arg === '--threads' || arg === '-j'
-    )
-    if (argv['single-thread'] && threadsExplicitlySet) {
+    if (argv['single-thread'] && explicitThreads !== undefined) {
       throw new Error('Cannot specify both --single-thread and --threads')
     }
     if (argv['pull-from-default'] && argv['switch-to-default']) {
       throw new Error('Cannot specify both --pull-from-default and --switch-to-default')
     }
+    if (argv['pull-changes-to-fork'] && argv['switch-to-default']) {
+      throw new Error('Cannot specify both --pull-changes-to-fork and --switch-to-default')
+    }
+    if (argv['pull-changes-to-fork'] && argv['pull-from-default']) {
+      throw new Error('Cannot specify both --pull-changes-to-fork and --pull-from-default')
+    }
     return true
   })
   .help('h')
   .alias('h', 'help')
+  .example('$0', 'Auto-detect GitHub owner from local repositories or directory name')
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
   .example('$0 --user konard', 'Sync all repositories from konard user account')
+  .example('$0 --user github.com/konard', 'Sync all repositories from a GitHub URL owner')
   .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')
   .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
   .example('$0 --user konard --single-thread', 'Run operations sequentially')
@@ -792,142 +815,44 @@ const argv = yargs(hideBin(process.argv))
   .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
   .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
   .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
-  .argv
+  .example('$0 --user konard --pull-changes-to-fork', 'Sync forked repositories with their upstream repositories')
 
-/**
- * Load heavy dependencies (deferred until after CLI argument parsing)
- */
-async function loadDependencies() {
-  if (!Octokit) {
-    const octokitModule = await use('@octokit/rest@22.0.0')
-    Octokit = octokitModule.Octokit
-  }
-  if (!git) {
-    const gitModule = await use('simple-git@3.28.0')
-    git = gitModule.default
-  }
+const argv = cli.argv
+const explicitThreads = readThreadOption(rawArgs)
+
+if (explicitThreads !== undefined) {
+  argv.threads = explicitThreads
 }
 
-/**
- * Handle GitHub API errors with consistent messaging
- * @param {Error} error - The error object
- * @param {string} apiUrl - The API URL that failed
- * @param {string|null} token - GitHub token (if provided)
- */
-function handleGitHubAPIError(error, apiUrl, token) {
-  if (error.status === 404) {
-    log('red', `❌ Resource not found or not accessible`)
-    log('yellow', `   API URL: ${apiUrl}`)
-  } else if (error.status === 401) {
-    log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
-    log('yellow', `   API URL: ${apiUrl}`)
-  } else {
-    log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
-    log('red', `   Error: ${error.message}`)
-    if (error.message.includes('Unable to connect')) {
-      log('yellow', '💡 Please check your internet connection')
-      log('yellow', `   You can test by visiting: ${apiUrl}`)
-    }
-  }
-  if (!token) {
-    log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
-    log('yellow', '   Visit: https://github.com/settings/tokens')
-  }
-  process.exit(1)
+if (isHelpRequest) {
+  console.log(await cli.getHelp())
+  process.exit(0)
 }
 
-/**
- * Get all repositories from a GitHub organization
- * @param {string} org - Organization name
- * @param {string|null} token - GitHub token
- * @returns {Promise<Array>} Array of repository objects
- */
-async function getOrganizationRepos(org, token) {
-  try {
-    log('blue', `🔍 Fetching repositories from ${org} organization...`)
-    
-    // Create Octokit instance
-    const octokit = new Octokit({
-      auth: token,
-      baseUrl: 'https://api.github.com'
-    })
-    
-    // Get all repositories from the organization
-    const { data: repos } = await octokit.rest.repos.listForOrg({
-      org: org,
-      type: 'all',
-      per_page: 100,
-      sort: 'updated',
-      direction: 'desc'
-    })
-    
-    log('green', `✅ Found ${repos.length} repositories`)
-    return repos.map(repo => ({
-      name: repo.name,
-      clone_url: repo.clone_url,
-      ssh_url: repo.ssh_url,
-      html_url: repo.html_url,
-      updated_at: repo.updated_at,
-      private: repo.private
-    }))
-  } catch (error) {
-    const apiUrl = `https://api.github.com/orgs/${org}/repos`
-    handleGitHubAPIError(error, apiUrl, token)
-  }
+// Import sync dependencies only after standalone CLI requests are handled.
+const { Octokit } = await use('@octokit/rest@22.0.0')
+const { default: git } = await use('simple-git@3.28.0')
+const fs = await use('fs-extra@11.3.0')
+const { syncForkWithUpstream } = await import('./fork-sync.mjs')
+const {
+  getGhToken,
+  getReposFromGhCli,
+  getOrganizationRepos,
+  getUserRepos
+} = await import('./github-repositories.mjs')
+
+function createGit(baseDir) {
+  const simpleGit = git(baseDir)
+  return typeof simpleGit.timeout === 'function'
+    ? simpleGit.timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
+    : simpleGit
 }
 
-/**
- * Get all repositories from a GitHub user
- * @param {string} username - GitHub username
- * @param {string|null} token - GitHub token
- * @returns {Promise<Array>} Array of repository objects
- */
-async function getUserRepos(username, token) {
-  try {
-    log('blue', `🔍 Fetching repositories from ${username} user account...`)
-
-    // Create Octokit instance
-    const octokit = new Octokit({
-      auth: token,
-      baseUrl: 'https://api.github.com'
-    })
-
-    // Get all repositories for the user
-    const { data: repos } = await octokit.rest.repos.listForUser({
-      username: username,
-      type: 'all',
-      per_page: 100,
-      sort: 'updated',
-      direction: 'desc'
-    })
-
-    log('green', `✅ Found ${repos.length} repositories`)
-    return repos.map(repo => ({
-      name: repo.name,
-      clone_url: repo.clone_url,
-      ssh_url: repo.ssh_url,
-      html_url: repo.html_url,
-      updated_at: repo.updated_at,
-      private: repo.private
-    }))
-  } catch (error) {
-    const apiUrl = `https://api.github.com/users/${username}/repos`
-    handleGitHubAPIError(error, apiUrl, token)
-  }
-}
-
-/**
- * Check if a directory exists
- * @param {string} dirPath - Path to check
- * @returns {Promise<boolean>} True if directory exists and is accessible
- */
 async function directoryExists(dirPath) {
   try {
-    const stats = await fs.stat(dirPath)
+    const stats = await statPath(dirPath)
     return stats.isDirectory()
   } catch (error) {
-    // Only return false for "not found" errors
-    // Let permission and other errors bubble up
     if (error.code === 'ENOENT') {
       return false
     }
@@ -941,7 +866,7 @@ async function getDefaultBranch(simpleGit) {
     const remotes = await simpleGit.getRemotes(true)
     if (remotes.length > 0) {
       const remoteName = remotes[0].name || 'origin'
-      
+
       // Try to get symbolic ref from remote HEAD
       try {
         const remoteHead = await simpleGit.raw(['symbolic-ref', `refs/remotes/${remoteName}/HEAD`])
@@ -963,27 +888,27 @@ async function getDefaultBranch(simpleGit) {
         }
       }
     }
-    
+
     // Fallback: check common default branch names
     const branches = await simpleGit.branch(['-r'])
     const remoteBranches = branches.all.filter(branch => branch.includes('/'))
-    
+
     // Look for main or master in remote branches
     const mainBranch = remoteBranches.find(branch => branch.endsWith('/main'))
     if (mainBranch) {
       return 'main'
     }
-    
+
     const masterBranch = remoteBranches.find(branch => branch.endsWith('/master'))
     if (masterBranch) {
       return 'master'
     }
-    
+
     // If no common defaults found, use the first remote branch
     if (remoteBranches.length > 0) {
       return remoteBranches[0].split('/').pop()
     }
-    
+
     // Final fallback: assume main
     return 'main'
   } catch (error) {
@@ -992,123 +917,179 @@ async function getDefaultBranch(simpleGit) {
   }
 }
 
-/**
- * Switch repository to its default branch
- * @param {string} repoName - Name of the repository
- * @param {string} targetDir - Target directory containing repositories
- * @param {StatusDisplay} statusDisplay - Status display instance
- * @returns {Promise<{success: boolean, type: string, error?: string, details?: Object}>}
- */
+async function getPrimaryRemoteName(simpleGit) {
+  const remotes = await simpleGit.getRemotes(true)
+  return remotes[0]?.name || 'origin'
+}
+
+async function repositoryHasCommits(simpleGit) {
+  try {
+    await simpleGit.raw(['rev-parse', '--verify', 'HEAD'])
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function getCurrentBranchName(simpleGit) {
+  try {
+    const currentBranch = await simpleGit.revparse(['--abbrev-ref', 'HEAD'])
+    return currentBranch.trim()
+  } catch {
+    const currentBranch = await simpleGit.raw(['symbolic-ref', '--short', 'HEAD'])
+    return currentBranch.trim()
+  }
+}
+
+async function getRemoteBranchNames(simpleGit) {
+  const branches = await simpleGit.branch(['-r'])
+  const remoteBranches = branches.all
+    .map(branch => branch.trim())
+    .filter(branch => branch && branch.includes('/') && !branch.includes('HEAD ->'))
+    .map(branch => branch.slice(branch.indexOf('/') + 1))
+
+  return Array.from(new Set(remoteBranches))
+}
+
+async function pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisplay) {
+  const remoteBranches = await getRemoteBranchNames(simpleGit)
+
+  if (remoteBranches.length === 0) {
+    statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled (empty repository)')
+    return { success: true, type: 'pulled_empty' }
+  }
+
+  statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
+  const detectedDefaultBranch = await getDefaultBranch(simpleGit)
+  const defaultBranch = remoteBranches.includes(detectedDefaultBranch)
+    ? detectedDefaultBranch
+    : remoteBranches[0]
+
+  const currentBranchName = await getCurrentBranchName(simpleGit)
+
+  if (currentBranchName !== defaultBranch) {
+    statusDisplay.updateRepo(repoName, 'pulling', `Switching to ${defaultBranch}...`)
+    try {
+      await simpleGit.checkout(defaultBranch)
+    } catch {
+      await simpleGit.checkoutBranch(defaultBranch, `origin/${defaultBranch}`)
+    }
+  }
+
+  statusDisplay.updateRepo(repoName, 'pulling', `Pulling ${defaultBranch}...`)
+  await simpleGit.pull(await getPrimaryRemoteName(simpleGit), defaultBranch)
+  statusDisplay.updateRepo(repoName, 'success', `Successfully pulled ${defaultBranch}`)
+  return { success: true, type: 'pulled_default', details: { defaultBranch } }
+}
+
 async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
   try {
     statusDisplay.updateRepo(repoName, 'checking', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
-    
+    const simpleGit = createGit(repoPath)
+
     const status = await simpleGit.status()
     if (status.files.length > 0) {
       statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped')
       return { success: true, type: 'uncommitted' }
     }
-    
+
     statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
     await simpleGit.fetch(['--all'])
-    
+
     // Get current branch
-    const currentBranch = await simpleGit.revparse(['--abbrev-ref', 'HEAD'])
-    const currentBranchName = currentBranch.trim()
-    
+    const currentBranchName = await getCurrentBranchName(simpleGit)
+
     // Get default branch
     statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
     const defaultBranch = await getDefaultBranch(simpleGit)
-    
+    const remoteName = await getPrimaryRemoteName(simpleGit)
+
     if (currentBranchName === defaultBranch) {
-      statusDisplay.updateRepo(repoName, 'success', `Already on default branch: ${defaultBranch}`)
+      // Already on default branch, but still pull latest changes
+      statusDisplay.updateRepo(repoName, 'pulling', `Already on ${defaultBranch}, pulling latest changes...`)
+      await simpleGit.pull(remoteName, defaultBranch)
+      statusDisplay.updateRepo(repoName, 'success', `Already on default branch ${defaultBranch} and pulled latest changes`)
       return { success: true, type: 'already_on_default', details: { defaultBranch } }
     }
-    
+
     // Switch to default branch
     statusDisplay.updateRepo(repoName, 'pulling', `Switching to ${defaultBranch}...`)
     try {
       await simpleGit.checkout(defaultBranch)
-      statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch}`)
-      return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
     } catch (checkoutError) {
       // Try to create and checkout the branch if it doesn't exist locally
       statusDisplay.updateRepo(repoName, 'pulling', `Creating local ${defaultBranch} branch...`)
       try {
-        await simpleGit.checkoutBranch(defaultBranch, `origin/${defaultBranch}`)
-        statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch}`)
-        return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
+        await simpleGit.checkoutBranch(defaultBranch, `${remoteName}/${defaultBranch}`)
       } catch (createError) {
         statusDisplay.updateRepo(repoName, 'failed', `Could not switch to ${defaultBranch}: ${createError.message}`)
         return { success: false, type: 'switch_failed', error: createError.message, details: { defaultBranch } }
       }
     }
+
+    // After switching to default branch, always pull the latest changes.
+    statusDisplay.updateRepo(repoName, 'pulling', `Pulling latest changes from ${remoteName}/${defaultBranch}...`)
+    await simpleGit.pull(remoteName, defaultBranch)
+    statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch} and pulled latest changes`)
+    return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
   } catch (error) {
     statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
     return { success: false, type: 'switch', error: error.message }
   }
 }
 
-/**
- * Pull updates for a repository
- * @param {string} repoName - Name of the repository
- * @param {string} targetDir - Target directory containing repositories
- * @param {StatusDisplay} statusDisplay - Status display instance
- * @param {boolean} pullFromDefault - Whether to pull from default branch
- * @returns {Promise<{success: boolean, type: string, error?: string, details?: Object}>}
- */
 async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefault = false) {
   try {
     statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
-    
+    const simpleGit = createGit(repoPath)
+
     const status = await simpleGit.status()
     if (status.files.length > 0) {
       statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped')
       return { success: true, type: 'uncommitted' }
     }
-    
+
     statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
     await simpleGit.fetch(['--all'])
-    
+
+    if (!(await repositoryHasCommits(simpleGit))) {
+      return await pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisplay)
+    }
+
     if (pullFromDefault) {
       // Get current branch
-      const currentBranch = await simpleGit.revparse(['--abbrev-ref', 'HEAD'])
-      const currentBranchName = currentBranch.trim()
-      
+      const currentBranchName = await getCurrentBranchName(simpleGit)
+
       // Get default branch
       statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
       const defaultBranch = await getDefaultBranch(simpleGit)
-      
+
       if (currentBranchName !== defaultBranch) {
         // Attempt to merge from default branch
         statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
         try {
-          // Get remote name dynamically
-          const remotes = await simpleGit.getRemotes()
-          const remoteName = remotes.length > 0 ? remotes[0].name : 'origin'
+          const remoteName = await getPrimaryRemoteName(simpleGit)
           const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
-          
+
           // Check if remote branch exists
           const branches = await simpleGit.branch(['-r'])
           const hasRemoteDefault = branches.all.some(branch => branch.includes(remoteDefaultBranch))
-          
+
           if (hasRemoteDefault) {
             // Attempt to merge - let git decide what to do
             try {
               const result = await simpleGit.merge([remoteDefaultBranch])
-              
+
               // Check merge result - simple-git returns an object with changes info
-              const hasChanges = (result?.files?.length > 0) || 
-                                (result?.summary?.changes > 0) || 
-                                (result?.summary?.insertions > 0) || 
+              const hasChanges = (result?.files?.length > 0) ||
+                                (result?.summary?.changes > 0) ||
+                                (result?.summary?.insertions > 0) ||
                                 (result?.summary?.deletions > 0)
-              
+
               const isAlreadyUpToDate = !hasChanges
-              
+
               if (isAlreadyUpToDate) {
                 statusDisplay.updateRepo(repoName, 'success', `Already up to date with ${defaultBranch}`)
                 return { success: true, type: 'up_to_date_with_default', details: { defaultBranch, currentBranch: currentBranchName } }
@@ -1161,18 +1142,10 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
   }
 }
 
-/**
- * Clone a repository
- * @param {Object} repo - Repository object with name, clone_url, ssh_url
- * @param {string} targetDir - Target directory for cloning
- * @param {boolean} useSsh - Whether to use SSH for cloning
- * @param {StatusDisplay} statusDisplay - Status display instance
- * @returns {Promise<{success: boolean, type: string, error?: string}>}
- */
 async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   try {
     statusDisplay.updateRepo(repo.name, 'cloning', 'Cloning...')
-    const simpleGit = git(targetDir).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
+    const simpleGit = createGit(targetDir)
 
     // Use SSH if requested and available, fallback to HTTPS
     const cloneUrl = useSsh && repo.ssh_url ? repo.ssh_url : repo.clone_url
@@ -1180,9 +1153,9 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
 
     statusDisplay.updateRepo(repo.name, 'cloning', 'Fetching all branches...')
     const repoPath = path.join(targetDir, repo.name)
-    const repoGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
+    const repoGit = createGit(repoPath)
     await repoGit.fetch(['--all'])
-    
+
     statusDisplay.updateRepo(repo.name, 'success', 'Successfully cloned')
     return { success: true, type: 'cloned' }
   } catch (error) {
@@ -1191,13 +1164,6 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   }
 }
 
-/**
- * Delete a repository directory
- * @param {string} repoName - Name of the repository
- * @param {string} targetDir - Target directory containing repositories
- * @param {StatusDisplay} statusDisplay - Status display instance
- * @returns {Promise<{success: boolean, type: string, error?: string}>}
- */
 async function deleteRepository(repoName, targetDir, statusDisplay) {
   try {
     const repoPath = path.join(targetDir, repoName)
@@ -1210,8 +1176,8 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 
     // Check for uncommitted changes
     statusDisplay.updateRepo(repoName, 'checking', 'Checking for uncommitted changes...')
-    const simpleGit = git(repoPath).timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
-    
+    const simpleGit = createGit(repoPath)
+
     try {
       const status = await simpleGit.status()
       if (status.files.length > 0) {
@@ -1223,7 +1189,7 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
       statusDisplay.updateRepo(repoName, 'skipped', 'Not a git repository')
       return { success: true, type: 'skipped' }
     }
-    
+
     // Delete the repository
     statusDisplay.updateRepo(repoName, 'deleting', 'Deleting repository...')
     await fs.remove(repoPath)
@@ -1236,53 +1202,86 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 }
 
 // Process repository (either pull or clone)
-async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false) {
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false, pullChangesToFork = false) {
   const repoPath = path.join(targetDir, repo.name)
   const exists = await directoryExists(repoPath)
-  
+
   // Check if private repo without token
   if (repo.private && !token && !exists) {
     statusDisplay.updateRepo(repo.name, 'skipped', 'Private repo, no token provided')
     return { success: true, type: 'skipped' }
   }
-  
+
+  if (pullChangesToFork && (!repo.fork || !repo.parent)) {
+    statusDisplay.updateRepo(repo.name, 'skipped', repo.fork ? 'Fork parent unavailable' : 'Not a fork')
+    return { success: true, type: repo.fork ? 'missing_parent' : 'not_fork' }
+  }
+
   if (exists) {
-    if (switchToDefault) {
+    if (pullChangesToFork) {
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit })
+    } else if (switchToDefault) {
       return await switchToDefaultBranch(repo.name, targetDir, statusDisplay)
     } else {
       return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
     }
   } else {
-    return await cloneRepository(repo, targetDir, useSsh, statusDisplay)
+    const cloneResult = await cloneRepository(repo, targetDir, useSsh, statusDisplay)
+    if (pullChangesToFork && cloneResult.success) {
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit })
+    }
+    return cloneResult
   }
 }
 
 async function main() {
-  // Load heavy dependencies now that args are parsed
-  await loadDependencies()
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault, 'pull-changes-to-fork': pullChangesToFork } = argv
 
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  if (org) {
+    org = normalizeExplicitTarget(org, 'organization')
+  }
+
+  if (user) {
+    user = normalizeExplicitTarget(user, 'username')
+  }
 
   // If no token provided, try to get it from gh CLI
-  if (!token) {
+  if (!token || token === undefined) {
     const ghToken = await getGhToken()
     if (ghToken) {
       token = ghToken
       log('cyan', '🔑 Using GitHub token from gh CLI')
     }
   }
-  
+
+  // Ensure target directory exists before auto-detection inspects it
+  await fs.ensureDir(targetDir)
+
+  if (!org && !user) {
+    const detectedTarget = await resolveAutoTarget({
+      targetDir,
+      gitFactory: createGit,
+      token,
+      Octokit,
+      askConfirmation,
+      askQuestion,
+      log
+    })
+    org = detectedTarget.org
+    user = detectedTarget.user
+  }
+
   const target = org || user
   const targetType = org ? 'organization' : 'user'
-  
+
   // Determine concurrency limit: single-thread overrides threads setting
   const concurrencyLimit = singleThread ? 1 : threads
-  
+
   if (deleteMode) {
     log('red', `🗑️  Starting ${target} ${targetType} repository deletion...`)
     log('cyan', `📁 Target directory: ${targetDir}`)
     log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
-    
+
     // Confirmation prompt
     const confirmed = await askConfirmation(`⚠️  Are you sure you want to delete all repositories from ${targetDir}? (y/N): `)
     if (!confirmed) {
@@ -1299,54 +1298,54 @@ async function main() {
     if (switchToDefault) {
       log('cyan', `🔄 Switch to default branch: enabled`)
     }
+    if (pullChangesToFork) {
+      log('cyan', `🍴 Pull changes to fork: enabled`)
+    }
     log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
   }
-  
-  // Ensure target directory exists
-  await fs.ensureDir(targetDir)
-  
+
   // Try to get repositories using gh CLI first (includes private repos)
   let repos = await getReposFromGhCli(org, user)
-  
+
   if (repos) {
     log('cyan', '📋 Using gh CLI to fetch repositories (includes private repos)')
   } else {
     // Fallback to API calls
     log('cyan', '📋 Using GitHub API to fetch repositories')
-    repos = org 
-      ? await getOrganizationRepos(org, token)
-      : await getUserRepos(user, token)
+    repos = org
+      ? await getOrganizationRepos(org, token, Octokit, log)
+      : await getUserRepos(user, token, Octokit, log)
   }
-  
+
   // Initialize status display
   const statusDisplay = new StatusDisplay(liveUpdates, concurrencyLimit)
-  
+
   // Add all repositories to status display
   for (const repo of repos) {
     statusDisplay.addRepo(repo.name)
   }
-  
+
   // Sort repositories alphabetically by name
   repos.sort((a, b) => a.name.localeCompare(b.name))
-  
+
   // Process all repositories with configurable concurrency
   const results = []
-  
-  // Start render loop for dynamic updates
+
+  // Start render loop at 10 FPS for dynamic updates
   let renderInterval
   if (statusDisplay.useInPlaceUpdates) {
     renderInterval = setInterval(() => {
       statusDisplay.render()
-    }, DEFAULTS.RENDER_INTERVAL_MS) // 100ms = 10 FPS
+    }, 100) // 100ms = 10 FPS
   }
-  
+
   try {
     if (concurrencyLimit === 1) {
       // Sequential processing for single-thread mode
       for (const repo of repos) {
-        const result = deleteMode 
+        const result = deleteMode
           ? await deleteRepository(repo.name, targetDir, statusDisplay)
-          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
         results.push(result)
       }
     } else {
@@ -1354,7 +1353,7 @@ async function main() {
       let activeWorkers = 0
       let repoIndex = 0
       const resultsMap = new Map()
-      
+
       // Create a promise that resolves when all repos are processed
       await new Promise((resolve) => {
         const processNext = async () => {
@@ -1363,19 +1362,19 @@ async function main() {
             resolve()
             return
           }
-          
+
           // Start new workers up to the concurrency limit
           while (activeWorkers < concurrencyLimit && repoIndex < repos.length) {
             const currentIndex = repoIndex
             const repo = repos[currentIndex]
             repoIndex++
             activeWorkers++
-            
+
             // Process repository asynchronously
             const processPromise = deleteMode
               ? deleteRepository(repo.name, targetDir, statusDisplay)
-              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
-            
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
+
             processPromise
               .then(result => {
                 resultsMap.set(currentIndex, result)
@@ -1384,10 +1383,10 @@ async function main() {
               })
               .catch(error => {
                 // Handle unexpected errors
-                resultsMap.set(currentIndex, { 
-                  success: false, 
-                  type: 'error', 
-                  error: error.message 
+                resultsMap.set(currentIndex, {
+                  success: false,
+                  type: 'error',
+                  error: error.message
                 })
                 statusDisplay.updateRepo(repo.name, 'failed', `Unexpected error: ${error.message}`)
                 activeWorkers--
@@ -1395,11 +1394,11 @@ async function main() {
               })
           }
         }
-        
+
         // Start initial workers
         processNext()
       })
-      
+
       // Convert resultsMap to array in original order
       for (let i = 0; i < repos.length; i++) {
         results.push(resultsMap.get(i))
@@ -1413,12 +1412,28 @@ async function main() {
       statusDisplay.render()
     }
   }
-  
+
   // Print final summary
   statusDisplay.printSummary()
 }
 
-main().catch(error => {
-  log('red', `💥 Script failed: ${error.message}`)
-  process.exit(1)
-})
+function isDirectExecution() {
+  if (!process.argv[1]) {
+    return false
+  }
+
+  try {
+    return realpathSync(process.argv[1]) === __filename
+  } catch (error) {
+    return path.resolve(process.argv[1]) === __filename
+  }
+}
+
+if (isDirectExecution() && !isHelpOrVersionRequest) {
+  main().catch(error => {
+    log('red', `💥 Script failed: ${error.message}`)
+    process.exit(1)
+  })
+}
+
+export { StatusDisplay }

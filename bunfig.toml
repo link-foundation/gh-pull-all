@@ -1,0 +1,9 @@
+[test]
+# Enable running tests from the tests/ directory
+testdir = ["tests"]
+
+# Configure test patterns
+patterns = ["**/*.test.{js,mjs,ts,tsx}", "test-*.{js,mjs}", "tests/**/*.{js,mjs}"]
+
+# Set timeout
+timeout = 30000

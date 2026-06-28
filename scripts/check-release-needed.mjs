@@ -23,15 +23,26 @@ function isVersionPublished(packageName, version) {
   return result.status === 0 && result.stdout.trim() === version;
 }
 
+const hasChangesets = process.env.HAS_CHANGESETS === 'true';
 const { name, version } = readPackageInfo();
 
 console.log(`Package: ${name}`);
 console.log(`Current version: ${version}`);
+console.log(`Has changesets: ${hasChangesets}`);
+
+if (hasChangesets) {
+  console.log('Pending changesets found; release workflow should bump version first.');
+  setOutput('should_release', 'true');
+  setOutput('skip_bump', 'false');
+  process.exit(0);
+}
 
 if (isVersionPublished(name, version)) {
   console.log(`${formatNpmPackageVersion(name, version)} is already published.`);
   setOutput('should_release', 'false');
+  setOutput('skip_bump', 'false');
 } else {
   console.log(`${formatNpmPackageVersion(name, version)} is not published yet.`);
   setOutput('should_release', 'true');
+  setOutput('skip_bump', 'true');
 }

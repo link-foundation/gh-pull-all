@@ -58,6 +58,7 @@ const testDescriptions = {
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',
   'test-changesets.mjs': 'Tests changeset validation and release metadata scripts',
   'test-detect-code-changes.mjs': 'Tests CI change detection for code and non-code commits',
+  'test-file-line-limits.mjs': 'Tests CI line-limit warnings and hard failures',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
   'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',

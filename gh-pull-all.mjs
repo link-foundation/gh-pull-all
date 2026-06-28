@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const PACKAGE_NAME = 'gh-pull-all'
-let version = '1.4.4' // Fallback version
+let version = '1.4.3' // Fallback version
 
 function normalizeVersion(value) {
   return typeof value === 'string' && value.trim() !== '' ? value.trim() : null

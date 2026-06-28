@@ -49,6 +49,7 @@ const testDescriptions = {
   'test-fixed-rendering.mjs': 'Tests fixed terminal rendering functionality',
   'test-terminal-rendering.mjs': 'Tests terminal rendering output and formatting',
   'test-windowed-display.mjs': 'Tests windowed display mode for terminal output',
+  'test-version.mjs': 'Tests --version output and fallback behavior without package metadata',
   'test-progress-bar.mjs': 'Tests progress bar functionality and display',
   'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior',
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',

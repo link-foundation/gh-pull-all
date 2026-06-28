@@ -5,17 +5,102 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 import readline from 'readline'
+import { existsSync, readFileSync, realpathSync } from 'fs'
 import { stat as statPath } from 'fs/promises'
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const PACKAGE_NAME = 'gh-pull-all'
+let version = '1.4.3' // Fallback version
+
+function normalizeVersion(value) {
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null
+}
+
+function readPackageVersion(packagePath) {
+  try {
+    if (!existsSync(packagePath)) {
+      return null
+    }
+
+    const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'))
+    if (packageJson.name !== PACKAGE_NAME) {
+      return null
+    }
+
+    return normalizeVersion(packageJson.version)
+  } catch (error) {
+    return null
+  }
+}
+
+function getVersionFromDirectory(startDir) {
+  let currentDir = startDir
+
+  for (let depth = 0; depth < 10; depth++) {
+    for (const packagePath of [
+      path.join(currentDir, 'package.json'),
+      path.join(currentDir, 'node_modules', PACKAGE_NAME, 'package.json'),
+      path.join(currentDir, 'lib', 'node_modules', PACKAGE_NAME, 'package.json')
+    ]) {
+      const detectedVersion = readPackageVersion(packagePath)
+      if (detectedVersion) {
+        return detectedVersion
+      }
+    }
+
+    const parentDir = path.dirname(currentDir)
+    if (parentDir === currentDir) {
+      break
+    }
+    currentDir = parentDir
+  }
+
+  return null
+}
+
+function getVersionSync() {
+  const candidateDirs = new Set([__dirname])
+
+  for (const filename of [__filename, process.argv[1]]) {
+    if (!filename) {
+      continue
+    }
+
+    try {
+      candidateDirs.add(path.dirname(realpathSync(filename)))
+    } catch (error) {
+      // Ignore paths that are unavailable in the current runtime.
+    }
+  }
+
+  for (const candidateDir of candidateDirs) {
+    const detectedVersion = getVersionFromDirectory(candidateDir)
+    if (detectedVersion) {
+      return detectedVersion
+    }
+  }
+
+  return version
+}
+
+function hasAnyArg(args, names) {
+  return args.some(arg => names.includes(arg))
+}
+
+const startupArgs = process.argv.slice(2)
+if (hasAnyArg(startupArgs, ['--version', '-v']) && !hasAnyArg(startupArgs, ['--help', '-h'])) {
+  console.log(getVersionSync())
+  process.exit(0)
+}
+
 // Download use-m dynamically (robustly, with CDN fallback and clear errors).
 // A bare `eval(await (await fetch(...)).text())` crashes with a cryptic
 // SyntaxError when a CDN returns an error body instead of the module source.
 // See https://github.com/link-foundation/gh-pull-all/issues/35.
-import { loadUseM } from './load-use-m.mjs'
+const { loadUseM } = await import('./load-use-m.mjs')
 const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
@@ -26,18 +111,7 @@ const { default: yargs } = await use('yargs@17.7.2')
 const yargsHelpers = await use('yargs@17.7.2/helpers')
 const hideBin = yargsHelpers.hideBin || yargsHelpers.default?.hideBin || ((argv) => argv.slice(2))
 
-// Get version from package.json or fallback
-let version = '1.4.2' // Fallback version
-
-try {
-  const packagePath = path.join(__dirname, 'package.json')
-  if (await fs.pathExists(packagePath)) {
-    const packageJson = await fs.readJson(packagePath)
-    version = packageJson.version
-  }
-} catch (error) {
-  // Use fallback version if package.json can't be read
-}
+version = getVersionSync()
 
 // Helper function for confirmation prompt
 async function askConfirmation(question) {
@@ -580,7 +654,7 @@ async function getReposFromGhCli(org, user) {
 const scriptName = path.basename(process.argv[1])
 const rawArgs = hideBin(process.argv)
 const isHelpRequest = rawArgs.some(arg => arg === '--help' || arg === '-h')
-const isVersionRequest = rawArgs.some(arg => arg === '--version')
+const isVersionRequest = rawArgs.some(arg => arg === '--version' || arg === '-v')
 const isHelpOrVersionRequest = isHelpRequest || isVersionRequest
 const yargsInput = isHelpRequest ? [] : rawArgs
 
@@ -606,6 +680,7 @@ function readThreadOption(args) {
 const cli = yargs(yargsInput)
   .scriptName(scriptName)
   .version(version)
+  .alias('version', 'v')
   .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
   .option('org', {
     alias: 'o',

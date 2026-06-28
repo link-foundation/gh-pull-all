@@ -39,7 +39,8 @@ const testDescriptions = {
   'test-auto-mode.mjs': 'Tests default auto mode with local git repositories and directory fallback',
   'test-terminal-width.mjs': 'Tests terminal width handling and message truncation',
   'test-uncommitted-changes.mjs': 'Tests handling of repositories with uncommitted changes',
-  'test-integration.mjs': 'Tests all functionality together in complex scenarios',
+  'test-integration-fast.mjs': 'Tests core CLI behavior with local mock repositories',
+  'test-integration-slow.mjs': 'Tests all functionality together in complex scenarios',
   'test-issue-11-integration.mjs': 'Tests short status errors with full details in the errors section',
   'test-cli-simple.mjs': 'Tests basic CLI functionality and argument parsing',
   'test-file-operations.mjs': 'Tests file system operations and directory handling',
@@ -94,8 +95,21 @@ async function discoverTests() {
   // Find all test files (excluding test-all.mjs)
   const files = await fs.readdir(__dirname)
   const testFilePattern = /^test-.*\.mjs$/
+
+  // Skip slow tests by default (run with --include-slow to include them)
+  const slowTests = ['test-integration-slow.mjs', 'test-issue-11-integration.mjs']
+  const includeSlowTests = process.argv.includes('--include-slow')
+
   return files
-    .filter(file => testFilePattern.test(file) && file !== 'test-all.mjs')
+    .filter(file => {
+      if (!testFilePattern.test(file) || file === 'test-all.mjs') {
+        return false
+      }
+      if (!includeSlowTests && slowTests.includes(file)) {
+        return false
+      }
+      return true
+    })
     .sort()
 }
 
@@ -104,41 +118,45 @@ async function runAllTests() {
   let passedTests = 0
   let failedTests = 0
   const results = []
-  
+
   log('blue', `${colors.bold}🧪 GH-Pull-All Test Suite${colors.reset}`)
-  
+
   // Discover all test files
   const testFiles = await discoverTests()
-  
+
   if (testFiles.length === 0) {
     log('yellow', '⚠️  No test files found')
     return
   }
-  
+
+  const includeSlowTests = process.argv.includes('--include-slow')
   log('cyan', `Running ${testFiles.length} test suites...`)
+  if (!includeSlowTests) {
+    log('yellow', '⚡ Running fast tests only (use --include-slow to include slow integration tests)')
+  }
   log('cyan', `Found test files: ${testFiles.join(', ')}`)
   log('dim', '─'.repeat(80))
-  
+
   for (const testFile of testFiles) {
     const testStartTime = Date.now()
     const displayName = getTestDisplayName(testFile)
     const description = testDescriptions[testFile] || 'Test suite'
-    
+
     log('cyan', `\n🔍 Running: ${displayName}`)
     log('dim', `   File: ${testFile}`)
     log('dim', `   ${description}`)
-    
+
     try {
       const result = execFileSync(process.execPath, [path.join(__dirname, testFile)], {
         cwd: __dirname,
         encoding: 'utf8',
         stdio: 'pipe'
       })
-      
+
       const testDuration = ((Date.now() - testStartTime) / 1000).toFixed(1)
       log('green', `✅ ${displayName} passed (${testDuration}s)`)
       passedTests++
-      
+
       results.push({
         name: displayName,
         file: testFile,
@@ -146,7 +164,7 @@ async function runAllTests() {
         duration: testDuration,
         output: result
       })
-      
+
     } catch (error) {
       const testDuration = ((Date.now() - testStartTime) / 1000).toFixed(1)
       log('red', `❌ ${displayName} failed (${testDuration}s)`)
@@ -156,7 +174,7 @@ async function runAllTests() {
       if (stdout) log('dim', stdout)
       if (stderr) log('dim', stderr)
       failedTests++
-      
+
       results.push({
         name: displayName,
         file: testFile,
@@ -167,29 +185,29 @@ async function runAllTests() {
       })
     }
   }
-  
+
   // Print final summary
   const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1)
-  
+
   log('dim', '\n' + '─'.repeat(80))
   log('blue', `\n${colors.bold}📊 Test Suite Summary${colors.reset}`)
-  
+
   if (passedTests > 0) {
     log('green', `✅ Passed: ${passedTests}/${testFiles.length} tests`)
   }
-  
+
   if (failedTests > 0) {
     log('red', `❌ Failed: ${failedTests}/${testFiles.length} tests`)
-    
+
     // List failed tests
     log('red', '\nFailed Tests:')
     results.filter(r => r.status === 'failed').forEach(result => {
       log('red', `  • ${result.name} (${result.file}): ${result.error}`)
     })
   }
-  
+
   log('blue', `⏱️  Total time: ${totalDuration}s`)
-  
+
   if (failedTests === 0) {
     log('green', `\n🎉 All tests passed! The gh-pull-all.mjs implementation is working correctly.`)
     log('magenta', '✨ Features validated across all test suites:')

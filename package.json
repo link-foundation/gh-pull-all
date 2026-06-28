@@ -9,6 +9,9 @@
   },
   "scripts": {
     "test": "node tests/test-all.mjs",
+    "test:fast": "node tests/test-all.mjs",
+    "test:all": "node tests/test-all.mjs --include-slow",
+    "test:bun": "bun test",
     "test:ci": "node tests/test-all.mjs",
     "check:syntax": "bash scripts/check-mjs-syntax.sh",
     "check:line-limits": "bash scripts/check-file-line-limits.sh",

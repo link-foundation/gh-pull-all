@@ -259,8 +259,15 @@ In multi-thread mode with live updates, the script displays a color-coded progre
 The project includes a comprehensive test suite:
 
 ```bash
-# Run all tests
+# Run the fast direct-execution suite
 npm test
+
+# Run the Bun unit tests
+npm run test:bun
+
+# Run fast tests explicitly, or include slow integration tests
+npm run test:fast
+npm run test:all
 
 # Run specific test categories
 node tests/test-cli-simple.mjs      # CLI validation tests
@@ -268,7 +275,8 @@ node tests/test-github-api.mjs      # GitHub API integration tests
 node tests/test-file-operations.mjs # File system and git operations
 node tests/test-threading.mjs       # Thread configuration tests
 node tests/test-parallel.mjs        # Parallel processing tests
-node tests/test-integration.mjs     # End-to-end integration tests
+node tests/test-integration-fast.mjs # Fast local integration tests
+node tests/test-integration-slow.mjs # End-to-end integration tests
 ```
 
 ## Rate Limits

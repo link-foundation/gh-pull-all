@@ -1,0 +1,6 @@
+[34m🧪 Testing terminal width handling and message truncation...[0m
+[36m🔧 Created conflicting file to generate longer error message[0m
+[32m✅ Terminal width test completed[0m
+[31m❌ Terminal width test failed: Expected error status lines not found[0m
+[36m🧹 Cleaned up test directory[0m
+[31m💥 Test failed: Expected error status lines not found[0m

@@ -1,0 +1,584 @@
+Test	Set up job	﻿2026-06-25T16:12:46.5880728Z Current runner version: '2.335.1'
+Test	Set up job	2026-06-25T16:12:46.5905446Z ##[group]Runner Image Provisioner
+Test	Set up job	2026-06-25T16:12:46.5906433Z Hosted Compute Agent
+Test	Set up job	2026-06-25T16:12:46.5907067Z Version: 20260611.554
+Test	Set up job	2026-06-25T16:12:46.5907758Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+Test	Set up job	2026-06-25T16:12:46.5908625Z Build Date: 2026-06-11T21:40:46Z
+Test	Set up job	2026-06-25T16:12:46.5909342Z Worker ID: {fadf2e04-26e0-433f-b29e-530a713f08ef}
+Test	Set up job	2026-06-25T16:12:46.5910051Z Azure Region: westus3
+Test	Set up job	2026-06-25T16:12:46.5910699Z ##[endgroup]
+Test	Set up job	2026-06-25T16:12:46.5912192Z ##[group]Operating System
+Test	Set up job	2026-06-25T16:12:46.5912917Z Ubuntu
+Test	Set up job	2026-06-25T16:12:46.5913453Z 24.04.4
+Test	Set up job	2026-06-25T16:12:46.5913968Z LTS
+Test	Set up job	2026-06-25T16:12:46.5914533Z ##[endgroup]
+Test	Set up job	2026-06-25T16:12:46.5915359Z ##[group]Runner Image
+Test	Set up job	2026-06-25T16:12:46.5916064Z Image: ubuntu-24.04
+Test	Set up job	2026-06-25T16:12:46.5916654Z Version: 20260622.220.1
+Test	Set up job	2026-06-25T16:12:46.5917725Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+Test	Set up job	2026-06-25T16:12:46.5919524Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+Test	Set up job	2026-06-25T16:12:46.5920461Z ##[endgroup]
+Test	Set up job	2026-06-25T16:12:46.5921642Z ##[group]GITHUB_TOKEN Permissions
+Test	Set up job	2026-06-25T16:12:46.5923500Z Contents: read
+Test	Set up job	2026-06-25T16:12:46.5924300Z Metadata: read
+Test	Set up job	2026-06-25T16:12:46.5925146Z ##[endgroup]
+Test	Set up job	2026-06-25T16:12:46.5927262Z Secret source: Actions
+Test	Set up job	2026-06-25T16:12:46.5928061Z Prepare workflow directory
+Test	Set up job	2026-06-25T16:12:46.6264049Z Prepare all required actions
+Test	Set up job	2026-06-25T16:12:46.6302246Z Getting action download info
+Test	Set up job	2026-06-25T16:12:47.0182024Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+Test	Set up job	2026-06-25T16:12:47.1880900Z Download action repository 'actions/setup-node@v6' (SHA:48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e)
+Test	Set up job	2026-06-25T16:12:47.3730841Z Complete job name: Test
+Test	Run actions/checkout@v6	﻿2026-06-25T16:12:47.4467490Z ##[group]Run actions/checkout@v6
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4468386Z with:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4468885Z   repository: link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4473466Z   token: ***
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4473920Z   ssh-strict: true
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4474373Z   ssh-user: git
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4475047Z   persist-credentials: true
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4475572Z   clean: true
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4476030Z   sparse-checkout-cone-mode: true
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4476572Z   fetch-depth: 1
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4477017Z   fetch-tags: false
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4477472Z   show-progress: true
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4477944Z   lfs: false
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4478374Z   submodules: false
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4478858Z   set-safe-directory: true
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.4479616Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5434587Z Syncing repository: link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5436917Z ##[group]Getting Git version info
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5437732Z Working directory is '/home/runner/work/gh-pull-all/gh-pull-all'
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5438864Z [command]/usr/bin/git version
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5493038Z git version 2.54.0
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5547323Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5565356Z Temporarily overriding HOME='/home/runner/work/_temp/8eb96a4f-9d5c-4066-8b76-e05879b8defb' before making global git config changes
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5568185Z Adding repository directory to the temporary git global config as a safe directory
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5570211Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5619093Z Deleting the contents of '/home/runner/work/gh-pull-all/gh-pull-all'
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5626737Z ##[group]Determining repository object format
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5628882Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5630756Z ##[group]Initializing the repository
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5632658Z [command]/usr/bin/git init /home/runner/work/gh-pull-all/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5721467Z hint: Using 'master' as the name for the initial branch. This default branch name
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5722842Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5724073Z hint: to use in all of your new repositories, which will suppress this warning,
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5725382Z hint: call:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5725827Z hint:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5726360Z hint: 	git config --global init.defaultBranch <name>
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5727144Z hint:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5728140Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5729247Z hint: 'development'. The just-created branch can be renamed via this command:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5729990Z hint:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5730414Z hint: 	git branch -m <name>
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5730899Z hint:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5731663Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5733431Z Initialized empty Git repository in /home/runner/work/gh-pull-all/gh-pull-all/.git/
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5738800Z [command]/usr/bin/git remote add origin https://github.com/link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5780191Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5781032Z ##[group]Disabling automatic garbage collection
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5783739Z [command]/usr/bin/git config --local gc.auto 0
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5810735Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5811636Z ##[group]Setting up auth
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5812481Z Removing SSH command configuration
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5817763Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.5850026Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6169962Z Removing HTTP extra header
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6174506Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6205340Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6420135Z Removing includeIf entries pointing to credentials config files
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6426342Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6460412Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6701496Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6741575Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6775605Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6812049Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6846330Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6883749Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6884688Z ##[group]Fetching the repository
+Test	Run actions/checkout@v6	2026-06-25T16:12:47.6895366Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +adb9c8ece4ba9cc9ccec511e56e7b25bc9304696:refs/remotes/pull/41/merge
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5562459Z From https://github.com/link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5575802Z  * [new ref]         adb9c8ece4ba9cc9ccec511e56e7b25bc9304696 -> pull/41/merge
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5601324Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5602739Z ##[group]Determining the checkout info
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5605255Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5607907Z [command]/usr/bin/git sparse-checkout disable
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5652261Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5683663Z ##[group]Checking out the ref
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5686556Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/41/merge
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5852388Z Note: switching to 'refs/remotes/pull/41/merge'.
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5853406Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5854013Z You are in 'detached HEAD' state. You can look around, make experimental
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5856166Z changes and commit them, and you can discard any commits you make in this
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5857715Z state without impacting any branches by switching back to a branch.
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5858806Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5859412Z If you want to create a new branch to retain commits you create, you may
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5860716Z do so (now or later) by using -c with the switch command. Example:
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5861504Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5861847Z   git switch -c <new-branch-name>
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5862409Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5862815Z Or undo this operation with:
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5863468Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5863756Z   git switch -
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5864157Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5865080Z Turn off this advice by setting config variable advice.detachedHead to false
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5866155Z
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5867337Z HEAD is now at adb9c8e Merge d24c23ed43a2b2a797a51a976dd680b7e913aa53 into 866b5384754bc8d8aa90e16c248e753e81b931eb
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5870629Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5893198Z [command]/usr/bin/git log -1 --format=%H
+Test	Run actions/checkout@v6	2026-06-25T16:12:48.5916481Z adb9c8ece4ba9cc9ccec511e56e7b25bc9304696
+Test	Setup Node.js	﻿2026-06-25T16:12:48.6356439Z ##[group]Run actions/setup-node@v6
+Test	Setup Node.js	2026-06-25T16:12:48.6358345Z with:
+Test	Setup Node.js	2026-06-25T16:12:48.6359710Z   node-version: 24.x
+Test	Setup Node.js	2026-06-25T16:12:48.6361246Z   check-latest: false
+Test	Setup Node.js	2026-06-25T16:12:48.6376767Z   token: ***
+Test	Setup Node.js	2026-06-25T16:12:48.6377757Z   package-manager-cache: true
+Test	Setup Node.js	2026-06-25T16:12:48.6378789Z ##[endgroup]
+Test	Setup Node.js	2026-06-25T16:12:48.7891121Z Found in cache @ /opt/hostedtoolcache/node/24.17.0/x64
+Test	Setup Node.js	2026-06-25T16:12:48.7894741Z ##[group]Environment details
+Test	Setup Node.js	2026-06-25T16:12:49.1678477Z node: v24.17.0
+Test	Setup Node.js	2026-06-25T16:12:49.1679276Z npm: 11.13.0
+Test	Setup Node.js	2026-06-25T16:12:49.1679842Z yarn: 1.22.22
+Test	Setup Node.js	2026-06-25T16:12:49.1681250Z ##[endgroup]
+Test	Install dependencies	﻿2026-06-25T16:12:49.1834590Z ##[group]Run npm install
+Test	Install dependencies	2026-06-25T16:12:49.1835457Z ^[[36;1mnpm install^[[0m
+Test	Install dependencies	2026-06-25T16:12:49.1996885Z shell: /usr/bin/bash -e {0}
+Test	Install dependencies	2026-06-25T16:12:49.1997377Z ##[endgroup]
+Test	Install dependencies	2026-06-25T16:12:49.7338941Z
+Test	Install dependencies	2026-06-25T16:12:49.7347860Z up to date, audited 1 package in 472ms
+Test	Install dependencies	2026-06-25T16:12:49.7351917Z
+Test	Install dependencies	2026-06-25T16:12:49.7352580Z found 0 vulnerabilities
+Test	Check syntax	﻿2026-06-25T16:12:49.7762582Z ##[group]Run npm run check:syntax
+Test	Check syntax	2026-06-25T16:12:49.7763003Z ^[[36;1mnpm run check:syntax^[[0m
+Test	Check syntax	2026-06-25T16:12:49.7795795Z shell: /usr/bin/bash -e {0}
+Test	Check syntax	2026-06-25T16:12:49.7796146Z ##[endgroup]
+Test	Check syntax	2026-06-25T16:12:49.8798949Z
+Test	Check syntax	2026-06-25T16:12:49.8799515Z > gh-pull-all@1.4.2 check:syntax
+Test	Check syntax	2026-06-25T16:12:49.8800157Z > bash scripts/check-mjs-syntax.sh
+Test	Check syntax	2026-06-25T16:12:49.8800435Z
+Test	Check syntax	2026-06-25T16:12:49.8874469Z Checking syntax: demos/demo-progress-bar.mjs
+Test	Check syntax	2026-06-25T16:12:49.9125338Z Checking syntax: demos/demonstrate-bug.mjs
+Test	Check syntax	2026-06-25T16:12:49.9341405Z Checking syntax: demos/ink-list-demo.mjs
+Test	Check syntax	2026-06-25T16:12:49.9557034Z Checking syntax: demos/terminal-simulator.mjs
+Test	Check syntax	2026-06-25T16:12:49.9761807Z Checking syntax: experiments/use-m-loader-failure.mjs
+Test	Check syntax	2026-06-25T16:12:49.9979247Z Checking syntax: gh-pull-all.mjs
+Test	Check syntax	2026-06-25T16:12:50.0187330Z Checking syntax: load-use-m.mjs
+Test	Check syntax	2026-06-25T16:12:50.0403683Z Checking syntax: scripts/check-release-needed.mjs
+Test	Check syntax	2026-06-25T16:12:50.0618100Z Checking syntax: scripts/create-github-release.mjs
+Test	Check syntax	2026-06-25T16:12:50.0829239Z Checking syntax: scripts/package-info.mjs
+Test	Check syntax	2026-06-25T16:12:50.1055875Z Checking syntax: scripts/publish-to-npm.mjs
+Test	Check syntax	2026-06-25T16:12:50.1271764Z Checking syntax: scripts/setup-npm.mjs
+Test	Check syntax	2026-06-25T16:12:50.1493769Z Checking syntax: scripts/smoke-test-package.mjs
+Test	Check syntax	2026-06-25T16:12:50.1704105Z Checking syntax: tests/test-all.mjs
+Test	Check syntax	2026-06-25T16:12:50.1908512Z Checking syntax: tests/test-cli-simple.mjs
+Test	Check syntax	2026-06-25T16:12:50.2129075Z Checking syntax: tests/test-concurrent-processing.mjs
+Test	Check syntax	2026-06-25T16:12:50.2341714Z Checking syntax: tests/test-empty-repository.mjs
+Test	Check syntax	2026-06-25T16:12:50.2570403Z Checking syntax: tests/test-error-handling.mjs
+Test	Check syntax	2026-06-25T16:12:50.2788581Z Checking syntax: tests/test-error-message-display.mjs
+Test	Check syntax	2026-06-25T16:12:50.3002499Z Checking syntax: tests/test-file-operations.mjs
+Test	Check syntax	2026-06-25T16:12:50.3228333Z Checking syntax: tests/test-fixed-rendering.mjs
+Test	Check syntax	2026-06-25T16:12:50.3433545Z Checking syntax: tests/test-gh-cli.mjs
+Test	Check syntax	2026-06-25T16:12:50.3634335Z Checking syntax: tests/test-github-api.mjs
+Test	Check syntax	2026-06-25T16:12:50.3861464Z Checking syntax: tests/test-integration.mjs
+Test	Check syntax	2026-06-25T16:12:50.4062605Z Checking syntax: tests/test-issue-11-integration.mjs
+Test	Check syntax	2026-06-25T16:12:50.4280178Z Checking syntax: tests/test-line-padding.mjs
+Test	Check syntax	2026-06-25T16:12:50.4500424Z Checking syntax: tests/test-merge-result.mjs
+Test	Check syntax	2026-06-25T16:12:50.4699112Z Checking syntax: tests/test-multithread-live.mjs
+Test	Check syntax	2026-06-25T16:12:50.4905711Z Checking syntax: tests/test-multithread-no-live.mjs
+Test	Check syntax	2026-06-25T16:12:50.5148881Z Checking syntax: tests/test-parallel.mjs
+Test	Check syntax	2026-06-25T16:12:50.5389001Z Checking syntax: tests/test-progress-bar.mjs
+Test	Check syntax	2026-06-25T16:12:50.5617799Z Checking syntax: tests/test-release-workflow.mjs
+Test	Check syntax	2026-06-25T16:12:50.5865116Z Checking syntax: tests/test-single-repo.mjs
+Test	Check syntax	2026-06-25T16:12:50.6073930Z Checking syntax: tests/test-single-thread.mjs
+Test	Check syntax	2026-06-25T16:12:50.6282136Z Checking syntax: tests/test-sorting.mjs
+Test	Check syntax	2026-06-25T16:12:50.6491674Z Checking syntax: tests/test-switch-to-default-cli.mjs
+Test	Check syntax	2026-06-25T16:12:50.6731972Z Checking syntax: tests/test-switch-to-default.mjs
+Test	Check syntax	2026-06-25T16:12:50.6960654Z Checking syntax: tests/test-terminal-output.mjs
+Test	Check syntax	2026-06-25T16:12:50.7189321Z Checking syntax: tests/test-terminal-rendering.mjs
+Test	Check syntax	2026-06-25T16:12:50.7434064Z Checking syntax: tests/test-terminal-width.mjs
+Test	Check syntax	2026-06-25T16:12:50.7665863Z Checking syntax: tests/test-threading.mjs
+Test	Check syntax	2026-06-25T16:12:50.7919530Z Checking syntax: tests/test-uncommitted-changes.mjs
+Test	Check syntax	2026-06-25T16:12:50.8149150Z Checking syntax: tests/test-use-m-loader.mjs
+Test	Check syntax	2026-06-25T16:12:50.8423882Z Checking syntax: tests/test-windowed-display.mjs
+Test	Check syntax	2026-06-25T16:12:50.8642699Z Checking syntax: version.mjs
+Test	Check file line limits	﻿2026-06-25T16:12:50.8995649Z ##[group]Run npm run check:line-limits
+Test	Check file line limits	2026-06-25T16:12:50.8996020Z ^[[36;1mnpm run check:line-limits^[[0m
+Test	Check file line limits	2026-06-25T16:12:50.9038170Z shell: /usr/bin/bash -e {0}
+Test	Check file line limits	2026-06-25T16:12:50.9038498Z ##[endgroup]
+Test	Check file line limits	2026-06-25T16:12:51.0001304Z
+Test	Check file line limits	2026-06-25T16:12:51.0001933Z > gh-pull-all@1.4.2 check:line-limits
+Test	Check file line limits	2026-06-25T16:12:51.0002581Z > bash scripts/check-file-line-limits.sh
+Test	Check file line limits	2026-06-25T16:12:51.0002969Z
+Test	Check file line limits	2026-06-25T16:12:51.0098094Z OK: .github/workflows/release.yml has 104 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0117159Z OK: README.md has 234 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0136047Z OK: demos/demo-progress-bar.mjs has 84 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0153900Z OK: demos/demonstrate-bug.mjs has 91 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0172056Z OK: demos/ink-list-demo.mjs has 221 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0190131Z OK: demos/terminal-simulator.mjs has 318 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0208610Z OK: docs/case-studies/issue-38/analysis.md has 47 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0227288Z OK: docs/case-studies/issue-40/analysis.md has 147 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0245773Z OK: experiments/use-m-loader-failure.mjs has 35 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0262947Z OK: gh-pull-all.mjs has 1350 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0280800Z OK: load-use-m.mjs has 106 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0298870Z OK: scripts/check-release-needed.mjs has 37 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0317025Z OK: scripts/create-github-release.mjs has 91 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0335087Z OK: scripts/package-info.mjs has 33 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0352739Z OK: scripts/publish-to-npm.mjs has 96 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0370665Z OK: scripts/setup-npm.mjs has 93 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0388779Z OK: scripts/smoke-test-package.mjs has 60 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0406820Z OK: tests/test-all.mjs has 194 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0424364Z OK: tests/test-cli-simple.mjs has 115 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0442328Z OK: tests/test-concurrent-processing.mjs has 113 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0460086Z OK: tests/test-empty-repository.mjs has 204 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0478052Z OK: tests/test-error-handling.mjs has 121 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0496609Z OK: tests/test-error-message-display.mjs has 121 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0514173Z OK: tests/test-file-operations.mjs has 127 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0532367Z OK: tests/test-fixed-rendering.mjs has 151 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0550161Z OK: tests/test-gh-cli.mjs has 123 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0568602Z OK: tests/test-github-api.mjs has 133 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0586571Z OK: tests/test-integration.mjs has 234 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0606078Z OK: tests/test-issue-11-integration.mjs has 157 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0623571Z OK: tests/test-line-padding.mjs has 132 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0641475Z OK: tests/test-merge-result.mjs has 84 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0659809Z OK: tests/test-multithread-live.mjs has 94 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0677554Z OK: tests/test-multithread-no-live.mjs has 102 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0695491Z OK: tests/test-parallel.mjs has 97 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0713127Z OK: tests/test-progress-bar.mjs has 149 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0731234Z OK: tests/test-release-workflow.mjs has 70 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0749112Z OK: tests/test-single-repo.mjs has 62 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0766742Z OK: tests/test-single-thread.mjs has 81 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0784319Z OK: tests/test-sorting.mjs has 39 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0802359Z OK: tests/test-switch-to-default-cli.mjs has 130 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0819999Z OK: tests/test-switch-to-default.mjs has 218 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0837670Z OK: tests/test-terminal-output.mjs has 72 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0855406Z OK: tests/test-terminal-rendering.mjs has 423 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0872828Z OK: tests/test-terminal-width.mjs has 133 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0890481Z OK: tests/test-threading.mjs has 100 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0908285Z OK: tests/test-uncommitted-changes.mjs has 198 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0926410Z OK: tests/test-use-m-loader.mjs has 173 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0944063Z OK: tests/test-windowed-display.mjs has 44 lines.
+Test	Check file line limits	2026-06-25T16:12:51.0961540Z OK: version.mjs has 95 lines.
+Test	Run tests	﻿2026-06-25T16:12:51.1069694Z ##[group]Run npm run test:ci
+Test	Run tests	2026-06-25T16:12:51.1069994Z ^[[36;1mnpm run test:ci^[[0m
+Test	Run tests	2026-06-25T16:12:51.1101977Z shell: /usr/bin/bash -e {0}
+Test	Run tests	2026-06-25T16:12:51.1102237Z ##[endgroup]
+Test	Run tests	2026-06-25T16:12:51.2078418Z
+Test	Run tests	2026-06-25T16:12:51.2078712Z > gh-pull-all@1.4.2 test:ci
+Test	Run tests	2026-06-25T16:12:51.2079064Z > node tests/test-all.mjs
+Test	Run tests	2026-06-25T16:12:51.2079242Z
+Test	Run tests	2026-06-25T16:12:52.9284341Z ^[[34m^[[1m🧪 GH-Pull-All Test Suite^[[0m^[[0m
+Test	Run tests	2026-06-25T16:12:52.9291763Z ^[[36mRunning 30 test suites...^[[0m
+Test	Run tests	2026-06-25T16:12:52.9297648Z ^[[36mFound test files: test-cli-simple.mjs, test-concurrent-processing.mjs, test-empty-repository.mjs, test-error-handling.mjs, test-error-message-display.mjs, test-file-operations.mjs, test-fixed-rendering.mjs, test-gh-cli.mjs, test-github-api.mjs, test-integration.mjs, test-issue-11-integration.mjs, test-line-padding.mjs, test-merge-result.mjs, test-multithread-live.mjs, test-multithread-no-live.mjs, test-parallel.mjs, test-progress-bar.mjs, test-release-workflow.mjs, test-single-repo.mjs, test-single-thread.mjs, test-sorting.mjs, test-switch-to-default-cli.mjs, test-switch-to-default.mjs, test-terminal-output.mjs, test-terminal-rendering.mjs, test-terminal-width.mjs, test-threading.mjs, test-uncommitted-changes.mjs, test-use-m-loader.mjs, test-windowed-display.mjs^[[0m
+Test	Run tests	2026-06-25T16:12:52.9301124Z ^[[2m────────────────────────────────────────────────────────────────────────────────^[[0m
+Test	Run tests	2026-06-25T16:12:52.9301555Z ^[[36m
+Test	Run tests	2026-06-25T16:12:52.9301832Z 🔍 Running: Cli Simple^[[0m
+Test	Run tests	2026-06-25T16:12:52.9302460Z ^[[2m   File: test-cli-simple.mjs^[[0m
+Test	Run tests	2026-06-25T16:12:52.9302953Z ^[[2m   Tests basic CLI functionality and argument parsing^[[0m
+Test	Run tests	2026-06-25T16:12:54.0452209Z ^[[32m✅ Cli Simple passed (1.1s)^[[0m
+Test	Run tests	2026-06-25T16:12:54.0452847Z ^[[36m
+Test	Run tests	2026-06-25T16:12:54.0453340Z 🔍 Running: Concurrent Processing^[[0m
+Test	Run tests	2026-06-25T16:12:54.0464642Z ^[[2m   File: test-concurrent-processing.mjs^[[0m
+Test	Run tests	2026-06-25T16:12:54.0465951Z ^[[2m   Tests concurrent repository processing with worker pool pattern^[[0m
+Test	Run tests	2026-06-25T16:13:01.6282995Z ^[[31m❌ Concurrent Processing failed (7.6s)^[[0m
+Test	Run tests	2026-06-25T16:13:01.6284421Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-concurrent-processing.mjs
+Test	Run tests	2026-06-25T16:13:01.6285840Z Exiting early before testing is finished.
+Test	Run tests	2026-06-25T16:13:01.6286259Z ^[[0m
+Test	Run tests	2026-06-25T16:13:01.6286583Z ^[[2m   Output: ✘ ...^[[0m
+Test	Run tests	2026-06-25T16:13:01.6286918Z ^[[36m
+Test	Run tests	2026-06-25T16:13:01.6287385Z 🔍 Running: Empty Repository^[[0m
+Test	Run tests	2026-06-25T16:13:01.6288289Z ^[[2m   File: test-empty-repository.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:01.6289267Z ^[[2m   Tests empty repository pull handling and first default branch detection^[[0m
+Test	Run tests	2026-06-25T16:13:04.1615653Z ^[[31m❌ Empty Repository failed (2.5s)^[[0m
+Test	Run tests	2026-06-25T16:13:04.1617649Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-empty-repository.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:04.1619091Z ^[[2m   Output: ✘ ✘ ✘   (0 / 3)
+Test	Run tests	2026-06-25T16:13:04.1619409Z
+Test	Run tests	2026-06-25T16:13:04.1620003Z    FAIL  "empty repository can be pulled again without reporting a stale upstream error"
+Test	Run tests	2026-06-25T16:13:04.1621132Z     file:///home/runner/work/gh-pull-all/gh-pull-all/gh-pull-all.mjs:580
+Test	Run tests	2026-06-25T16:13:04.1621983Z const rawArgs = hideB...^[[0m
+Test	Run tests	2026-06-25T16:13:04.1622471Z ^[[36m
+Test	Run tests	2026-06-25T16:13:04.1623232Z 🔍 Running: Error Handling^[[0m
+Test	Run tests	2026-06-25T16:13:04.1623876Z ^[[2m   File: test-error-handling.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:04.1624664Z ^[[2m   Tests error numbering system and error list display^[[0m
+Test	Run tests	2026-06-25T16:13:05.1261195Z ^[[31m❌ Error Handling failed (1.0s)^[[0m
+Test	Run tests	2026-06-25T16:13:05.1263093Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-error-handling.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:05.1264737Z ^[[2m   Output: ^[[34m🧪 Testing error handling and numbering system...^[[0m
+Test	Run tests	2026-06-25T16:13:05.1265946Z ^[[36m🔧 Created conflicting files to trigger errors^[[0m
+Test	Run tests	2026-06-25T16:13:05.1266685Z ^[[32m✅ Error handling test completed^[[0m
+Test	Run tests	2026-06-25T16:13:05.1267781Z ^[[31m❌ Error handling test failed: Expected ...^[[0m
+Test	Run tests	2026-06-25T16:13:05.1268313Z ^[[36m
+Test	Run tests	2026-06-25T16:13:05.1268790Z 🔍 Running: Error Message Display^[[0m
+Test	Run tests	2026-06-25T16:13:05.1269469Z ^[[2m   File: test-error-message-display.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:05.1270026Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T16:13:06.1419899Z ^[[31m❌ Error Message Display failed (1.0s)^[[0m
+Test	Run tests	2026-06-25T16:13:06.1421862Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-error-message-display.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:06.1423591Z ^[[2m   Output: ^[[34m🧪 Testing error message display (Issue #11)...^[[0m
+Test	Run tests	2026-06-25T16:13:06.1424605Z ^[[36m🔧 Created conflicting files to trigger errors^[[0m
+Test	Run tests	2026-06-25T16:13:06.1425746Z ^[[32m✅ Error message display test completed^[[0m
+Test	Run tests	2026-06-25T16:13:06.1426393Z ^[[2mOutput preview:^[[0m
+Test	Run tests	2026-06-25T16:13:06.1426653Z
+Test	Run tests	2026-06-25T16:13:06.1426888Z ^[[32m✅ Status ...^[[0m
+Test	Run tests	2026-06-25T16:13:06.1427296Z ^[[36m
+Test	Run tests	2026-06-25T16:13:06.1427807Z 🔍 Running: File Operations^[[0m
+Test	Run tests	2026-06-25T16:13:06.1428404Z ^[[2m   File: test-file-operations.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:06.1429214Z ^[[2m   Tests file system operations and directory handling^[[0m
+Test	Run tests	2026-06-25T16:13:08.6680319Z ^[[32m✅ File Operations passed (2.5s)^[[0m
+Test	Run tests	2026-06-25T16:13:08.6680717Z ^[[36m
+Test	Run tests	2026-06-25T16:13:08.6681031Z 🔍 Running: Fixed Rendering^[[0m
+Test	Run tests	2026-06-25T16:13:08.6681432Z ^[[2m   File: test-fixed-rendering.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:08.6682166Z ^[[2m   Tests fixed terminal rendering functionality^[[0m
+Test	Run tests	2026-06-25T16:13:08.7807141Z ^[[32m✅ Fixed Rendering passed (0.1s)^[[0m
+Test	Run tests	2026-06-25T16:13:08.7807981Z ^[[36m
+Test	Run tests	2026-06-25T16:13:08.7808426Z 🔍 Running: Gh Cli^[[0m
+Test	Run tests	2026-06-25T16:13:08.7808988Z ^[[2m   File: test-gh-cli.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:08.7809780Z ^[[2m   Tests GitHub CLI integration and fallback behavior^[[0m
+Test	Run tests	2026-06-25T16:13:09.5562146Z ^[[32m✅ Gh Cli passed (0.8s)^[[0m
+Test	Run tests	2026-06-25T16:13:09.5562715Z ^[[36m
+Test	Run tests	2026-06-25T16:13:09.5563166Z 🔍 Running: Github Api^[[0m
+Test	Run tests	2026-06-25T16:13:09.5563815Z ^[[2m   File: test-github-api.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:09.5564586Z ^[[2m   Tests GitHub API integration and error handling^[[0m
+Test	Run tests	2026-06-25T16:13:16.1787189Z ^[[32m✅ Github Api passed (6.6s)^[[0m
+Test	Run tests	2026-06-25T16:13:16.1787732Z ^[[36m
+Test	Run tests	2026-06-25T16:13:16.1788023Z 🔍 Running: Integration^[[0m
+Test	Run tests	2026-06-25T16:13:16.1788392Z ^[[2m   File: test-integration.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:16.1788884Z ^[[2m   Tests all functionality together in complex scenarios^[[0m
+Test	Run tests	2026-06-25T16:13:20.5062742Z ^[[31m❌ Integration failed (4.3s)^[[0m
+Test	Run tests	2026-06-25T16:13:20.5064576Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-integration.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:20.5066501Z ^[[2m   Output: ^[[34m🧪 Running comprehensive integration test...^[[0m
+Test	Run tests	2026-06-25T16:13:20.5067964Z ^[[36m🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width^[[0m
+Test	Run tests	2026-06-25T16:13:20.5069155Z ^[[36m🔧 Phase 1: Setting up mixed sce...^[[0m
+Test	Run tests	2026-06-25T16:13:20.5069775Z ^[[36m
+Test	Run tests	2026-06-25T16:13:20.5070291Z 🔍 Running: Issue 11 Integration^[[0m
+Test	Run tests	2026-06-25T16:13:20.5071005Z ^[[2m   File: test-issue-11-integration.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:20.5071558Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T16:13:21.3956631Z ^[[31m❌ Issue 11 Integration failed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:21.3957772Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-issue-11-integration.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:21.3958819Z ^[[2m   Output: ^[[34m🧪 Testing Issue #11 integration (short error messages)...^[[0m
+Test	Run tests	2026-06-25T16:13:21.3959410Z ^[[36m🔧 Created conflicting files to trigger errors^[[0m
+Test	Run tests	2026-06-25T16:13:21.3959898Z ^[[36m🔧 Testing: Multi-threaded with live updates^[[0m
+Test	Run tests	2026-06-25T16:13:21.3960273Z ^[[31m❌ Issue #11 integ...^[[0m
+Test	Run tests	2026-06-25T16:13:21.3965958Z ^[[36m
+Test	Run tests	2026-06-25T16:13:21.3970070Z 🔍 Running: Line Padding^[[0m
+Test	Run tests	2026-06-25T16:13:21.3970515Z ^[[2m   File: test-line-padding.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:21.3971160Z ^[[2m   Tests line padding to prevent truncation issues like "Successfully pulledes..."^[[0m
+Test	Run tests	2026-06-25T16:13:22.2512843Z ^[[32m✅ Line Padding passed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:22.2513433Z ^[[36m
+Test	Run tests	2026-06-25T16:13:22.2513891Z 🔍 Running: Merge Result^[[0m
+Test	Run tests	2026-06-25T16:13:22.2514513Z ^[[2m   File: test-merge-result.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:22.2515642Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T16:13:23.7459864Z ^[[32m✅ Merge Result passed (1.5s)^[[0m
+Test	Run tests	2026-06-25T16:13:23.7460580Z ^[[36m
+Test	Run tests	2026-06-25T16:13:23.7461125Z 🔍 Running: Multithread Live^[[0m
+Test	Run tests	2026-06-25T16:13:23.7461783Z ^[[2m   File: test-multithread-live.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:23.7462635Z ^[[2m   Tests multi-thread mode with live in-place updates^[[0m
+Test	Run tests	2026-06-25T16:13:24.6383302Z ^[[31m❌ Multithread Live failed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:24.6384401Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-multithread-live.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:24.6385716Z ^[[2m   Output: ^[[34m🧪 Testing multi-thread mode with live updates...^[[0m
+Test	Run tests	2026-06-25T16:13:24.6386795Z ^[[31m❌ Multi-thread live updates test failed: Command failed: ../gh-pull-all.mjs --user octocat --threads 4 --live-updates --dir /tmp/gh-pull...^[[0m
+Test	Run tests	2026-06-25T16:13:24.6387468Z ^[[36m
+Test	Run tests	2026-06-25T16:13:24.6387777Z 🔍 Running: Multithread No Live^[[0m
+Test	Run tests	2026-06-25T16:13:24.6388187Z ^[[2m   File: test-multithread-no-live.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:24.6395366Z ^[[2m   Tests multi-thread mode with append-only final status^[[0m
+Test	Run tests	2026-06-25T16:13:25.5795801Z ^[[31m❌ Multithread No Live failed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:25.5817058Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-multithread-no-live.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:25.5818616Z ^[[2m   Output: ^[[34m🧪 Testing multi-thread mode without live updates...^[[0m
+Test	Run tests	2026-06-25T16:13:25.5820313Z ^[[31m❌ Multi-thread no live updates test failed: Command failed: ../gh-pull-all.mjs --user octocat --threads 3 --no-live-updates --dir /tm...^[[0m
+Test	Run tests	2026-06-25T16:13:25.5821575Z ^[[36m
+Test	Run tests	2026-06-25T16:13:25.5822033Z 🔍 Running: Parallel^[[0m
+Test	Run tests	2026-06-25T16:13:25.5822636Z ^[[2m   File: test-parallel.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:25.5823405Z ^[[2m   Tests parallel processing functionality^[[0m
+Test	Run tests	2026-06-25T16:13:29.6869011Z ^[[31m❌ Parallel failed (4.1s)^[[0m
+Test	Run tests	2026-06-25T16:13:29.6870065Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-parallel.mjs
+Test	Run tests	2026-06-25T16:13:29.6870828Z Exiting early before testing is finished.
+Test	Run tests	2026-06-25T16:13:29.6871136Z ^[[0m
+Test	Run tests	2026-06-25T16:13:29.6871398Z ^[[2m   Output: ✘ ...^[[0m
+Test	Run tests	2026-06-25T16:13:29.6876448Z ^[[36m
+Test	Run tests	2026-06-25T16:13:29.6876954Z 🔍 Running: Progress Bar^[[0m
+Test	Run tests	2026-06-25T16:13:29.6877579Z ^[[2m   File: test-progress-bar.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:29.6878349Z ^[[2m   Tests progress bar functionality and display^[[0m
+Test	Run tests	2026-06-25T16:13:30.1097500Z ^[[32m✅ Progress Bar passed (0.4s)^[[0m
+Test	Run tests	2026-06-25T16:13:30.1098101Z ^[[36m
+Test	Run tests	2026-06-25T16:13:30.1098423Z 🔍 Running: Release Workflow^[[0m
+Test	Run tests	2026-06-25T16:13:30.1098861Z ^[[2m   File: test-release-workflow.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:30.1099198Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T16:13:30.1406986Z ^[[32m✅ Release Workflow passed (0.0s)^[[0m
+Test	Run tests	2026-06-25T16:13:30.1407365Z ^[[36m
+Test	Run tests	2026-06-25T16:13:30.1407661Z 🔍 Running: Single Repo^[[0m
+Test	Run tests	2026-06-25T16:13:30.1408030Z ^[[2m   File: test-single-repo.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:30.1408351Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T16:13:31.3106300Z ^[[32m✅ Single Repo passed (1.2s)^[[0m
+Test	Run tests	2026-06-25T16:13:31.3106936Z ^[[36m
+Test	Run tests	2026-06-25T16:13:31.3107404Z 🔍 Running: Single Thread^[[0m
+Test	Run tests	2026-06-25T16:13:31.3108040Z ^[[2m   File: test-single-thread.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:31.3109032Z ^[[2m   Tests single-thread mode with live updates and append-only behavior^[[0m
+Test	Run tests	2026-06-25T16:13:32.2338805Z ^[[31m❌ Single Thread failed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:32.2339875Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-single-thread.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:32.2340816Z ^[[2m   Output: ^[[34m🧪 Testing single-thread mode with live updates...^[[0m
+Test	Run tests	2026-06-25T16:13:32.2342189Z ^[[31m❌ Single-thread test failed: Command failed: ../gh-pull-all.mjs --user octocat --single-thread --dir /tmp/gh-pull-all-test-single-threa...^[[0m
+Test	Run tests	2026-06-25T16:13:32.2342871Z ^[[36m
+Test	Run tests	2026-06-25T16:13:32.2343129Z 🔍 Running: Sorting^[[0m
+Test	Run tests	2026-06-25T16:13:32.2343459Z ^[[2m   File: test-sorting.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:32.2343884Z ^[[2m   Tests alphabetical sorting of repositories^[[0m
+Test	Run tests	2026-06-25T16:13:32.9702251Z ^[[31m❌ Sorting failed (0.7s)^[[0m
+Test	Run tests	2026-06-25T16:13:32.9704046Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-sorting.mjs
+Test	Run tests	2026-06-25T16:13:32.9705750Z ❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+Test	Run tests	2026-06-25T16:13:32.9706705Z file:///home/runner/work/gh-pull-all/gh-pull-all/gh-pull-all.mjs:580
+Test	Run tests	2026-06-25T16:13:32.9707507Z const rawArgs = hideBin(process.argv)
+Test	Run tests	2026-06-25T16:13:32.9707977Z                 ^
+Test	Run tests	2026-06-25T16:13:32.9708235Z
+Test	Run tests	2026-06-25T16:13:32.9708500Z TypeError: hideBin is not a function
+Test	Run tests	2026-06-25T16:13:32.9709276Z     at file:///home/runner/work/gh-pull-all/gh-pull-all/gh-pull-all.mjs:580:17
+Test	Run tests	2026-06-25T16:13:32.9709838Z
+Test	Run tests	2026-06-25T16:13:32.9709992Z Node.js v24.17.0
+Test	Run tests	2026-06-25T16:13:32.9710203Z
+Test	Run tests	2026-06-25T16:13:32.9710398Z ^[[0m
+Test	Run tests	2026-06-25T16:13:32.9710975Z ^[[2m   Output: 🧪 Testing repository sorting...
+Test	Run tests	2026-06-25T16:13:32.9711534Z ...^[[0m
+Test	Run tests	2026-06-25T16:13:32.9711892Z ^[[36m
+Test	Run tests	2026-06-25T16:13:32.9712711Z 🔍 Running: Switch To Default Cli^[[0m
+Test	Run tests	2026-06-25T16:13:32.9713412Z ^[[2m   File: test-switch-to-default-cli.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:32.9714414Z ^[[2m   Tests CLI argument validation and help text for --switch-to-default option^[[0m
+Test	Run tests	2026-06-25T16:13:33.9951508Z ^[[31m❌ Switch To Default Cli failed (1.0s)^[[0m
+Test	Run tests	2026-06-25T16:13:33.9953298Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-switch-to-default-cli.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:33.9955183Z ^[[2m   Output: ^[[34m🧪 Testing switch-to-default CLI functionality...^[[0m
+Test	Run tests	2026-06-25T16:13:33.9955838Z ^[[36m
+Test	Run tests	2026-06-25T16:13:33.9956503Z 📋 Test 1: Verify --switch-to-default appears in help text^[[0m
+Test	Run tests	2026-06-25T16:13:33.9957710Z ^[[31m❌ --switch-to-default option not found in help text^[[0m
+Test	Run tests	2026-06-25T16:13:33.9958347Z ^[[31mOutput...^[[0m
+Test	Run tests	2026-06-25T16:13:33.9958676Z ^[[36m
+Test	Run tests	2026-06-25T16:13:33.9959069Z 🔍 Running: Switch To Default^[[0m
+Test	Run tests	2026-06-25T16:13:33.9959661Z ^[[2m   File: test-switch-to-default.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:33.9960680Z ^[[2m   Tests --switch-to-default functionality for switching repositories to default branch^[[0m
+Test	Run tests	2026-06-25T16:13:35.9135870Z ^[[32m✅ Switch To Default passed (1.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:35.9136474Z ^[[36m
+Test	Run tests	2026-06-25T16:13:35.9136847Z 🔍 Running: Terminal Output^[[0m
+Test	Run tests	2026-06-25T16:13:35.9137261Z ^[[2m   File: test-terminal-output.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:35.9137714Z ^[[2m   Tests terminal output formatting and colors^[[0m
+Test	Run tests	2026-06-25T16:13:38.4269160Z ^[[31m❌ Terminal Output failed (2.5s)^[[0m
+Test	Run tests	2026-06-25T16:13:38.4271087Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-terminal-output.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:38.4272412Z ^[[2m   Output: ✘ ✘ ✘   (0 / 3)
+Test	Run tests	2026-06-25T16:13:38.4272605Z
+Test	Run tests	2026-06-25T16:13:38.4272847Z    FAIL  "no-live-updates mode should not use cursor manipulation"
+Test	Run tests	2026-06-25T16:13:38.4273518Z     Expected value to match `/Starting nonexistent-test-user user repository sync/` pattern  (match)
+Test	Run tests	2026-06-25T16:13:38.4273951Z
+Test	Run tests	2026-06-25T16:13:38.4274090Z     at assert ...^[[0m
+Test	Run tests	2026-06-25T16:13:38.4274339Z ^[[36m
+Test	Run tests	2026-06-25T16:13:38.4274655Z 🔍 Running: Terminal Rendering^[[0m
+Test	Run tests	2026-06-25T16:13:38.4276655Z ^[[2m   File: test-terminal-rendering.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:38.4277178Z ^[[2m   Tests terminal rendering output and formatting^[[0m
+Test	Run tests	2026-06-25T16:13:39.2186424Z ^[[32m✅ Terminal Rendering passed (0.8s)^[[0m
+Test	Run tests	2026-06-25T16:13:39.2186786Z ^[[36m
+Test	Run tests	2026-06-25T16:13:39.2187086Z 🔍 Running: Terminal Width^[[0m
+Test	Run tests	2026-06-25T16:13:39.2187715Z ^[[2m   File: test-terminal-width.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:39.2188192Z ^[[2m   Tests terminal width handling and message truncation^[[0m
+Test	Run tests	2026-06-25T16:13:40.1358854Z ^[[31m❌ Terminal Width failed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:40.1360047Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-terminal-width.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:40.1361062Z ^[[2m   Output: ^[[34m🧪 Testing terminal width handling and message truncation...^[[0m
+Test	Run tests	2026-06-25T16:13:40.1361771Z ^[[36m🔧 Created conflicting file to generate longer error message^[[0m
+Test	Run tests	2026-06-25T16:13:40.1362263Z ^[[32m✅ Terminal width test completed^[[0m
+Test	Run tests	2026-06-25T16:13:40.1362603Z ^[[31m❌ Terminal wid...^[[0m
+Test	Run tests	2026-06-25T16:13:40.1362847Z ^[[36m
+Test	Run tests	2026-06-25T16:13:40.1363102Z 🔍 Running: Threading^[[0m
+Test	Run tests	2026-06-25T16:13:40.1363432Z ^[[2m   File: test-threading.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:40.1363852Z ^[[2m   Tests threading and concurrency management^[[0m
+Test	Run tests	2026-06-25T16:13:45.6936950Z ^[[31m❌ Threading failed (5.6s)^[[0m
+Test	Run tests	2026-06-25T16:13:45.6938025Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-threading.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:45.6938812Z ^[[2m   Output: ✘ ✘ ✘ • • ✘ ✘   (2 / 7)
+Test	Run tests	2026-06-25T16:13:45.6939013Z
+Test	Run tests	2026-06-25T16:13:45.6939194Z    FAIL  "should show single-thread concurrency"
+Test	Run tests	2026-06-25T16:13:45.6939723Z     Expected value to match `/Concurrency: 1 thread \(sequential\)/` pattern  (match)
+Test	Run tests	2026-06-25T16:13:45.6940329Z
+Test	Run tests	2026-06-25T16:13:45.6940543Z     at assert (/opt/hostedtoolcache/nod...^[[0m
+Test	Run tests	2026-06-25T16:13:45.6940875Z ^[[36m
+Test	Run tests	2026-06-25T16:13:45.6941208Z 🔍 Running: Uncommitted Changes^[[0m
+Test	Run tests	2026-06-25T16:13:45.6941628Z ^[[2m   File: test-uncommitted-changes.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:45.6942189Z ^[[2m   Tests handling of repositories with uncommitted changes^[[0m
+Test	Run tests	2026-06-25T16:13:46.5896002Z ^[[31m❌ Uncommitted Changes failed (0.9s)^[[0m
+Test	Run tests	2026-06-25T16:13:46.5897947Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-uncommitted-changes.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:46.5899496Z ^[[2m   Output: ^[[34m🧪 Testing uncommitted changes handling...^[[0m
+Test	Run tests	2026-06-25T16:13:46.5900374Z ^[[36m🔧 Step 1: Cloning repositories initially...^[[0m
+Test	Run tests	2026-06-25T16:13:46.5901607Z ^[[31m❌ Initial clone failed: Command failed: ../gh-pull-all.mjs --org deep-assistant --threads...^[[0m
+Test	Run tests	2026-06-25T16:13:46.5902404Z ^[[36m
+Test	Run tests	2026-06-25T16:13:46.5902808Z 🔍 Running: Use M Loader^[[0m
+Test	Run tests	2026-06-25T16:13:46.5903363Z ^[[2m   File: test-use-m-loader.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:46.5904262Z ^[[2m   Tests robust use-m loading with CDN fallback and clear errors (issue #35)^[[0m
+Test	Run tests	2026-06-25T16:13:46.9966782Z ^[[32m✅ Use M Loader passed (0.4s)^[[0m
+Test	Run tests	2026-06-25T16:13:46.9967220Z ^[[36m
+Test	Run tests	2026-06-25T16:13:46.9967545Z 🔍 Running: Windowed Display^[[0m
+Test	Run tests	2026-06-25T16:13:46.9967949Z ^[[2m   File: test-windowed-display.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:46.9968423Z ^[[2m   Tests windowed display mode for terminal output^[[0m
+Test	Run tests	2026-06-25T16:13:48.2659675Z ^[[32m✅ Windowed Display passed (1.3s)^[[0m
+Test	Run tests	2026-06-25T16:13:48.2660294Z ^[[2m
+Test	Run tests	2026-06-25T16:13:48.2660987Z ────────────────────────────────────────────────────────────────────────────────^[[0m
+Test	Run tests	2026-06-25T16:13:48.2661655Z ^[[34m
+Test	Run tests	2026-06-25T16:13:48.2662149Z ^[[1m📊 Test Suite Summary^[[0m^[[0m
+Test	Run tests	2026-06-25T16:13:48.2662742Z ^[[32m✅ Passed: 14/30 tests^[[0m
+Test	Run tests	2026-06-25T16:13:48.2663289Z ^[[31m❌ Failed: 16/30 tests^[[0m
+Test	Run tests	2026-06-25T16:13:48.2663710Z ^[[31m
+Test	Run tests	2026-06-25T16:13:48.2664157Z Failed Tests:^[[0m
+Test	Run tests	2026-06-25T16:13:48.2666823Z ^[[31m  • Concurrent Processing (test-concurrent-processing.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-concurrent-processing.mjs
+Test	Run tests	2026-06-25T16:13:48.2668099Z Exiting early before testing is finished.
+Test	Run tests	2026-06-25T16:13:48.2668458Z ^[[0m
+Test	Run tests	2026-06-25T16:13:48.2669604Z ^[[31m  • Empty Repository (test-empty-repository.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-empty-repository.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2671552Z ^[[31m  • Error Handling (test-error-handling.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-error-handling.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2673345Z ^[[31m  • Error Message Display (test-error-message-display.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-error-message-display.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2675496Z ^[[31m  • Integration (test-integration.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-integration.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2677271Z ^[[31m  • Issue 11 Integration (test-issue-11-integration.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-issue-11-integration.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2679045Z ^[[31m  • Multithread Live (test-multithread-live.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-multithread-live.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2680783Z ^[[31m  • Multithread No Live (test-multithread-no-live.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-multithread-no-live.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2682339Z ^[[31m  • Parallel (test-parallel.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-parallel.mjs
+Test	Run tests	2026-06-25T16:13:48.2683309Z Exiting early before testing is finished.
+Test	Run tests	2026-06-25T16:13:48.2683619Z ^[[0m
+Test	Run tests	2026-06-25T16:13:48.2684632Z ^[[31m  • Single Thread (test-single-thread.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-single-thread.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2686423Z ^[[31m  • Sorting (test-sorting.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-sorting.mjs
+Test	Run tests	2026-06-25T16:13:48.2687343Z ❌ Test failed: Command failed: ../gh-pull-all.mjs --help
+Test	Run tests	2026-06-25T16:13:48.2687885Z file:///home/runner/work/gh-pull-all/gh-pull-all/gh-pull-all.mjs:580
+Test	Run tests	2026-06-25T16:13:48.2688339Z const rawArgs = hideBin(process.argv)
+Test	Run tests	2026-06-25T16:13:48.2688655Z                 ^
+Test	Run tests	2026-06-25T16:13:48.2688803Z
+Test	Run tests	2026-06-25T16:13:48.2688964Z TypeError: hideBin is not a function
+Test	Run tests	2026-06-25T16:13:48.2689442Z     at file:///home/runner/work/gh-pull-all/gh-pull-all/gh-pull-all.mjs:580:17
+Test	Run tests	2026-06-25T16:13:48.2689760Z
+Test	Run tests	2026-06-25T16:13:48.2689857Z Node.js v24.17.0
+Test	Run tests	2026-06-25T16:13:48.2689995Z
+Test	Run tests	2026-06-25T16:13:48.2690108Z ^[[0m
+Test	Run tests	2026-06-25T16:13:48.2691267Z ^[[31m  • Switch To Default Cli (test-switch-to-default-cli.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-switch-to-default-cli.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2692982Z ^[[31m  • Terminal Output (test-terminal-output.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-terminal-output.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2694634Z ^[[31m  • Terminal Width (test-terminal-width.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-terminal-width.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2696564Z ^[[31m  • Threading (test-threading.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-threading.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2698241Z ^[[31m  • Uncommitted Changes (test-uncommitted-changes.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-uncommitted-changes.mjs^[[0m
+Test	Run tests	2026-06-25T16:13:48.2699189Z ^[[34m⏱️  Total time: 55.3s^[[0m
+Test	Run tests	2026-06-25T16:13:48.2699468Z ^[[31m
+Test	Run tests	2026-06-25T16:13:48.2699882Z 💥 16 test(s) failed. Please review and fix the issues.^[[0m
+Test	Run tests	2026-06-25T16:13:48.2807552Z ##[error]Process completed with exit code 1.
+Test	Post Run actions/checkout@v6	﻿2026-06-25T16:13:48.2947739Z Post job cleanup.
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3766168Z [command]/usr/bin/git version
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3803360Z git version 2.54.0
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3843622Z Temporarily overriding HOME='/home/runner/work/_temp/98ca7e3f-ad9c-4bd2-bbb7-3faf1c9a046a' before making global git config changes
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3846040Z Adding repository directory to the temporary git global config as a safe directory
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3849418Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3879496Z Removing SSH command configuration
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3886469Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.3919826Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4137383Z Removing HTTP extra header
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4141979Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4173695Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4385705Z Removing includeIf entries pointing to credentials config files
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4391687Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4417973Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4418933Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4419536Z includeif.gitdir:/github/workspace/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4419986Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4427311Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4478110Z /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4488701Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4519548Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4541310Z /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4552141Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4582789Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4602531Z /github/runner_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4609977Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4640232Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4659825Z /github/runner_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4668155Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4697065Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Test	Post Run actions/checkout@v6	2026-06-25T16:13:48.4904767Z Removing credentials config '/home/runner/work/_temp/git-credentials-79144231-6744-4e2f-b41d-20f413794143.config'
+Test	Complete job	﻿2026-06-25T16:13:48.5041726Z Cleaning up orphan processes

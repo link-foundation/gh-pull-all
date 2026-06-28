@@ -1,0 +1,12 @@
+[34m🧪 Testing Issue #11 integration (short error messages)...[0m
+[36m🔧 Created conflicting files to trigger errors[0m
+[36m🔧 Testing: Multi-threaded with live updates[0m
+[32m✅ Multi-threaded with live updates passed[0m
+[36m🔧 Testing: Multi-threaded without live updates[0m
+[32m✅ Multi-threaded without live updates passed[0m
+[36m🔧 Testing: Single-threaded[0m
+[32m✅ Single-threaded passed[0m
+[36m🔧 Testing successful operations still display correctly[0m
+[32m✅ Successful operations display correctly[0m
+[32m🎉 Issue #11 integration test passed![0m
+[36m🧹 Cleaned up test directory[0m

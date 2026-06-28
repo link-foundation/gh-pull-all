@@ -1,0 +1,789 @@
+Detect Changes	Set up job	﻿2026-06-25T20:40:02.2121171Z Current runner version: '2.335.1'
+Detect Changes	Set up job	2026-06-25T20:40:02.2145638Z ##[group]Runner Image Provisioner
+Detect Changes	Set up job	2026-06-25T20:40:02.2147001Z Hosted Compute Agent
+Detect Changes	Set up job	2026-06-25T20:40:02.2147690Z Version: 20260611.554
+Detect Changes	Set up job	2026-06-25T20:40:02.2148378Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+Detect Changes	Set up job	2026-06-25T20:40:02.2149145Z Build Date: 2026-06-11T21:40:46Z
+Detect Changes	Set up job	2026-06-25T20:40:02.2149857Z Worker ID: {6ec9d3bb-4aa6-4262-b6cf-c565618dba66}
+Detect Changes	Set up job	2026-06-25T20:40:02.2150564Z Azure Region: westus
+Detect Changes	Set up job	2026-06-25T20:40:02.2151175Z ##[endgroup]
+Detect Changes	Set up job	2026-06-25T20:40:02.2152623Z ##[group]Operating System
+Detect Changes	Set up job	2026-06-25T20:40:02.2153247Z Ubuntu
+Detect Changes	Set up job	2026-06-25T20:40:02.2153846Z 24.04.4
+Detect Changes	Set up job	2026-06-25T20:40:02.2154349Z LTS
+Detect Changes	Set up job	2026-06-25T20:40:02.2154883Z ##[endgroup]
+Detect Changes	Set up job	2026-06-25T20:40:02.2155482Z ##[group]Runner Image
+Detect Changes	Set up job	2026-06-25T20:40:02.2156352Z Image: ubuntu-24.04
+Detect Changes	Set up job	2026-06-25T20:40:02.2156998Z Version: 20260622.220.1
+Detect Changes	Set up job	2026-06-25T20:40:02.2158056Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+Detect Changes	Set up job	2026-06-25T20:40:02.2159812Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+Detect Changes	Set up job	2026-06-25T20:40:02.2160781Z ##[endgroup]
+Detect Changes	Set up job	2026-06-25T20:40:02.2161925Z ##[group]GITHUB_TOKEN Permissions
+Detect Changes	Set up job	2026-06-25T20:40:02.2163969Z Contents: read
+Detect Changes	Set up job	2026-06-25T20:40:02.2164734Z Metadata: read
+Detect Changes	Set up job	2026-06-25T20:40:02.2165287Z ##[endgroup]
+Detect Changes	Set up job	2026-06-25T20:40:02.2167573Z Secret source: Actions
+Detect Changes	Set up job	2026-06-25T20:40:02.2168359Z Prepare workflow directory
+Detect Changes	Set up job	2026-06-25T20:40:02.2524099Z Prepare all required actions
+Detect Changes	Set up job	2026-06-25T20:40:02.2583929Z Getting action download info
+Detect Changes	Set up job	2026-06-25T20:40:02.6381354Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+Detect Changes	Set up job	2026-06-25T20:40:02.8107545Z Complete job name: Detect Changes
+Detect Changes	Run actions/checkout@v6	﻿2026-06-25T20:40:02.8838701Z ##[group]Run actions/checkout@v6
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8839589Z with:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8840022Z   fetch-depth: 0
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8840516Z   repository: link-foundation/gh-pull-all
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8844834Z   token: ***
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8845297Z   ssh-strict: true
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8845741Z   ssh-user: git
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8846504Z   persist-credentials: true
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8847009Z   clean: true
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8847454Z   sparse-checkout-cone-mode: true
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8847986Z   fetch-tags: false
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8848432Z   show-progress: true
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8848872Z   lfs: false
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8849286Z   submodules: false
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8849732Z   set-safe-directory: true
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.8850493Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9823843Z Syncing repository: link-foundation/gh-pull-all
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9825838Z ##[group]Getting Git version info
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9827054Z Working directory is '/home/runner/work/gh-pull-all/gh-pull-all'
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9828182Z [command]/usr/bin/git version
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9911690Z git version 2.54.0
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9966644Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9980355Z Temporarily overriding HOME='/home/runner/work/_temp/30dfe552-ea76-4e5b-8a36-f87b2d8dd5d5' before making global git config changes
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9982702Z Adding repository directory to the temporary git global config as a safe directory
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:02.9985097Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0034413Z Deleting the contents of '/home/runner/work/gh-pull-all/gh-pull-all'
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0038853Z ##[group]Determining repository object format
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0041361Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0042570Z ##[group]Initializing the repository
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0046599Z [command]/usr/bin/git init /home/runner/work/gh-pull-all/gh-pull-all
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0198016Z hint: Using 'master' as the name for the initial branch. This default branch name
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0199979Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0201382Z hint: to use in all of your new repositories, which will suppress this warning,
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0202809Z hint: call:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0203645Z hint:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0204690Z hint: 	git config --global init.defaultBranch <name>
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0206307Z hint:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0207591Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0209300Z hint: 'development'. The just-created branch can be renamed via this command:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0210613Z hint:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0211333Z hint: 	git branch -m <name>
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0212052Z hint:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0212980Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0214044Z Initialized empty Git repository in /home/runner/work/gh-pull-all/gh-pull-all/.git/
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0216863Z [command]/usr/bin/git remote add origin https://github.com/link-foundation/gh-pull-all
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0264340Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0265600Z ##[group]Disabling automatic garbage collection
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0267628Z [command]/usr/bin/git config --local gc.auto 0
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0297555Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0298289Z ##[group]Setting up auth
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0299098Z Removing SSH command configuration
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0306271Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0340823Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0715083Z Removing HTTP extra header
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0721249Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0752039Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0960108Z Removing includeIf entries pointing to credentials config files
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0966372Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.0996763Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1213988Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1250413Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1279350Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1312111Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1340860Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1368224Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1369009Z ##[group]Fetching the repository
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.1377208Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +8b6dd5c9730fa085a8bae7ad945cecea61993b8a:refs/remotes/pull/43/merge
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9733168Z From https://github.com/link-foundation/gh-pull-all
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9736707Z  * [new branch]      claude/code-review-and-issues-013TdwapjQt3vkShfG4xjAWC -> origin/claude/code-review-and-issues-013TdwapjQt3vkShfG4xjAWC
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9740226Z  * [new branch]      feature/pull-from-default-branch         -> origin/feature/pull-from-default-branch
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9743271Z  * [new branch]      feature/switch-to-default-branch         -> origin/feature/switch-to-default-branch
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9745862Z  * [new branch]      issue-11-d6268dbd                        -> origin/issue-11-d6268dbd
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9748590Z  * [new branch]      issue-15-9852ad1e                        -> origin/issue-15-9852ad1e
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9750881Z  * [new branch]      issue-15-e79fcb6a                        -> origin/issue-15-e79fcb6a
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9753218Z  * [new branch]      issue-16-ce08fee9                        -> origin/issue-16-ce08fee9
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9755509Z  * [new branch]      issue-16-d267fa74                        -> origin/issue-16-d267fa74
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9758335Z  * [new branch]      issue-17-082a4ad4                        -> origin/issue-17-082a4ad4
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9761084Z  * [new branch]      issue-17-d5b7c4bb                        -> origin/issue-17-d5b7c4bb
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9763894Z  * [new branch]      issue-18-159518be                        -> origin/issue-18-159518be
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9766839Z  * [new branch]      issue-18-fd060e33                        -> origin/issue-18-fd060e33
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9769372Z  * [new branch]      issue-19-880500a5                        -> origin/issue-19-880500a5
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9772091Z  * [new branch]      issue-19-a14cab3a                        -> origin/issue-19-a14cab3a
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9774668Z  * [new branch]      issue-20-03e07caa                        -> origin/issue-20-03e07caa
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9777436Z  * [new branch]      issue-20-3852eeec                        -> origin/issue-20-3852eeec
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9779163Z  * [new branch]      issue-3-d2f9bc44                         -> origin/issue-3-d2f9bc44
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9781559Z  * [new branch]      issue-3-e4c1a13c                         -> origin/issue-3-e4c1a13c
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9783637Z  * [new branch]      issue-35-099980219516                    -> origin/issue-35-099980219516
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9785385Z  * [new branch]      issue-38-cd02a821e0d3                    -> origin/issue-38-cd02a821e0d3
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9787045Z  * [new branch]      issue-40-5461509fea36                    -> origin/issue-40-5461509fea36
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9789022Z  * [new branch]      issue-42-065c709658c4                    -> origin/issue-42-065c709658c4
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9791032Z  * [new branch]      main                                     -> origin/main
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9792838Z  * [new ref]         8b6dd5c9730fa085a8bae7ad945cecea61993b8a -> pull/43/merge
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9846298Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9848031Z ##[group]Determining the checkout info
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9850051Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9851363Z [command]/usr/bin/git sparse-checkout disable
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9896914Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9927499Z ##[group]Checking out the ref
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:03.9929935Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/43/merge
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0147734Z Note: switching to 'refs/remotes/pull/43/merge'.
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0148785Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0149716Z You are in 'detached HEAD' state. You can look around, make experimental
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0151626Z changes and commit them, and you can discard any commits you make in this
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0153447Z state without impacting any branches by switching back to a branch.
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0154467Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0155441Z If you want to create a new branch to retain commits you create, you may
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0157889Z do so (now or later) by using -c with the switch command. Example:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0158889Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0159270Z   git switch -c <new-branch-name>
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0159888Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0160243Z Or undo this operation with:
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0160792Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0161154Z   git switch -
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0161566Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0162517Z Turn off this advice by setting config variable advice.detachedHead to false
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0163662Z
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0165013Z HEAD is now at 8b6dd5c Merge d059c25b2f8aa9eeb9f33a0cc2600198143f28b9 into 9bb1f95aa2562ba154ad6bd4c075da9da763eb30
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0169206Z ##[endgroup]
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0198361Z [command]/usr/bin/git log -1 --format=%H
+Detect Changes	Run actions/checkout@v6	2026-06-25T20:40:04.0222419Z 8b6dd5c9730fa085a8bae7ad945cecea61993b8a
+Detect Changes	Detect changes	﻿2026-06-25T20:40:04.0461934Z ##[group]Run node scripts/detect-code-changes.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.0463711Z ^[[36;1mnode scripts/detect-code-changes.mjs^[[0m
+Detect Changes	Detect changes	2026-06-25T20:40:04.0658463Z shell: /usr/bin/bash -e {0}
+Detect Changes	Detect changes	2026-06-25T20:40:04.0659739Z ##[endgroup]
+Detect Changes	Detect changes	2026-06-25T20:40:04.2930292Z Detecting file changes for CI/CD.
+Detect Changes	Detect changes	2026-06-25T20:40:04.2931321Z
+Detect Changes	Detect changes	2026-06-25T20:40:04.2985214Z Pull request merge commit detected.
+Detect Changes	Detect changes	2026-06-25T20:40:04.3012006Z Comparing HEAD^2^ to HEAD^2 for latest PR head commit.
+Detect Changes	Detect changes	2026-06-25T20:40:04.3041407Z Changed files:
+Detect Changes	Detect changes	2026-06-25T20:40:04.3042866Z   docs/case-studies/issue-42/analysis.md
+Detect Changes	Detect changes	2026-06-25T20:40:04.3044709Z   docs/case-studies/issue-42/ci-logs/local-check-line-limits-after.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3046882Z   docs/case-studies/issue-42/ci-logs/local-check-syntax-after.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3048975Z   docs/case-studies/issue-42/ci-logs/local-node24-test-issue-11-direct-after.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3051141Z   docs/case-studies/issue-42/ci-logs/local-node24-test-issue-11-runner-cwd-before.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3053256Z   docs/case-studies/issue-42/ci-logs/local-test-all-after.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3055290Z   docs/case-studies/issue-42/ci-logs/local-test-issue-11-direct-after-unique-temp.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3057709Z   docs/case-studies/issue-42/ci-logs/local-test-issue-11-direct-after.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3059776Z   docs/case-studies/issue-42/ci-logs/local-test-issue-11-direct-before.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3061752Z   docs/case-studies/issue-42/ci-logs/local-test-issue-11-runner-cwd-after-unique-temp.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3063285Z   docs/case-studies/issue-42/ci-logs/local-test-issue-11-runner-cwd-after.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3064913Z   docs/case-studies/issue-42/ci-logs/local-test-issue-11-runner-cwd-before.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3066679Z   docs/case-studies/issue-42/ci-logs/run-28197242012.log
+Detect Changes	Detect changes	2026-06-25T20:40:04.3067864Z   docs/case-studies/issue-42/gh-data/issue-42-comments.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3069100Z   docs/case-studies/issue-42/gh-data/recent-runs-issue-branch.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3070310Z   docs/case-studies/issue-42/gh-data/run-28197242012.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3071453Z   docs/case-studies/issue-42/templates/csharp-ci-files.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3072908Z   docs/case-studies/issue-42/templates/csharp-detect-code-changes.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3074869Z   docs/case-studies/issue-42/templates/csharp-file-tree.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3076583Z   docs/case-studies/issue-42/templates/csharp-release.yml
+Detect Changes	Detect changes	2026-06-25T20:40:04.3077731Z   docs/case-studies/issue-42/templates/csharp-repo.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3078840Z   docs/case-studies/issue-42/templates/csharp-tree.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3079948Z   docs/case-studies/issue-42/templates/js-ci-files.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3081089Z   docs/case-studies/issue-42/templates/js-detect-code-changes.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3082330Z   docs/case-studies/issue-42/templates/js-file-tree.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3083548Z   docs/case-studies/issue-42/templates/js-release.yml
+Detect Changes	Detect changes	2026-06-25T20:40:04.3084716Z   docs/case-studies/issue-42/templates/js-repo.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3086086Z   docs/case-studies/issue-42/templates/js-tree.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3087374Z   docs/case-studies/issue-42/templates/python-ci-files.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3088575Z   docs/case-studies/issue-42/templates/python-detect_code_changes.py
+Detect Changes	Detect changes	2026-06-25T20:40:04.3089767Z   docs/case-studies/issue-42/templates/python-file-tree.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3090895Z   docs/case-studies/issue-42/templates/python-release.yml
+Detect Changes	Detect changes	2026-06-25T20:40:04.3092044Z   docs/case-studies/issue-42/templates/python-repo.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3093602Z   docs/case-studies/issue-42/templates/python-tree.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3095406Z   docs/case-studies/issue-42/templates/rust-ci-files.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3096830Z   docs/case-studies/issue-42/templates/rust-detect-code-changes.rs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3097991Z   docs/case-studies/issue-42/templates/rust-file-tree.txt
+Detect Changes	Detect changes	2026-06-25T20:40:04.3099066Z   docs/case-studies/issue-42/templates/rust-release.yml
+Detect Changes	Detect changes	2026-06-25T20:40:04.3100128Z   docs/case-studies/issue-42/templates/rust-repo.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3101437Z   docs/case-studies/issue-42/templates/rust-tree.json
+Detect Changes	Detect changes	2026-06-25T20:40:04.3102405Z   tests/test-all.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3103272Z   tests/test-issue-11-integration.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3103794Z
+Detect Changes	Detect changes	2026-06-25T20:40:04.3104182Z mjs-changed=true
+Detect Changes	Detect changes	2026-06-25T20:40:04.3104981Z shell-changed=false
+Detect Changes	Detect changes	2026-06-25T20:40:04.3105806Z package-changed=false
+Detect Changes	Detect changes	2026-06-25T20:40:04.3106997Z docs-changed=true
+Detect Changes	Detect changes	2026-06-25T20:40:04.3107815Z workflow-changed=false
+Detect Changes	Detect changes	2026-06-25T20:40:04.3108270Z
+Detect Changes	Detect changes	2026-06-25T20:40:04.3108698Z Files considered as code changes:
+Detect Changes	Detect changes	2026-06-25T20:40:04.3109580Z   tests/test-all.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3110459Z   tests/test-issue-11-integration.mjs
+Detect Changes	Detect changes	2026-06-25T20:40:04.3110980Z
+Detect Changes	Detect changes	2026-06-25T20:40:04.3111367Z any-code-changed=true
+Detect Changes	Detect changes	2026-06-25T20:40:04.3111817Z
+Detect Changes	Detect changes	2026-06-25T20:40:04.3112218Z Change detection completed.
+Detect Changes	Post Run actions/checkout@v6	﻿2026-06-25T20:40:04.3385769Z Post job cleanup.
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4200319Z [command]/usr/bin/git version
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4267593Z git version 2.54.0
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4306772Z Temporarily overriding HOME='/home/runner/work/_temp/43aa482e-54b9-41a8-9217-502bacdd394e' before making global git config changes
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4313110Z Adding repository directory to the temporary git global config as a safe directory
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4315625Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4343090Z Removing SSH command configuration
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4349753Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4382197Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4598825Z Removing HTTP extra header
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4603629Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4634325Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4844601Z Removing includeIf entries pointing to credentials config files
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4849734Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4874934Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4877508Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4879152Z includeif.gitdir:/github/workspace/.git.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4880236Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4883837Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4904512Z /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4916338Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4949345Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4970093Z /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.4980674Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5010355Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5030523Z /github/runner_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5038391Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5068718Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5088901Z /github/runner_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5096973Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5127351Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Detect Changes	Post Run actions/checkout@v6	2026-06-25T20:40:04.5339495Z Removing credentials config '/home/runner/work/_temp/git-credentials-a5b0cddb-3f53-4126-839a-071372f49844.config'
+Detect Changes	Complete job	﻿2026-06-25T20:40:04.5480992Z Evaluate and set job outputs
+Detect Changes	Complete job	2026-06-25T20:40:04.5492516Z Set output 'mjs-changed'
+Detect Changes	Complete job	2026-06-25T20:40:04.5495429Z Set output 'shell-changed'
+Detect Changes	Complete job	2026-06-25T20:40:04.5497338Z Set output 'package-changed'
+Detect Changes	Complete job	2026-06-25T20:40:04.5498572Z Set output 'docs-changed'
+Detect Changes	Complete job	2026-06-25T20:40:04.5499775Z Set output 'workflow-changed'
+Detect Changes	Complete job	2026-06-25T20:40:04.5500986Z Set output 'any-code-changed'
+Detect Changes	Complete job	2026-06-25T20:40:04.5502641Z Cleaning up orphan processes
+Test	Set up job	﻿2026-06-25T20:40:09.3240590Z Current runner version: '2.335.1'
+Test	Set up job	2026-06-25T20:40:09.3275064Z ##[group]Runner Image Provisioner
+Test	Set up job	2026-06-25T20:40:09.3276273Z Hosted Compute Agent
+Test	Set up job	2026-06-25T20:40:09.3277339Z Version: 20260611.554
+Test	Set up job	2026-06-25T20:40:09.3278568Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+Test	Set up job	2026-06-25T20:40:09.3279722Z Build Date: 2026-06-11T21:40:46Z
+Test	Set up job	2026-06-25T20:40:09.3280989Z Worker ID: {1d09ac0e-1dd0-43e3-912f-a807841437f9}
+Test	Set up job	2026-06-25T20:40:09.3282139Z Azure Region: eastus
+Test	Set up job	2026-06-25T20:40:09.3283112Z ##[endgroup]
+Test	Set up job	2026-06-25T20:40:09.3284980Z ##[group]Operating System
+Test	Set up job	2026-06-25T20:40:09.3286058Z Ubuntu
+Test	Set up job	2026-06-25T20:40:09.3286980Z 24.04.4
+Test	Set up job	2026-06-25T20:40:09.3287989Z LTS
+Test	Set up job	2026-06-25T20:40:09.3288744Z ##[endgroup]
+Test	Set up job	2026-06-25T20:40:09.3289770Z ##[group]Runner Image
+Test	Set up job	2026-06-25T20:40:09.3290785Z Image: ubuntu-24.04
+Test	Set up job	2026-06-25T20:40:09.3291757Z Version: 20260622.220.1
+Test	Set up job	2026-06-25T20:40:09.3293513Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+Test	Set up job	2026-06-25T20:40:09.3296439Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+Test	Set up job	2026-06-25T20:40:09.3298310Z ##[endgroup]
+Test	Set up job	2026-06-25T20:40:09.3299942Z ##[group]GITHUB_TOKEN Permissions
+Test	Set up job	2026-06-25T20:40:09.3302688Z Contents: read
+Test	Set up job	2026-06-25T20:40:09.3303786Z Metadata: read
+Test	Set up job	2026-06-25T20:40:09.3304641Z ##[endgroup]
+Test	Set up job	2026-06-25T20:40:09.3307763Z Secret source: Actions
+Test	Set up job	2026-06-25T20:40:09.3309218Z Prepare workflow directory
+Test	Set up job	2026-06-25T20:40:09.3757942Z Prepare all required actions
+Test	Set up job	2026-06-25T20:40:09.3811024Z Getting action download info
+Test	Set up job	2026-06-25T20:40:09.5911878Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+Test	Set up job	2026-06-25T20:40:09.6940827Z Download action repository 'actions/setup-node@v6' (SHA:48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e)
+Test	Set up job	2026-06-25T20:40:09.8791584Z Complete job name: Test
+Test	Run actions/checkout@v6	﻿2026-06-25T20:40:09.9518725Z ##[group]Run actions/checkout@v6
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9519760Z with:
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9520242Z   repository: link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9524897Z   token: ***
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9525351Z   ssh-strict: true
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9525830Z   ssh-user: git
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9526284Z   persist-credentials: true
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9526773Z   clean: true
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9527223Z   sparse-checkout-cone-mode: true
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9528121Z   fetch-depth: 1
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9528572Z   fetch-tags: false
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9529019Z   show-progress: true
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9529462Z   lfs: false
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9529875Z   submodules: false
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9530323Z   set-safe-directory: true
+Test	Run actions/checkout@v6	2026-06-25T20:40:09.9531149Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0539714Z Syncing repository: link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0541731Z ##[group]Getting Git version info
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0542504Z Working directory is '/home/runner/work/gh-pull-all/gh-pull-all'
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0543637Z [command]/usr/bin/git version
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0579870Z git version 2.54.0
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0601055Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0614566Z Temporarily overriding HOME='/home/runner/work/_temp/5a3c4f6a-b76f-41e6-a03a-c68da23da5e2' before making global git config changes
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0616717Z Adding repository directory to the temporary git global config as a safe directory
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0620205Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0663139Z Deleting the contents of '/home/runner/work/gh-pull-all/gh-pull-all'
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0667210Z ##[group]Determining repository object format
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0669639Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0670759Z ##[group]Initializing the repository
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0674784Z [command]/usr/bin/git init /home/runner/work/gh-pull-all/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0747776Z hint: Using 'master' as the name for the initial branch. This default branch name
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0749622Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0751489Z hint: to use in all of your new repositories, which will suppress this warning,
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0752638Z hint: call:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0753384Z hint:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0753970Z hint: 	git config --global init.defaultBranch <name>
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0755040Z hint:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0755770Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0756754Z hint: 'development'. The just-created branch can be renamed via this command:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0757866Z hint:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0758515Z hint: 	git branch -m <name>
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0759265Z hint:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0760055Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0761101Z Initialized empty Git repository in /home/runner/work/gh-pull-all/gh-pull-all/.git/
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0763641Z [command]/usr/bin/git remote add origin https://github.com/link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0800056Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0801256Z ##[group]Disabling automatic garbage collection
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0803079Z [command]/usr/bin/git config --local gc.auto 0
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0832603Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0833642Z ##[group]Setting up auth
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0834440Z Removing SSH command configuration
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0839507Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.0872676Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1177158Z Removing HTTP extra header
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1183033Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1213807Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1438159Z Removing includeIf entries pointing to credentials config files
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1443277Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1474645Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1705121Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1742423Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1772902Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1804803Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1837610Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1865320Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1866497Z ##[group]Fetching the repository
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.1874240Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8b6dd5c9730fa085a8bae7ad945cecea61993b8a:refs/remotes/pull/43/merge
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4293099Z From https://github.com/link-foundation/gh-pull-all
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4294256Z  * [new ref]         8b6dd5c9730fa085a8bae7ad945cecea61993b8a -> pull/43/merge
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4332056Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4333574Z ##[group]Determining the checkout info
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4335546Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4339728Z [command]/usr/bin/git sparse-checkout disable
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4385782Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4414432Z ##[group]Checking out the ref
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4417407Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/43/merge
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4629431Z Note: switching to 'refs/remotes/pull/43/merge'.
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4630322Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4631001Z You are in 'detached HEAD' state. You can look around, make experimental
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4632600Z changes and commit them, and you can discard any commits you make in this
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4634195Z state without impacting any branches by switching back to a branch.
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4634789Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4635209Z If you want to create a new branch to retain commits you create, you may
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4636164Z do so (now or later) by using -c with the switch command. Example:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4636953Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4637342Z   git switch -c <new-branch-name>
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4638072Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4638307Z Or undo this operation with:
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4638650Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4638868Z   git switch -
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4639158Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4639636Z Turn off this advice by setting config variable advice.detachedHead to false
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4640246Z
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4640922Z HEAD is now at 8b6dd5c Merge d059c25b2f8aa9eeb9f33a0cc2600198143f28b9 into 9bb1f95aa2562ba154ad6bd4c075da9da763eb30
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4643223Z ##[endgroup]
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4679583Z [command]/usr/bin/git log -1 --format=%H
+Test	Run actions/checkout@v6	2026-06-25T20:40:10.4704673Z 8b6dd5c9730fa085a8bae7ad945cecea61993b8a
+Test	Setup Node.js	﻿2026-06-25T20:40:10.5071821Z ##[group]Run actions/setup-node@v6
+Test	Setup Node.js	2026-06-25T20:40:10.5072925Z with:
+Test	Setup Node.js	2026-06-25T20:40:10.5073696Z   node-version: 24.x
+Test	Setup Node.js	2026-06-25T20:40:10.5074528Z   check-latest: false
+Test	Setup Node.js	2026-06-25T20:40:10.5080764Z   token: ***
+Test	Setup Node.js	2026-06-25T20:40:10.5081348Z   package-manager-cache: true
+Test	Setup Node.js	2026-06-25T20:40:10.5081920Z ##[endgroup]
+Test	Setup Node.js	2026-06-25T20:40:10.6657404Z Found in cache @ /opt/hostedtoolcache/node/24.17.0/x64
+Test	Setup Node.js	2026-06-25T20:40:10.6660213Z ##[group]Environment details
+Test	Setup Node.js	2026-06-25T20:40:10.9848373Z node: v24.17.0
+Test	Setup Node.js	2026-06-25T20:40:10.9849297Z npm: 11.13.0
+Test	Setup Node.js	2026-06-25T20:40:10.9849993Z yarn: 1.22.22
+Test	Setup Node.js	2026-06-25T20:40:10.9851392Z ##[endgroup]
+Test	Install dependencies	﻿2026-06-25T20:40:11.0035035Z ##[group]Run npm install
+Test	Install dependencies	2026-06-25T20:40:11.0036457Z ^[[36;1mnpm install^[[0m
+Test	Install dependencies	2026-06-25T20:40:11.0171583Z shell: /usr/bin/bash -e {0}
+Test	Install dependencies	2026-06-25T20:40:11.0172845Z ##[endgroup]
+Test	Install dependencies	2026-06-25T20:40:11.4827848Z
+Test	Install dependencies	2026-06-25T20:40:11.4842749Z up to date, audited 1 package in 403ms
+Test	Install dependencies	2026-06-25T20:40:11.4843849Z
+Test	Install dependencies	2026-06-25T20:40:11.4844373Z found 0 vulnerabilities
+Test	Check syntax	﻿2026-06-25T20:40:11.5285671Z ##[group]Run npm run check:syntax
+Test	Check syntax	2026-06-25T20:40:11.5286920Z ^[[36;1mnpm run check:syntax^[[0m
+Test	Check syntax	2026-06-25T20:40:11.5323759Z shell: /usr/bin/bash -e {0}
+Test	Check syntax	2026-06-25T20:40:11.5324836Z ##[endgroup]
+Test	Check syntax	2026-06-25T20:40:11.6404442Z
+Test	Check syntax	2026-06-25T20:40:11.6405721Z > gh-pull-all@1.4.2 check:syntax
+Test	Check syntax	2026-06-25T20:40:11.6407171Z > bash scripts/check-mjs-syntax.sh
+Test	Check syntax	2026-06-25T20:40:11.6408373Z
+Test	Check syntax	2026-06-25T20:40:11.6486082Z Checking syntax: demos/demo-progress-bar.mjs
+Test	Check syntax	2026-06-25T20:40:11.6740822Z Checking syntax: demos/demonstrate-bug.mjs
+Test	Check syntax	2026-06-25T20:40:11.7011658Z Checking syntax: demos/ink-list-demo.mjs
+Test	Check syntax	2026-06-25T20:40:11.7268157Z Checking syntax: demos/terminal-simulator.mjs
+Test	Check syntax	2026-06-25T20:40:11.7520467Z Checking syntax: docs/case-studies/issue-42/templates/csharp-detect-code-changes.mjs
+Test	Check syntax	2026-06-25T20:40:11.7773412Z Checking syntax: docs/case-studies/issue-42/templates/js-detect-code-changes.mjs
+Test	Check syntax	2026-06-25T20:40:11.8053652Z Checking syntax: experiments/use-m-loader-failure.mjs
+Test	Check syntax	2026-06-25T20:40:11.8294033Z Checking syntax: gh-pull-all.mjs
+Test	Check syntax	2026-06-25T20:40:11.8538233Z Checking syntax: load-use-m.mjs
+Test	Check syntax	2026-06-25T20:40:11.8811522Z Checking syntax: scripts/check-release-needed.mjs
+Test	Check syntax	2026-06-25T20:40:11.9054797Z Checking syntax: scripts/create-github-release.mjs
+Test	Check syntax	2026-06-25T20:40:11.9297822Z Checking syntax: scripts/detect-code-changes.mjs
+Test	Check syntax	2026-06-25T20:40:11.9561802Z Checking syntax: scripts/package-info.mjs
+Test	Check syntax	2026-06-25T20:40:11.9828043Z Checking syntax: scripts/publish-to-npm.mjs
+Test	Check syntax	2026-06-25T20:40:12.0061458Z Checking syntax: scripts/setup-npm.mjs
+Test	Check syntax	2026-06-25T20:40:12.0293494Z Checking syntax: scripts/smoke-test-package.mjs
+Test	Check syntax	2026-06-25T20:40:12.0520695Z Checking syntax: tests/test-all.mjs
+Test	Check syntax	2026-06-25T20:40:12.0770403Z Checking syntax: tests/test-cli-simple.mjs
+Test	Check syntax	2026-06-25T20:40:12.1013268Z Checking syntax: tests/test-concurrent-processing.mjs
+Test	Check syntax	2026-06-25T20:40:12.1252733Z Checking syntax: tests/test-detect-code-changes.mjs
+Test	Check syntax	2026-06-25T20:40:12.1511482Z Checking syntax: tests/test-empty-repository.mjs
+Test	Check syntax	2026-06-25T20:40:12.1761658Z Checking syntax: tests/test-error-handling.mjs
+Test	Check syntax	2026-06-25T20:40:12.2025660Z Checking syntax: tests/test-error-message-display.mjs
+Test	Check syntax	2026-06-25T20:40:12.2307018Z Checking syntax: tests/test-file-operations.mjs
+Test	Check syntax	2026-06-25T20:40:12.2576120Z Checking syntax: tests/test-fixed-rendering.mjs
+Test	Check syntax	2026-06-25T20:40:12.2813906Z Checking syntax: tests/test-gh-cli.mjs
+Test	Check syntax	2026-06-25T20:40:12.3075561Z Checking syntax: tests/test-github-api.mjs
+Test	Check syntax	2026-06-25T20:40:12.3321521Z Checking syntax: tests/test-integration.mjs
+Test	Check syntax	2026-06-25T20:40:12.3556385Z Checking syntax: tests/test-issue-11-integration.mjs
+Test	Check syntax	2026-06-25T20:40:12.3819603Z Checking syntax: tests/test-line-padding.mjs
+Test	Check syntax	2026-06-25T20:40:12.4061700Z Checking syntax: tests/test-merge-result.mjs
+Test	Check syntax	2026-06-25T20:40:12.4289824Z Checking syntax: tests/test-multithread-live.mjs
+Test	Check syntax	2026-06-25T20:40:12.4540910Z Checking syntax: tests/test-multithread-no-live.mjs
+Test	Check syntax	2026-06-25T20:40:12.4781730Z Checking syntax: tests/test-parallel.mjs
+Test	Check syntax	2026-06-25T20:40:12.5010542Z Checking syntax: tests/test-progress-bar.mjs
+Test	Check syntax	2026-06-25T20:40:12.5250750Z Checking syntax: tests/test-release-workflow.mjs
+Test	Check syntax	2026-06-25T20:40:12.5505422Z Checking syntax: tests/test-single-repo.mjs
+Test	Check syntax	2026-06-25T20:40:12.5741019Z Checking syntax: tests/test-single-thread.mjs
+Test	Check syntax	2026-06-25T20:40:12.6042270Z Checking syntax: tests/test-sorting.mjs
+Test	Check syntax	2026-06-25T20:40:12.6336922Z Checking syntax: tests/test-switch-to-default-cli.mjs
+Test	Check syntax	2026-06-25T20:40:12.6630748Z Checking syntax: tests/test-switch-to-default.mjs
+Test	Check syntax	2026-06-25T20:40:12.6899872Z Checking syntax: tests/test-terminal-output.mjs
+Test	Check syntax	2026-06-25T20:40:12.7158561Z Checking syntax: tests/test-terminal-rendering.mjs
+Test	Check syntax	2026-06-25T20:40:12.7425186Z Checking syntax: tests/test-terminal-width.mjs
+Test	Check syntax	2026-06-25T20:40:12.7666509Z Checking syntax: tests/test-threading.mjs
+Test	Check syntax	2026-06-25T20:40:12.7909055Z Checking syntax: tests/test-uncommitted-changes.mjs
+Test	Check syntax	2026-06-25T20:40:12.8155293Z Checking syntax: tests/test-use-m-loader.mjs
+Test	Check syntax	2026-06-25T20:40:12.8406468Z Checking syntax: tests/test-windowed-display.mjs
+Test	Check syntax	2026-06-25T20:40:12.8641661Z Checking syntax: version.mjs
+Test	Check file line limits	﻿2026-06-25T20:40:12.8986347Z ##[group]Run npm run check:line-limits
+Test	Check file line limits	2026-06-25T20:40:12.8986757Z ^[[36;1mnpm run check:line-limits^[[0m
+Test	Check file line limits	2026-06-25T20:40:12.9022060Z shell: /usr/bin/bash -e {0}
+Test	Check file line limits	2026-06-25T20:40:12.9022412Z ##[endgroup]
+Test	Check file line limits	2026-06-25T20:40:13.0031701Z
+Test	Check file line limits	2026-06-25T20:40:13.0127079Z > gh-pull-all@1.4.2 check:line-limits
+Test	Check file line limits	2026-06-25T20:40:13.0128121Z > bash scripts/check-file-line-limits.sh
+Test	Check file line limits	2026-06-25T20:40:13.0128392Z
+Test	Check file line limits	2026-06-25T20:40:13.0128703Z OK: .github/workflows/release.yml has 138 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0146420Z OK: README.md has 234 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0166181Z OK: demos/demo-progress-bar.mjs has 84 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0185560Z OK: demos/demonstrate-bug.mjs has 91 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0205113Z OK: demos/ink-list-demo.mjs has 221 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0224538Z OK: demos/terminal-simulator.mjs has 318 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0244235Z OK: docs/case-studies/issue-38/analysis.md has 47 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0263649Z OK: docs/case-studies/issue-40/analysis.md has 206 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0283207Z OK: docs/case-studies/issue-40/template-comparison-2026-06-25.md has 36 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0302645Z OK: docs/case-studies/issue-42/analysis.md has 151 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0322431Z OK: docs/case-studies/issue-42/templates/csharp-detect-code-changes.mjs has 222 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0342265Z OK: docs/case-studies/issue-42/templates/js-detect-code-changes.mjs has 171 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0361244Z OK: experiments/use-m-loader-failure.mjs has 35 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0380342Z OK: gh-pull-all.mjs has 1351 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0399403Z OK: load-use-m.mjs has 106 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0418626Z OK: scripts/check-release-needed.mjs has 37 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0437999Z OK: scripts/create-github-release.mjs has 91 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0457012Z OK: scripts/detect-code-changes.mjs has 138 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0476409Z OK: scripts/package-info.mjs has 33 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0495730Z OK: scripts/publish-to-npm.mjs has 96 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0515084Z OK: scripts/setup-npm.mjs has 93 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0534639Z OK: scripts/smoke-test-package.mjs has 60 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0554047Z OK: tests/test-all.mjs has 210 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0573873Z OK: tests/test-cli-simple.mjs has 115 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0593119Z OK: tests/test-concurrent-processing.mjs has 125 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0613655Z OK: tests/test-detect-code-changes.mjs has 106 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0633365Z OK: tests/test-empty-repository.mjs has 204 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0652409Z OK: tests/test-error-handling.mjs has 121 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0671543Z OK: tests/test-error-message-display.mjs has 121 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0690471Z OK: tests/test-file-operations.mjs has 127 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0709518Z OK: tests/test-fixed-rendering.mjs has 151 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0728110Z OK: tests/test-gh-cli.mjs has 123 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0746869Z OK: tests/test-github-api.mjs has 133 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0766022Z OK: tests/test-integration.mjs has 234 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0785674Z OK: tests/test-issue-11-integration.mjs has 197 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0804239Z OK: tests/test-line-padding.mjs has 132 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0822623Z OK: tests/test-merge-result.mjs has 84 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0843191Z OK: tests/test-multithread-live.mjs has 94 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0861911Z OK: tests/test-multithread-no-live.mjs has 102 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0881121Z OK: tests/test-parallel.mjs has 114 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0899909Z OK: tests/test-progress-bar.mjs has 149 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0919057Z OK: tests/test-release-workflow.mjs has 82 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0937791Z OK: tests/test-single-repo.mjs has 62 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0956299Z OK: tests/test-single-thread.mjs has 81 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0975051Z OK: tests/test-sorting.mjs has 39 lines.
+Test	Check file line limits	2026-06-25T20:40:13.0993906Z OK: tests/test-switch-to-default-cli.mjs has 130 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1013169Z OK: tests/test-switch-to-default.mjs has 218 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1031637Z OK: tests/test-terminal-output.mjs has 72 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1050815Z OK: tests/test-terminal-rendering.mjs has 423 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1069487Z OK: tests/test-terminal-width.mjs has 133 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1088064Z OK: tests/test-threading.mjs has 100 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1106879Z OK: tests/test-uncommitted-changes.mjs has 198 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1125445Z OK: tests/test-use-m-loader.mjs has 173 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1144486Z OK: tests/test-windowed-display.mjs has 44 lines.
+Test	Check file line limits	2026-06-25T20:40:13.1163722Z OK: version.mjs has 95 lines.
+Test	Run tests	﻿2026-06-25T20:40:13.1270063Z ##[group]Run npm run test:ci
+Test	Run tests	2026-06-25T20:40:13.1270451Z ^[[36;1mnpm run test:ci^[[0m
+Test	Run tests	2026-06-25T20:40:13.1305605Z shell: /usr/bin/bash -e {0}
+Test	Run tests	2026-06-25T20:40:13.1306087Z ##[endgroup]
+Test	Run tests	2026-06-25T20:40:13.2270200Z
+Test	Run tests	2026-06-25T20:40:13.2271082Z > gh-pull-all@1.4.2 test:ci
+Test	Run tests	2026-06-25T20:40:13.2271792Z > node tests/test-all.mjs
+Test	Run tests	2026-06-25T20:40:13.2272111Z
+Test	Run tests	2026-06-25T20:40:13.5974530Z ^[[34m^[[1m🧪 GH-Pull-All Test Suite^[[0m^[[0m
+Test	Run tests	2026-06-25T20:40:13.5981580Z ^[[36mRunning 31 test suites...^[[0m
+Test	Run tests	2026-06-25T20:40:13.5989793Z ^[[36mFound test files: test-cli-simple.mjs, test-concurrent-processing.mjs, test-detect-code-changes.mjs, test-empty-repository.mjs, test-error-handling.mjs, test-error-message-display.mjs, test-file-operations.mjs, test-fixed-rendering.mjs, test-gh-cli.mjs, test-github-api.mjs, test-integration.mjs, test-issue-11-integration.mjs, test-line-padding.mjs, test-merge-result.mjs, test-multithread-live.mjs, test-multithread-no-live.mjs, test-parallel.mjs, test-progress-bar.mjs, test-release-workflow.mjs, test-single-repo.mjs, test-single-thread.mjs, test-sorting.mjs, test-switch-to-default-cli.mjs, test-switch-to-default.mjs, test-terminal-output.mjs, test-terminal-rendering.mjs, test-terminal-width.mjs, test-threading.mjs, test-uncommitted-changes.mjs, test-use-m-loader.mjs, test-windowed-display.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:13.5996218Z ^[[2m────────────────────────────────────────────────────────────────────────────────^[[0m
+Test	Run tests	2026-06-25T20:40:13.5996810Z ^[[36m
+Test	Run tests	2026-06-25T20:40:13.5997173Z 🔍 Running: Cli Simple^[[0m
+Test	Run tests	2026-06-25T20:40:13.5997831Z ^[[2m   File: test-cli-simple.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:13.5998724Z ^[[2m   Tests basic CLI functionality and argument parsing^[[0m
+Test	Run tests	2026-06-25T20:40:14.6633313Z ^[[32m✅ Cli Simple passed (1.1s)^[[0m
+Test	Run tests	2026-06-25T20:40:14.6633756Z ^[[36m
+Test	Run tests	2026-06-25T20:40:14.6634114Z 🔍 Running: Concurrent Processing^[[0m
+Test	Run tests	2026-06-25T20:40:14.6639038Z ^[[2m   File: test-concurrent-processing.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:14.6648029Z ^[[2m   Tests concurrent repository processing with worker pool pattern^[[0m
+Test	Run tests	2026-06-25T20:40:33.2634396Z ^[[32m✅ Concurrent Processing passed (18.6s)^[[0m
+Test	Run tests	2026-06-25T20:40:33.2634851Z ^[[36m
+Test	Run tests	2026-06-25T20:40:33.2635191Z 🔍 Running: Detect Code Changes^[[0m
+Test	Run tests	2026-06-25T20:40:33.2635609Z ^[[2m   File: test-detect-code-changes.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:33.2636567Z ^[[2m   Tests CI change detection for code and non-code commits^[[0m
+Test	Run tests	2026-06-25T20:40:33.5461856Z ^[[32m✅ Detect Code Changes passed (0.3s)^[[0m
+Test	Run tests	2026-06-25T20:40:33.5462302Z ^[[36m
+Test	Run tests	2026-06-25T20:40:33.5462644Z 🔍 Running: Empty Repository^[[0m
+Test	Run tests	2026-06-25T20:40:33.5463126Z ^[[2m   File: test-empty-repository.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:33.5463733Z ^[[2m   Tests empty repository pull handling and first default branch detection^[[0m
+Test	Run tests	2026-06-25T20:40:38.8212964Z ^[[32m✅ Empty Repository passed (5.3s)^[[0m
+Test	Run tests	2026-06-25T20:40:38.8213425Z ^[[36m
+Test	Run tests	2026-06-25T20:40:38.8213745Z 🔍 Running: Error Handling^[[0m
+Test	Run tests	2026-06-25T20:40:38.8214136Z ^[[2m   File: test-error-handling.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:38.8214619Z ^[[2m   Tests error numbering system and error list display^[[0m
+Test	Run tests	2026-06-25T20:40:57.9630290Z ^[[32m✅ Error Handling passed (19.1s)^[[0m
+Test	Run tests	2026-06-25T20:40:57.9631044Z ^[[36m
+Test	Run tests	2026-06-25T20:40:57.9631551Z 🔍 Running: Error Message Display^[[0m
+Test	Run tests	2026-06-25T20:40:57.9632227Z ^[[2m   File: test-error-message-display.mjs^[[0m
+Test	Run tests	2026-06-25T20:40:57.9632772Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T20:41:16.9622148Z ^[[32m✅ Error Message Display passed (19.0s)^[[0m
+Test	Run tests	2026-06-25T20:41:16.9622621Z ^[[36m
+Test	Run tests	2026-06-25T20:41:16.9622946Z 🔍 Running: File Operations^[[0m
+Test	Run tests	2026-06-25T20:41:16.9623348Z ^[[2m   File: test-file-operations.mjs^[[0m
+Test	Run tests	2026-06-25T20:41:16.9626014Z ^[[2m   Tests file system operations and directory handling^[[0m
+Test	Run tests	2026-06-25T20:41:18.5956587Z ^[[32m✅ File Operations passed (1.6s)^[[0m
+Test	Run tests	2026-06-25T20:41:18.5957180Z ^[[36m
+Test	Run tests	2026-06-25T20:41:18.5957940Z 🔍 Running: Fixed Rendering^[[0m
+Test	Run tests	2026-06-25T20:41:18.5958530Z ^[[2m   File: test-fixed-rendering.mjs^[[0m
+Test	Run tests	2026-06-25T20:41:18.5959229Z ^[[2m   Tests fixed terminal rendering functionality^[[0m
+Test	Run tests	2026-06-25T20:41:18.7214703Z ^[[32m✅ Fixed Rendering passed (0.1s)^[[0m
+Test	Run tests	2026-06-25T20:41:18.7215897Z ^[[36m
+Test	Run tests	2026-06-25T20:41:18.7216276Z 🔍 Running: Gh Cli^[[0m
+Test	Run tests	2026-06-25T20:41:18.7216736Z ^[[2m   File: test-gh-cli.mjs^[[0m
+Test	Run tests	2026-06-25T20:41:18.7217345Z ^[[2m   Tests GitHub CLI integration and fallback behavior^[[0m
+Test	Run tests	2026-06-25T20:41:19.2889032Z ^[[32m✅ Gh Cli passed (0.6s)^[[0m
+Test	Run tests	2026-06-25T20:41:19.2889784Z ^[[36m
+Test	Run tests	2026-06-25T20:41:19.2890286Z 🔍 Running: Github Api^[[0m
+Test	Run tests	2026-06-25T20:41:19.2890945Z ^[[2m   File: test-github-api.mjs^[[0m
+Test	Run tests	2026-06-25T20:41:19.2891708Z ^[[2m   Tests GitHub API integration and error handling^[[0m
+Test	Run tests	2026-06-25T20:41:23.6252456Z ^[[32m✅ Github Api passed (4.3s)^[[0m
+Test	Run tests	2026-06-25T20:41:23.6252886Z ^[[36m
+Test	Run tests	2026-06-25T20:41:23.6253178Z 🔍 Running: Integration^[[0m
+Test	Run tests	2026-06-25T20:41:23.6253540Z ^[[2m   File: test-integration.mjs^[[0m
+Test	Run tests	2026-06-25T20:41:23.6254020Z ^[[2m   Tests all functionality together in complex scenarios^[[0m
+Test	Run tests	2026-06-25T20:41:35.2438283Z ^[[32m✅ Integration passed (11.6s)^[[0m
+Test	Run tests	2026-06-25T20:41:35.2438835Z ^[[36m
+Test	Run tests	2026-06-25T20:41:35.2439301Z 🔍 Running: Issue 11 Integration^[[0m
+Test	Run tests	2026-06-25T20:41:35.2439969Z ^[[2m   File: test-issue-11-integration.mjs^[[0m
+Test	Run tests	2026-06-25T20:41:35.2440718Z ^[[2m   Tests short status errors with full details in the errors section^[[0m
+Test	Run tests	2026-06-25T20:43:03.7765897Z ^[[31m❌ Issue 11 Integration failed (88.5s)^[[0m
+Test	Run tests	2026-06-25T20:43:03.7767451Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-issue-11-integration.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:03.7770057Z ^[[2m   stdout:
+Test	Run tests	2026-06-25T20:43:03.7772686Z ^[[34m🧪 Testing Issue #11 integration (short error messages)...^[[0m
+Test	Run tests	2026-06-25T20:43:03.7773608Z ^[[36m🔧 Created conflicting files to trigger errors^[[0m
+Test	Run tests	2026-06-25T20:43:03.7774337Z ^[[36m🔧 Testing: Multi-threaded with live updates^[[0m
+Test	Run tests	2026-06-25T20:43:03.7775074Z ^[[32m✅ Multi-threaded with live updates passed^[[0m
+Test	Run tests	2026-06-25T20:43:03.7775772Z ^[[36m🔧 Testing: Multi-threaded without live updates^[[0m
+Test	Run tests	2026-06-25T20:43:03.7776448Z ^[[32m✅ Multi-threaded without live updates passed^[[0m
+Test	Run tests	2026-06-25T20:43:03.7777053Z ^[[36m🔧 Testing: Single-threaded^[[0m
+Test	Run tests	2026-06-25T20:43:03.7777766Z ^[[32m✅ Single-threaded passed^[[0m
+Test	Run tests	2026-06-25T20:43:03.7778494Z ^[[36m🔧 Testing successful operations still display correctly^[[0m
+Test	Run tests	2026-06-25T20:43:03.7780836Z ^[[31m❌ Issue #11 integration test failed: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/gh-pull-all.mjs --user octocat --threads 1 --dir /tmp/gh-pull-all-test-issue-11-9jpGge/clean
+Test	Run tests	2026-06-25T20:43:03.7781951Z ^[[34m🚀 Starting octocat user repository sync...^[[0m
+Test	Run tests	2026-06-25T20:43:03.7782552Z ^[[36m📁 Target directory: /tmp/gh-pull-all-test-issue-11-9jpGge/clean^[[0m
+Test	Run tests	2026-06-25T20:43:03.7783042Z ^[[36m🔗 Using HTTPS for cloning^[[0m
+Test	Run tests	2026-06-25T20:43:03.7783436Z ^[[36m⚡ Concurrency: 1 thread (sequential)^[[0m
+Test	Run tests	2026-06-25T20:43:03.7783867Z ^[[36m📋 Using GitHub API to fetch repositories^[[0m
+Test	Run tests	2026-06-25T20:43:03.7784360Z ^[[34m🔍 Fetching repositories from octocat user account...^[[0m
+Test	Run tests	2026-06-25T20:43:03.7784787Z ^[[32m✅ Found 100 repositories^[[0m
+Test	Run tests	2026-06-25T20:43:03.7785336Z ^[[32m✅ ama                     ^[[2m  0.3s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7786010Z ^[[32m✅ animal-sounds           ^[[2m  0.5s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7786657Z ^[[32m✅ astral-regex            ^[[2m  0.8s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7787291Z ^[[32m✅ base64-regex            ^[[2m  1.0s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7788160Z ^[[32m✅ bin-build               ^[[2m  1.3s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7788785Z ^[[32m✅ bin-wrapper             ^[[2m  1.6s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7789447Z ^[[32m✅ boysenberry-repo-1      ^[[2m  1.8s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7790124Z ^[[32m✅ brightness              ^[[2m  2.1s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7791162Z ^[[32m✅ brightness-cli          ^[[2m  2.4s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7792033Z ^[[32m✅ broccoli-myth           ^[[2m  2.8s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7792684Z ^[[32m✅ broccoli-rework         ^[[2m  3.0s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7793329Z ^[[32m✅ broccoli-styl           ^[[2m  3.3s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7793960Z ^[[32m✅ buffer-to-vinyl         ^[[2m  3.5s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7794893Z ^[[32m✅ caw                     ^[[2m  3.8s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7795482Z ^[[32m✅ claim                   ^[[2m  4.0s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7796101Z ^[[32m✅ compare-size            ^[[2m  4.3s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7796747Z ^[[32m✅ credit-card-regex       ^[[2m  4.9s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7797393Z ^[[32m✅ decompress              ^[[2m  5.1s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7800210Z ^[[32m✅ decompress-cli          ^[[2m  5.4s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7800877Z ^[[32m✅ decompress-targz        ^[[2m  5.6s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7801528Z ^[[32m✅ decompress-unzip        ^[[2m  6.0s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7802186Z ^[[32m✅ deku-slideout           ^[[2m  6.3s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7802806Z ^[[32m✅ download                ^[[2m  6.5s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7803465Z ^[[32m✅ download-cli            ^[[2m  6.8s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7804106Z ^[[32m✅ download-status         ^[[2m  7.1s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7804739Z ^[[32m✅ elm-bin                 ^[[2m 10.5s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7805354Z ^[[32m✅ etc-keyboard            ^[[2m 10.8s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7805990Z ^[[32m✅ etc-keyboard-cli        ^[[2m 11.0s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7806616Z ^[[32m✅ executable              ^[[2m 11.9s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7807225Z ^[[32m✅ ext-list                ^[[2m 12.2s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7808012Z ^[[32m✅ ext-name                ^[[2m 12.4s^[[0m Successfully cloned
+Test	Run tests	2026-06-25T20:43:03.7808482Z ^[[32m✅ ext-name-cli            ^[[2m 12.7s^[[
+Test	Run tests	2026-06-25T20:43:03.7808812Z ...<truncated>^[[0m
+Test	Run tests	2026-06-25T20:43:03.7809050Z ^[[36m
+Test	Run tests	2026-06-25T20:43:03.7809317Z 🔍 Running: Line Padding^[[0m
+Test	Run tests	2026-06-25T20:43:03.7809671Z ^[[2m   File: test-line-padding.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:03.7810271Z ^[[2m   Tests line padding to prevent truncation issues like "Successfully pulledes..."^[[0m
+Test	Run tests	2026-06-25T20:43:09.7822278Z ^[[32m✅ Line Padding passed (6.0s)^[[0m
+Test	Run tests	2026-06-25T20:43:09.7822794Z ^[[36m
+Test	Run tests	2026-06-25T20:43:09.7823161Z 🔍 Running: Merge Result^[[0m
+Test	Run tests	2026-06-25T20:43:09.7823535Z ^[[2m   File: test-merge-result.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:09.7823918Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T20:43:10.5897133Z ^[[32m✅ Merge Result passed (0.8s)^[[0m
+Test	Run tests	2026-06-25T20:43:10.5897806Z ^[[36m
+Test	Run tests	2026-06-25T20:43:10.5898275Z 🔍 Running: Multithread Live^[[0m
+Test	Run tests	2026-06-25T20:43:10.5898953Z ^[[2m   File: test-multithread-live.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:10.5899705Z ^[[2m   Tests multi-thread mode with live in-place updates^[[0m
+Test	Run tests	2026-06-25T20:43:22.1509483Z ^[[32m✅ Multithread Live passed (11.6s)^[[0m
+Test	Run tests	2026-06-25T20:43:22.1510072Z ^[[36m
+Test	Run tests	2026-06-25T20:43:22.1510543Z 🔍 Running: Multithread No Live^[[0m
+Test	Run tests	2026-06-25T20:43:22.1511181Z ^[[2m   File: test-multithread-no-live.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:22.1512001Z ^[[2m   Tests multi-thread mode with append-only final status^[[0m
+Test	Run tests	2026-06-25T20:43:34.7409106Z ^[[32m✅ Multithread No Live passed (12.6s)^[[0m
+Test	Run tests	2026-06-25T20:43:34.7409645Z ^[[36m
+Test	Run tests	2026-06-25T20:43:34.7409939Z 🔍 Running: Parallel^[[0m
+Test	Run tests	2026-06-25T20:43:34.7410292Z ^[[2m   File: test-parallel.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:34.7410724Z ^[[2m   Tests parallel processing functionality^[[0m
+Test	Run tests	2026-06-25T20:43:39.8834292Z ^[[32m✅ Parallel passed (5.1s)^[[0m
+Test	Run tests	2026-06-25T20:43:39.8834876Z ^[[36m
+Test	Run tests	2026-06-25T20:43:39.8835298Z 🔍 Running: Progress Bar^[[0m
+Test	Run tests	2026-06-25T20:43:39.8835869Z ^[[2m   File: test-progress-bar.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:39.8837001Z ^[[2m   Tests progress bar functionality and display^[[0m
+Test	Run tests	2026-06-25T20:43:40.2492365Z ^[[32m✅ Progress Bar passed (0.4s)^[[0m
+Test	Run tests	2026-06-25T20:43:40.2492810Z ^[[36m
+Test	Run tests	2026-06-25T20:43:40.2493124Z 🔍 Running: Release Workflow^[[0m
+Test	Run tests	2026-06-25T20:43:40.2493531Z ^[[2m   File: test-release-workflow.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:40.2493866Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T20:43:40.2838081Z ^[[32m✅ Release Workflow passed (0.0s)^[[0m
+Test	Run tests	2026-06-25T20:43:40.2838687Z ^[[36m
+Test	Run tests	2026-06-25T20:43:40.2839080Z 🔍 Running: Single Repo^[[0m
+Test	Run tests	2026-06-25T20:43:40.2839557Z ^[[2m   File: test-single-repo.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:40.2839984Z ^[[2m   Test suite^[[0m
+Test	Run tests	2026-06-25T20:43:40.9429723Z ^[[32m✅ Single Repo passed (0.7s)^[[0m
+Test	Run tests	2026-06-25T20:43:40.9430434Z ^[[36m
+Test	Run tests	2026-06-25T20:43:40.9433809Z 🔍 Running: Single Thread^[[0m
+Test	Run tests	2026-06-25T20:43:40.9434497Z ^[[2m   File: test-single-thread.mjs^[[0m
+Test	Run tests	2026-06-25T20:43:40.9435517Z ^[[2m   Tests single-thread mode with live updates and append-only behavior^[[0m
+Test	Run tests	2026-06-25T20:44:16.6793106Z ^[[32m✅ Single Thread passed (35.7s)^[[0m
+Test	Run tests	2026-06-25T20:44:16.6793671Z ^[[36m
+Test	Run tests	2026-06-25T20:44:16.6794032Z 🔍 Running: Sorting^[[0m
+Test	Run tests	2026-06-25T20:44:16.6794500Z ^[[2m   File: test-sorting.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:16.6795139Z ^[[2m   Tests alphabetical sorting of repositories^[[0m
+Test	Run tests	2026-06-25T20:44:17.4071303Z ^[[32m✅ Sorting passed (0.7s)^[[0m
+Test	Run tests	2026-06-25T20:44:17.4071863Z ^[[36m
+Test	Run tests	2026-06-25T20:44:17.4072341Z 🔍 Running: Switch To Default Cli^[[0m
+Test	Run tests	2026-06-25T20:44:17.4073063Z ^[[2m   File: test-switch-to-default-cli.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:17.4074032Z ^[[2m   Tests CLI argument validation and help text for --switch-to-default option^[[0m
+Test	Run tests	2026-06-25T20:44:20.4435771Z ^[[32m✅ Switch To Default Cli passed (3.0s)^[[0m
+Test	Run tests	2026-06-25T20:44:20.4436400Z ^[[36m
+Test	Run tests	2026-06-25T20:44:20.4436868Z 🔍 Running: Switch To Default^[[0m
+Test	Run tests	2026-06-25T20:44:20.4437738Z ^[[2m   File: test-switch-to-default.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:20.4438822Z ^[[2m   Tests --switch-to-default functionality for switching repositories to default branch^[[0m
+Test	Run tests	2026-06-25T20:44:22.3053444Z ^[[32m✅ Switch To Default passed (1.9s)^[[0m
+Test	Run tests	2026-06-25T20:44:22.3054038Z ^[[36m
+Test	Run tests	2026-06-25T20:44:22.3054505Z 🔍 Running: Terminal Output^[[0m
+Test	Run tests	2026-06-25T20:44:22.3055088Z ^[[2m   File: test-terminal-output.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:22.3055798Z ^[[2m   Tests terminal output formatting and colors^[[0m
+Test	Run tests	2026-06-25T20:44:25.1166762Z ^[[32m✅ Terminal Output passed (2.8s)^[[0m
+Test	Run tests	2026-06-25T20:44:25.1167190Z ^[[36m
+Test	Run tests	2026-06-25T20:44:25.1167687Z 🔍 Running: Terminal Rendering^[[0m
+Test	Run tests	2026-06-25T20:44:25.1168203Z ^[[2m   File: test-terminal-rendering.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:25.1168677Z ^[[2m   Tests terminal rendering output and formatting^[[0m
+Test	Run tests	2026-06-25T20:44:25.9125731Z ^[[32m✅ Terminal Rendering passed (0.8s)^[[0m
+Test	Run tests	2026-06-25T20:44:25.9126165Z ^[[36m
+Test	Run tests	2026-06-25T20:44:25.9126479Z 🔍 Running: Terminal Width^[[0m
+Test	Run tests	2026-06-25T20:44:25.9126859Z ^[[2m   File: test-terminal-width.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:25.9127335Z ^[[2m   Tests terminal width handling and message truncation^[[0m
+Test	Run tests	2026-06-25T20:44:45.6080685Z ^[[32m✅ Terminal Width passed (19.7s)^[[0m
+Test	Run tests	2026-06-25T20:44:45.6081202Z ^[[36m
+Test	Run tests	2026-06-25T20:44:45.6081484Z 🔍 Running: Threading^[[0m
+Test	Run tests	2026-06-25T20:44:45.6081835Z ^[[2m   File: test-threading.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:45.6082271Z ^[[2m   Tests threading and concurrency management^[[0m
+Test	Run tests	2026-06-25T20:44:51.9942597Z ^[[32m✅ Threading passed (6.4s)^[[0m
+Test	Run tests	2026-06-25T20:44:51.9943140Z ^[[36m
+Test	Run tests	2026-06-25T20:44:51.9943568Z 🔍 Running: Uncommitted Changes^[[0m
+Test	Run tests	2026-06-25T20:44:51.9944168Z ^[[2m   File: test-uncommitted-changes.mjs^[[0m
+Test	Run tests	2026-06-25T20:44:51.9945241Z ^[[2m   Tests handling of repositories with uncommitted changes^[[0m
+Test	Run tests	2026-06-25T20:45:04.2344544Z ^[[32m✅ Uncommitted Changes passed (12.2s)^[[0m
+Test	Run tests	2026-06-25T20:45:04.2345172Z ^[[36m
+Test	Run tests	2026-06-25T20:45:04.2345586Z 🔍 Running: Use M Loader^[[0m
+Test	Run tests	2026-06-25T20:45:04.2346135Z ^[[2m   File: test-use-m-loader.mjs^[[0m
+Test	Run tests	2026-06-25T20:45:04.2346985Z ^[[2m   Tests robust use-m loading with CDN fallback and clear errors (issue #35)^[[0m
+Test	Run tests	2026-06-25T20:45:04.5850471Z ^[[32m✅ Use M Loader passed (0.3s)^[[0m
+Test	Run tests	2026-06-25T20:45:04.5851459Z ^[[36m
+Test	Run tests	2026-06-25T20:45:04.5851929Z 🔍 Running: Windowed Display^[[0m
+Test	Run tests	2026-06-25T20:45:04.5852549Z ^[[2m   File: test-windowed-display.mjs^[[0m
+Test	Run tests	2026-06-25T20:45:04.5853273Z ^[[2m   Tests windowed display mode for terminal output^[[0m
+Test	Run tests	2026-06-25T20:45:05.9430002Z ^[[32m✅ Windowed Display passed (1.4s)^[[0m
+Test	Run tests	2026-06-25T20:45:05.9430594Z ^[[2m
+Test	Run tests	2026-06-25T20:45:05.9431331Z ────────────────────────────────────────────────────────────────────────────────^[[0m
+Test	Run tests	2026-06-25T20:45:05.9431958Z ^[[34m
+Test	Run tests	2026-06-25T20:45:05.9432393Z ^[[1m📊 Test Suite Summary^[[0m^[[0m
+Test	Run tests	2026-06-25T20:45:05.9432916Z ^[[32m✅ Passed: 30/31 tests^[[0m
+Test	Run tests	2026-06-25T20:45:05.9433387Z ^[[31m❌ Failed: 1/31 tests^[[0m
+Test	Run tests	2026-06-25T20:45:05.9433779Z ^[[31m
+Test	Run tests	2026-06-25T20:45:05.9434123Z Failed Tests:^[[0m
+Test	Run tests	2026-06-25T20:45:05.9435404Z ^[[31m  • Issue 11 Integration (test-issue-11-integration.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-issue-11-integration.mjs^[[0m
+Test	Run tests	2026-06-25T20:45:05.9436407Z ^[[34m⏱️  Total time: 292.3s^[[0m
+Test	Run tests	2026-06-25T20:45:05.9436673Z ^[[31m
+Test	Run tests	2026-06-25T20:45:05.9437122Z 💥 1 test(s) failed. Please review and fix the issues.^[[0m
+Test	Run tests	2026-06-25T20:45:05.9583802Z ##[error]Process completed with exit code 1.
+Test	Post Run actions/checkout@v6	﻿2026-06-25T20:45:05.9722821Z Post job cleanup.
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0553238Z [command]/usr/bin/git version
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0590808Z git version 2.54.0
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0627015Z Temporarily overriding HOME='/home/runner/work/_temp/9ea1da00-c53c-47bc-85d0-87000910ef4a' before making global git config changes
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0628053Z Adding repository directory to the temporary git global config as a safe directory
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0632528Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0663558Z Removing SSH command configuration
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0669307Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0703728Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0969080Z Removing HTTP extra header
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.0973571Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1009731Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1234708Z Removing includeIf entries pointing to credentials config files
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1240921Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1268089Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1269183Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1270029Z includeif.gitdir:/github/workspace/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1270699Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1278656Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1302126Z /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1312757Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1347811Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1370467Z /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1379723Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1410647Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1432368Z /github/runner_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1439380Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1470091Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1491130Z /github/runner_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1499467Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1530907Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Test	Post Run actions/checkout@v6	2026-06-25T20:45:06.1755506Z Removing credentials config '/home/runner/work/_temp/git-credentials-e432e30d-de99-4c22-964a-bf7feb0dd93a.config'
+Test	Complete job	﻿2026-06-25T20:45:06.1909458Z Cleaning up orphan processes

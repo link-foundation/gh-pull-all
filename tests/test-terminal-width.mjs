@@ -4,7 +4,8 @@ import path from 'path'
 
 // Test terminal width handling and message truncation
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
@@ -57,7 +58,7 @@ async function testTerminalWidth() {
     
     // Check that error messages are truncated in status lines
     const lines = result.split('\n')
-    const errorStatusLines = lines.filter(line => line.includes('Error #') && line.includes('❌'))
+    const errorStatusLines = lines.filter(line => line.includes('Failed with error #') && line.includes('❌'))
     
     if (errorStatusLines.length > 0) {
       log('green', `✅ Found ${errorStatusLines.length} error status line(s)`)

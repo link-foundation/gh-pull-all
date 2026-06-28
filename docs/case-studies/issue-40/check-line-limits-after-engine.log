@@ -1,0 +1,52 @@
+
+> gh-pull-all@1.4.2 check:line-limits
+> bash scripts/check-file-line-limits.sh
+
+OK: .github/workflows/release.yml has 104 lines.
+OK: scripts/check-release-needed.mjs has 37 lines.
+OK: scripts/create-github-release.mjs has 91 lines.
+OK: scripts/package-info.mjs has 33 lines.
+OK: scripts/publish-to-npm.mjs has 96 lines.
+OK: scripts/setup-npm.mjs has 93 lines.
+OK: scripts/smoke-test-package.mjs has 60 lines.
+OK: tests/test-release-workflow.mjs has 70 lines.
+OK: README.md has 234 lines.
+OK: demos/demo-progress-bar.mjs has 84 lines.
+OK: demos/demonstrate-bug.mjs has 91 lines.
+OK: demos/ink-list-demo.mjs has 221 lines.
+OK: demos/terminal-simulator.mjs has 318 lines.
+OK: docs/case-studies/issue-38/analysis.md has 47 lines.
+OK: experiments/use-m-loader-failure.mjs has 35 lines.
+OK: gh-pull-all.mjs has 1349 lines.
+OK: load-use-m.mjs has 106 lines.
+OK: tests/test-all.mjs has 194 lines.
+OK: tests/test-cli-simple.mjs has 115 lines.
+OK: tests/test-concurrent-processing.mjs has 113 lines.
+OK: tests/test-empty-repository.mjs has 204 lines.
+OK: tests/test-error-handling.mjs has 121 lines.
+OK: tests/test-error-message-display.mjs has 121 lines.
+OK: tests/test-file-operations.mjs has 127 lines.
+OK: tests/test-fixed-rendering.mjs has 151 lines.
+OK: tests/test-gh-cli.mjs has 123 lines.
+OK: tests/test-github-api.mjs has 133 lines.
+OK: tests/test-integration.mjs has 234 lines.
+OK: tests/test-issue-11-integration.mjs has 157 lines.
+OK: tests/test-line-padding.mjs has 132 lines.
+OK: tests/test-merge-result.mjs has 84 lines.
+OK: tests/test-multithread-live.mjs has 94 lines.
+OK: tests/test-multithread-no-live.mjs has 102 lines.
+OK: tests/test-parallel.mjs has 97 lines.
+OK: tests/test-progress-bar.mjs has 149 lines.
+OK: tests/test-single-repo.mjs has 62 lines.
+OK: tests/test-single-thread.mjs has 81 lines.
+OK: tests/test-sorting.mjs has 39 lines.
+OK: tests/test-switch-to-default-cli.mjs has 130 lines.
+OK: tests/test-switch-to-default.mjs has 218 lines.
+OK: tests/test-terminal-output.mjs has 72 lines.
+OK: tests/test-terminal-rendering.mjs has 423 lines.
+OK: tests/test-terminal-width.mjs has 133 lines.
+OK: tests/test-threading.mjs has 100 lines.
+OK: tests/test-uncommitted-changes.mjs has 198 lines.
+OK: tests/test-use-m-loader.mjs has 173 lines.
+OK: tests/test-windowed-display.mjs has 44 lines.
+OK: version.mjs has 95 lines.

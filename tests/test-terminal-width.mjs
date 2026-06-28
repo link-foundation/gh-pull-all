@@ -4,7 +4,8 @@ import path from 'path'
 
 // Test terminal width handling and message truncation
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
@@ -55,19 +56,25 @@ async function testTerminalWidth() {
     
     log('green', '✅ Terminal width test completed')
     
-    // Check that error messages are truncated in status lines
+    // Check that error status lines use concise error numbers.
     const lines = result.split('\n')
-    const errorStatusLines = lines.filter(line => line.includes('Error #') && line.includes('❌'))
+    const errorStatusLines = lines.filter(line => /Error #\d+/.test(line) && line.includes('❌'))
     
     if (errorStatusLines.length > 0) {
       log('green', `✅ Found ${errorStatusLines.length} error status line(s)`)
       
-      // Check if any status line message ends with '...' indicating truncation
+      const fullMessageLines = errorStatusLines.filter(line =>
+        line.includes('destination path') ||
+        line.includes('already exists') ||
+        line.includes('from the remote, but no such ref was fetched')
+      )
+      if (fullMessageLines.length > 0) {
+        throw new Error(`Status line contains full error message: ${fullMessageLines[0]}`)
+      }
+
       const truncatedLines = errorStatusLines.filter(line => line.includes('...'))
       if (truncatedLines.length > 0) {
-        log('green', '✅ Found truncated error messages in status lines')
-      } else {
-        log('yellow', '⚠️ No truncation found (may be normal if messages are short)')
+        throw new Error(`Status line should show only the error number: ${truncatedLines[0]}`)
       }
     } else {
       throw new Error('Expected error status lines not found')

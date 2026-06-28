@@ -4,6 +4,11 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import os from 'os'
+import { fileURLToPath } from 'url'
+import { execFileSync } from 'child_process'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const scriptPath = path.resolve(__dirname, '..', 'gh-pull-all.mjs')
 
 // Download use-m dynamically - cached for reuse
 let useM = null
@@ -56,33 +61,33 @@ export async function createMockRepo(repoDir, options = {}) {
   } = options
 
   await fs.mkdir(repoDir, { recursive: true })
-  
+
   // Initialize git repo
   const { execSync } = await import('child_process')
-  
+
   try {
     execSync('git init', { cwd: repoDir, stdio: 'pipe' })
     execSync('git config user.email "test@example.com"', { cwd: repoDir, stdio: 'pipe' })
     execSync('git config user.name "Test User"', { cwd: repoDir, stdio: 'pipe' })
-    
+
     // Create initial commit
     await fs.writeFile(path.join(repoDir, 'README.md'), '# Test Repository')
     execSync('git add .', { cwd: repoDir, stdio: 'pipe' })
     execSync('git commit -m "Initial commit"', { cwd: repoDir, stdio: 'pipe' })
-    
+
     // Add remote
     execSync(`git remote add origin ${remoteUrl}`, { cwd: repoDir, stdio: 'pipe' })
-    
+
     // Create branch if not main
     if (currentBranch !== 'main') {
       execSync(`git checkout -b ${currentBranch}`, { cwd: repoDir, stdio: 'pipe' })
     }
-    
+
     // Add uncommitted changes if requested
     if (hasUncommittedChanges) {
       await fs.writeFile(path.join(repoDir, 'uncommitted.txt'), 'uncommitted changes')
     }
-    
+
     return true
   } catch (error) {
     return false
@@ -103,16 +108,20 @@ export async function getTestUtils() {
 
 // Run gh-pull-all with timeout and error handling
 export async function runGhPullAll(args, options = {}) {
-  const { 
-    timeout = 10000, 
+  const {
+    timeout = 10000,
     expectError = false,
-    cwd = process.cwd() 
+    cwd = process.cwd()
   } = options
-  
-  const { execSync } = await import('child_process')
-  
+
+  const argv = Array.isArray(args)
+    ? args
+    : args.trim() === ''
+      ? []
+      : args.trim().split(/\s+/)
+
   try {
-    const result = execSync(`../gh-pull-all.mjs ${args}`, {
+    const result = execFileSync(process.execPath, [scriptPath, ...argv], {
       encoding: 'utf8',
       stdio: 'pipe',
       cwd,
@@ -132,7 +141,7 @@ export async function runGhPullAll(args, options = {}) {
 // Validate common test outputs
 export function validateOutput(output, checks) {
   const failures = []
-  
+
   for (const [checkName, pattern] of Object.entries(checks)) {
     if (typeof pattern === 'string') {
       if (!output.includes(pattern)) {
@@ -144,6 +153,6 @@ export function validateOutput(output, checks) {
       }
     }
   }
-  
+
   return failures
 }

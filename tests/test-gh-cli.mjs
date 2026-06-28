@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 // Test GitHub CLI integration functionality
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
@@ -38,7 +39,7 @@ async function getReposFromGhCli(org, user) {
     
     const target = org || user
     
-    const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt --limit 1000`
+    const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt,isFork,parent --limit 1000`
     const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' })
     const repos = JSON.parse(output)
     
@@ -48,7 +49,9 @@ async function getReposFromGhCli(org, user) {
       ssh_url: repo.sshUrl,
       html_url: repo.url,
       updated_at: repo.updatedAt,
-      private: repo.isPrivate
+      private: repo.isPrivate,
+      fork: repo.isFork,
+      parent: repo.parent
     }))
   } catch (error) {
     return null
@@ -90,7 +93,12 @@ test('getReposFromGhCli formats repo data correctly', async () => {
     isPrivate: false,
     url: 'https://github.com/test/test-repo',
     sshUrl: 'git@github.com:test/test-repo.git',
-    updatedAt: '2024-01-01T00:00:00Z'
+    updatedAt: '2024-01-01T00:00:00Z',
+    isFork: true,
+    parent: {
+      name: 'upstream-repo',
+      owner: { login: 'upstream-owner' }
+    }
   }]
   
   // Transform the data as the function would
@@ -100,7 +108,9 @@ test('getReposFromGhCli formats repo data correctly', async () => {
     ssh_url: repo.sshUrl,
     html_url: repo.url,
     updated_at: repo.updatedAt,
-    private: repo.isPrivate
+    private: repo.isPrivate,
+    fork: repo.isFork,
+    parent: repo.parent
   }))
   
   assert.equal(transformed[0].name, 'test-repo')
@@ -109,14 +119,16 @@ test('getReposFromGhCli formats repo data correctly', async () => {
   assert.equal(transformed[0].html_url, 'https://github.com/test/test-repo')
   assert.equal(transformed[0].updated_at, '2024-01-01T00:00:00Z')
   assert.equal(transformed[0].private, false)
+  assert.equal(transformed[0].fork, true)
+  assert.equal(transformed[0].parent.name, 'upstream-repo')
 })
 
 test('gh command format is correct', () => {
   const target = 'test-org'
-  const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt --limit 1000`
+  const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt,isFork,parent --limit 1000`
   
   assert.match(command, /gh repo list/)
-  assert.match(command, /--json name,isPrivate,url,sshUrl,updatedAt/)
+  assert.match(command, /--json name,isPrivate,url,sshUrl,updatedAt,isFork,parent/)
   assert.match(command, /--limit 1000/)
 })
 

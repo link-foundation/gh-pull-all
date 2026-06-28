@@ -112,7 +112,7 @@ const createTestableStatusDisplay = () => {
       
       let displayMessage = repo.message
       if (repo.status === 'failed' && repo.errorNumber) {
-        displayMessage = `Error #${repo.errorNumber}: ${this.truncateMessage(repo.message, availableWidth - 10)}`
+        displayMessage = `Error #${repo.errorNumber}`
       } else {
         displayMessage = this.truncateMessage(repo.message, availableWidth)
       }
@@ -150,7 +150,7 @@ const createTestableStatusDisplay = () => {
         
         let displayMessage = repo.message
         if (repo.status === 'failed' && repo.errorNumber) {
-          displayMessage = `Error #${repo.errorNumber}: ${this.truncateMessage(repo.message, availableWidth - 10)}`
+          displayMessage = `Error #${repo.errorNumber}`
         } else {
           displayMessage = this.truncateMessage(repo.message, availableWidth)
         }

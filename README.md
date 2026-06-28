@@ -1,19 +1,23 @@
 [![npm version](https://img.shields.io/npm/v/gh-pull-all)](https://www.npmjs.com/package/gh-pull-all)
+[![GitHub release](https://img.shields.io/github/v/release/link-foundation/gh-pull-all)](https://github.com/link-foundation/gh-pull-all/releases)
+[![Checks and release](https://github.com/link-foundation/gh-pull-all/actions/workflows/release.yml/badge.svg)](https://github.com/link-foundation/gh-pull-all/actions/workflows/release.yml)
 [![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/gh-pull-all)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/gh-pull-all)
 
 # gh-pull-all
 
-The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing and real-time status updates.
+The script that pulls it all - efficiently sync all repositories from a GitHub organization or user account with parallel processing, auto-detection, and real-time status updates.
 
 ## Features
 
 - 🚀 **Parallel Processing**: Configure concurrent operations with `--threads` option (default: 8)
 - 📊 **Real-time Status**: In-place updating display shows progress for each repository
 - 🔄 **Smart Updates**: Automatically pulls existing repos and clones new ones
+- 🍴 **Fork Sync**: Update forked repositories from their upstream parent repositories with `--pull-changes-to-fork`
 - 🔐 **SSH Support**: Use SSH URLs for cloning with `--ssh` flag
 - ⚡ **Flexible Threading**: Use `--single-thread` for sequential processing or customize with `--threads N`
 - 🎯 **Comprehensive**: Works with both organizations and user accounts
+- 🔍 **Auto Detection**: Omit `--org` and `--user` to detect the GitHub owner from local repositories or an empty target directory name
 - 🔑 **Smart Authentication**: Automatic GitHub CLI integration for seamless private repo access
 - 🛡️ **Error Handling**: Graceful handling of rate limits, authentication, and network issues
 - 📈 **Visual Progress Bar**: Color-coded progress bar shows real-time status (green=success, red=failed, yellow=skipped, cyan=active, gray=pending)
@@ -25,14 +29,23 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 ## Quick Start
 
 ```bash
+# Auto-detect from local repository remotes or the current folder name
+gh-pull-all
+
 # Clone all repositories from a user account
 gh-pull-all --user octocat
 
 # Clone all repositories from an organization
 gh-pull-all --org github
 
+# Names can also be GitHub URLs
+gh-pull-all --user github.com/octocat
+
 # Use SSH for cloning with custom thread count
 gh-pull-all --user octocat --ssh --threads 16
+
+# Sync forked repositories from their upstream parent repositories
+gh-pull-all --user octocat --pull-changes-to-fork
 
 # Sequential processing for debugging
 gh-pull-all --org myorg --single-thread
@@ -84,11 +97,13 @@ chmod +x gh-pull-all.mjs
 ## Usage
 
 ```
-Usage: gh-pull-all [--org <organization> | --user <username>] [options]
+Usage: gh-pull-all [--org <organization-or-url> | --user <username-or-url>] [options]
+
+Omit --org and --user to auto-detect the GitHub owner from local repositories or the target directory name.
 
 Options:
-  -o, --org            GitHub organization name
-  -u, --user           GitHub username  
+  -o, --org            GitHub organization name or URL
+  -u, --user           GitHub username or URL
   -t, --token          GitHub personal access token (optional for public repos)
   -s, --ssh            Use SSH URLs for cloning (requires SSH key setup)
   -d, --dir            Target directory for repositories (default: current directory)
@@ -96,8 +111,24 @@ Options:
       --single-thread  Run operations sequentially (equivalent to --threads 1)
       --live-updates   Enable live in-place status updates (default: true)
       --no-live-updates Disable live updates for terminal history preservation
+      --delete         Delete all cloned repositories after confirmation
+      --pull-from-default Pull default branch changes into the current branch
+      --switch-to-default Switch each repository to its default branch
+      --pull-changes-to-fork Update forks from their upstream parent repositories
   -h, --help           Show help
 ```
+
+## Auto Detection
+
+When neither `--org` nor `--user` is provided, `gh-pull-all` enables auto mode by default:
+
+1. It checks child folders in the current directory, or in the directory passed with `--dir`.
+2. It inspects child folders that are git repositories and reads their GitHub remotes.
+3. If all detected GitHub remotes belong to one owner, it validates whether that owner is a GitHub user or organization and asks for confirmation.
+4. If the target directory is empty, it tries the target directory name as a GitHub user or organization and asks for confirmation.
+5. If detection is ambiguous or invalid, it prompts for a GitHub name or URL such as `github.com/name`.
+
+No preferences are written to `.gh-pull-all`; pass `--user` or `--org` when you want to skip detection.
 
 ## Authentication
 
@@ -139,8 +170,14 @@ The script uses this fallback chain:
 ## Examples
 
 ```bash
+# Auto-detect owner from local git remotes or an empty directory name
+gh-pull-all
+
 # Basic usage - sync all public repos from a user
 gh-pull-all --user octocat
+
+# GitHub URL input
+gh-pull-all --org https://github.com/github
 
 # Sync all repos (including private) using GitHub CLI auth
 gh-pull-all --org myorg  # Automatically uses gh CLI if authenticated
@@ -166,7 +203,21 @@ gh-pull-all --org myorg --threads 20
 
 # Disable live updates for terminal history preservation
 gh-pull-all --user octocat --no-live-updates
+
+# Update forked repositories from their upstream parent repositories
+gh-pull-all --user octocat --pull-changes-to-fork
+
+# Update forks using SSH remotes
+gh-pull-all --user octocat --pull-changes-to-fork --ssh
 ```
+
+## Fork Synchronization
+
+The `--pull-changes-to-fork` option updates forked repositories from their upstream parent repositories. It detects forks from GitHub metadata, adds or updates the local `upstream` remote, fetches the upstream default branch, merges it into the matching local fork branch, and pushes the synchronized branch back to the fork.
+
+Non-fork repositories are skipped. Repositories with uncommitted local changes are skipped to avoid overwriting work. Merge conflicts are reported in the final error summary for manual resolution.
+
+This option cannot be combined with `--pull-from-default` or `--switch-to-default`.
 
 ## Status Display
 
@@ -208,16 +259,24 @@ In multi-thread mode with live updates, the script displays a color-coded progre
 The project includes a comprehensive test suite:
 
 ```bash
-# Run all tests
-./test-all.mjs
+# Run the fast direct-execution suite
+npm test
+
+# Run the Bun unit tests
+npm run test:bun
+
+# Run fast tests explicitly, or include slow integration tests
+npm run test:fast
+npm run test:all
 
 # Run specific test categories
-./test-cli-simple.mjs      # CLI validation tests
-./test-github-api.mjs      # GitHub API integration tests  
-./test-file-operations.mjs # File system and git operations
-./test-threading.mjs       # Thread configuration tests
-./test-parallel.mjs        # Parallel processing tests
-./test-integration.mjs     # End-to-end integration tests
+node tests/test-cli-simple.mjs      # CLI validation tests
+node tests/test-github-api.mjs      # GitHub API integration tests
+node tests/test-file-operations.mjs # File system and git operations
+node tests/test-threading.mjs       # Thread configuration tests
+node tests/test-parallel.mjs        # Parallel processing tests
+node tests/test-integration-fast.mjs # Fast local integration tests
+node tests/test-integration-slow.mjs # End-to-end integration tests
 ```
 
 ## Rate Limits

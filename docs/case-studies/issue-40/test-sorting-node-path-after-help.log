@@ -1,0 +1,5 @@
+🧪 Testing repository sorting...
+✅ Script loads successfully
+📝 Original order: [ 'alpha-repo', 'beta-repo', 'middle-repo', 'zebra-repo' ]
+📝 Sorted order: [ 'alpha-repo', 'beta-repo', 'middle-repo', 'zebra-repo' ]
+✅ Sorting works correctly!

@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 // Simple CLI validation test without yargs interference
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
@@ -10,10 +11,6 @@ const assert = await use('uvu@0.5.6/assert')
 function validateArgs(args) {
   const hasOrg = args.includes('--org') || args.includes('-o')
   const hasUser = args.includes('--user') || args.includes('-u')
-  
-  if (!hasOrg && !hasUser) {
-    throw new Error('You must specify either --org or --user')
-  }
   
   if (hasOrg && hasUser) {
     throw new Error('You cannot specify both --org and --user')
@@ -47,13 +44,9 @@ test('validateArgs should accept user argument', () => {
   assert.ok(result)
 })
 
-test('validateArgs should reject missing arguments', () => {
-  try {
-    validateArgs([])
-    assert.unreachable('Should have thrown validation error')
-  } catch (error) {
-    assert.match(error.message, /You must specify either --org or --user/)
-  }
+test('validateArgs should accept omitted target for auto-detection', () => {
+  const result = validateArgs([])
+  assert.ok(result)
 })
 
 test('validateArgs should reject both org and user', () => {

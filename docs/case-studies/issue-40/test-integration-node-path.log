@@ -1,0 +1,14 @@
+[34m🧪 Running comprehensive integration test...[0m
+[36m🔍 This test combines all functionality: threading, errors, uncommitted changes, and terminal width[0m
+[36m🔧 Phase 1: Setting up mixed scenario environment...[0m
+[32m✅ Phase 1 completed: Initial clone with errors[0m
+[36m🔧 Phase 2: Adding uncommitted changes to successful clones...[0m
+[36m🔧 Added uncommitted changes to .github and GPTutor[0m
+[36m🔧 Phase 3: Running pull with mixed repository states...[0m
+[32m✅ Phase 3 completed: Pull with mixed states[0m
+[36m🔧 Phase 4: Testing single-thread mode behavior...[0m
+[32m✅ Phase 4 completed: Single-thread mode[0m
+[36m🔍 Validating all functionality...[0m
+[31m❌ Integration test failed: Expected error numbering not found[0m
+[36m🧹 Cleaned up test directory[0m
+[31m💥 Test failed: Expected error numbering not found[0m

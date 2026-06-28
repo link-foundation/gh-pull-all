@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 // Test terminal output modes
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
@@ -9,7 +10,7 @@ const { spawn } = await import('child_process')
 
 function runScript(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn('bun', ['../gh-pull-all.mjs', ...args], {
+    const child = spawn(process.execPath, ['../gh-pull-all.mjs', ...args], {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: process.cwd()
     })

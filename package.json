@@ -55,6 +55,8 @@
   "files": [
     "gh-pull-all.mjs",
     "auto-detect.mjs",
+    "fork-sync.mjs",
+    "github-repositories.mjs",
     "load-use-m.mjs",
     "README.md",
     "LICENSE"

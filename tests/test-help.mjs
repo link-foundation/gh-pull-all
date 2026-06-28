@@ -26,6 +26,7 @@ function assertFullHelpOutput(args) {
   assert.match(output, /--user/)
   assert.match(output, /--threads/)
   assert.match(output, /--switch-to-default/)
+  assert.match(output, /--pull-changes-to-fork/)
   assert.match(output, /Examples:/)
   assert.doesNotMatch(output, /You must specify either --org or --user/)
   assert.doesNotMatch(output, /Starting undefined/)

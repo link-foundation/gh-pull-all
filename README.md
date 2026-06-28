@@ -13,6 +13,7 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 - 🚀 **Parallel Processing**: Configure concurrent operations with `--threads` option (default: 8)
 - 📊 **Real-time Status**: In-place updating display shows progress for each repository
 - 🔄 **Smart Updates**: Automatically pulls existing repos and clones new ones
+- 🍴 **Fork Sync**: Update forked repositories from their upstream parent repositories with `--pull-changes-to-fork`
 - 🔐 **SSH Support**: Use SSH URLs for cloning with `--ssh` flag
 - ⚡ **Flexible Threading**: Use `--single-thread` for sequential processing or customize with `--threads N`
 - 🎯 **Comprehensive**: Works with both organizations and user accounts
@@ -42,6 +43,9 @@ gh-pull-all --user github.com/octocat
 
 # Use SSH for cloning with custom thread count
 gh-pull-all --user octocat --ssh --threads 16
+
+# Sync forked repositories from their upstream parent repositories
+gh-pull-all --user octocat --pull-changes-to-fork
 
 # Sequential processing for debugging
 gh-pull-all --org myorg --single-thread
@@ -107,6 +111,10 @@ Options:
       --single-thread  Run operations sequentially (equivalent to --threads 1)
       --live-updates   Enable live in-place status updates (default: true)
       --no-live-updates Disable live updates for terminal history preservation
+      --delete         Delete all cloned repositories after confirmation
+      --pull-from-default Pull default branch changes into the current branch
+      --switch-to-default Switch each repository to its default branch
+      --pull-changes-to-fork Update forks from their upstream parent repositories
   -h, --help           Show help
 ```
 
@@ -195,7 +203,21 @@ gh-pull-all --org myorg --threads 20
 
 # Disable live updates for terminal history preservation
 gh-pull-all --user octocat --no-live-updates
+
+# Update forked repositories from their upstream parent repositories
+gh-pull-all --user octocat --pull-changes-to-fork
+
+# Update forks using SSH remotes
+gh-pull-all --user octocat --pull-changes-to-fork --ssh
 ```
+
+## Fork Synchronization
+
+The `--pull-changes-to-fork` option updates forked repositories from their upstream parent repositories. It detects forks from GitHub metadata, adds or updates the local `upstream` remote, fetches the upstream default branch, merges it into the matching local fork branch, and pushes the synchronized branch back to the fork.
+
+Non-fork repositories are skipped. Repositories with uncommitted local changes are skipped to avoid overwriting work. Merge conflicts are reported in the final error summary for manual resolution.
+
+This option cannot be combined with `--pull-from-default` or `--switch-to-default`.
 
 ## Status Display
 

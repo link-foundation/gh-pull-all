@@ -554,11 +554,14 @@ class StatusDisplay {
       up_to_date_with_default: 0,
       switched_to_default: 0,
       already_on_default: 0,
+      synced_with_upstream: 0,
+      up_to_date_with_upstream: 0,
       deleted: 0,
       failed: 0,
       skipped: 0,
       uncommitted: 0,
-      merge_conflicts: 0
+      merge_conflicts: 0,
+      upstream_merge_conflicts: 0
     }
 
     for (const [name, repo] of this.repos) {
@@ -566,6 +569,8 @@ class StatusDisplay {
         case 'success':
           if (repo.message.includes('cloned')) summary.cloned++
           else if (repo.message.includes('merged') && repo.message.includes('into')) summary.merged_from_default++
+          else if (repo.message.includes('synced fork with upstream')) summary.synced_with_upstream++
+          else if (repo.message.includes('up to date with upstream')) summary.up_to_date_with_upstream++
           else if (repo.message.includes('up to date with')) summary.up_to_date_with_default++
           else if (repo.message.includes('Switched from')) summary.switched_to_default++
           else if (repo.message.includes('Already on default branch')) summary.already_on_default++
@@ -574,7 +579,8 @@ class StatusDisplay {
           else if (repo.message.includes('uncommitted')) summary.uncommitted++
           break
         case 'failed':
-          if (repo.message.includes('Merge conflict')) summary.merge_conflicts++
+          if (repo.message.includes('Merge conflict with upstream')) summary.upstream_merge_conflicts++
+          else if (repo.message.includes('Merge conflict')) summary.merge_conflicts++
           else summary.failed++
           break
         case 'skipped':
@@ -597,68 +603,18 @@ class StatusDisplay {
     if (summary.up_to_date_with_default > 0) log('green', `✅ Up to date with default: ${summary.up_to_date_with_default}`)
     if (summary.switched_to_default > 0) log('green', `🔄 Switched to default branch: ${summary.switched_to_default}`)
     if (summary.already_on_default > 0) log('green', `✅ Already on default branch: ${summary.already_on_default}`)
+    if (summary.synced_with_upstream > 0) log('green', `🍴 Synced forks with upstream: ${summary.synced_with_upstream}`)
+    if (summary.up_to_date_with_upstream > 0) log('green', `✅ Up to date with upstream: ${summary.up_to_date_with_upstream}`)
     if (summary.deleted > 0) log('green', `✅ Deleted: ${summary.deleted}`)
     if (summary.uncommitted > 0) log('yellow', `🔄 Uncommitted changes: ${summary.uncommitted}`)
     if (summary.skipped > 0) log('yellow', `⚠️  Skipped: ${summary.skipped}`)
+    if (summary.upstream_merge_conflicts > 0) log('red', `💥 Upstream merge conflicts: ${summary.upstream_merge_conflicts}`)
     if (summary.merge_conflicts > 0) log('red', `💥 Merge conflicts: ${summary.merge_conflicts}`)
     if (summary.failed > 0) log('red', `❌ Failed: ${summary.failed}`)
 
     const totalTime = ((Date.now() - this.startTime) / 1000).toFixed(1)
     log('blue', `⏱️  Total time: ${totalTime}s`)
     log('blue', '🎉 Operation completed!')
-  }
-}
-
-// Helper function to check if gh CLI is installed
-async function isGhInstalled() {
-  try {
-    const { execSync } = await import('child_process')
-    execSync('gh --version', { stdio: 'pipe' })
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-// Helper function to get GitHub token from gh CLI if available
-async function getGhToken() {
-  try {
-    if (!(await isGhInstalled())) {
-      return null
-    }
-
-    const { execSync } = await import('child_process')
-    const token = execSync('gh auth token', { encoding: 'utf8', stdio: 'pipe' }).trim()
-    return token
-  } catch (error) {
-    return null
-  }
-}
-
-// Helper function to get repositories using gh CLI
-async function getReposFromGhCli(org, user) {
-  try {
-    if (!(await isGhInstalled())) {
-      return null
-    }
-
-    const { execSync } = await import('child_process')
-    const target = org || user
-
-    const command = `gh repo list ${target} --json name,isPrivate,url,sshUrl,updatedAt --limit 1000`
-    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' })
-    const repos = JSON.parse(output)
-
-    return repos.map(repo => ({
-      name: repo.name,
-      clone_url: repo.url + '.git',
-      ssh_url: repo.sshUrl,
-      html_url: repo.url,
-      updated_at: repo.updatedAt,
-      private: repo.isPrivate
-    }))
-  } catch (error) {
-    return null
   }
 }
 
@@ -755,6 +711,11 @@ const cli = yargs(yargsInput)
     describe: 'Switch to the default branch (main/master) in each repository',
     default: false
   })
+  .option('pull-changes-to-fork', {
+    type: 'boolean',
+    describe: 'Update forks with changes from their parent repositories (upstream sync)',
+    default: false
+  })
   .check((argv) => {
     if (isHelpOrVersionRequest) {
       return true
@@ -778,6 +739,12 @@ const cli = yargs(yargsInput)
     if (argv['pull-from-default'] && argv['switch-to-default']) {
       throw new Error('Cannot specify both --pull-from-default and --switch-to-default')
     }
+    if (argv['pull-changes-to-fork'] && argv['switch-to-default']) {
+      throw new Error('Cannot specify both --pull-changes-to-fork and --switch-to-default')
+    }
+    if (argv['pull-changes-to-fork'] && argv['pull-from-default']) {
+      throw new Error('Cannot specify both --pull-changes-to-fork and --pull-from-default')
+    }
     return true
   })
   .help('h')
@@ -794,6 +761,7 @@ const cli = yargs(yargsInput)
   .example('$0 --user konard --delete', 'Delete all cloned repositories (with confirmation)')
   .example('$0 --user konard --pull-from-default', 'Pull from default branch to current branch when behind')
   .example('$0 --user konard --switch-to-default', 'Switch all repositories to their default branch')
+  .example('$0 --user konard --pull-changes-to-fork', 'Sync forked repositories with their upstream repositories')
 
 const argv = cli.argv
 const explicitThreads = readThreadOption(rawArgs)
@@ -811,110 +779,13 @@ if (isHelpRequest) {
 const { Octokit } = await use('@octokit/rest@22.0.0')
 const { default: git } = await use('simple-git@3.28.0')
 const fs = await use('fs-extra@11.3.0')
-
-async function getOrganizationRepos(org, token) {
-  try {
-    log('blue', `🔍 Fetching repositories from ${org} organization...`)
-
-    // Create Octokit instance
-    const octokit = new Octokit({
-      auth: token,
-      baseUrl: 'https://api.github.com'
-    })
-
-    // Get all repositories from the organization
-    const { data: repos } = await octokit.rest.repos.listForOrg({
-      org: org,
-      type: 'all',
-      per_page: 100,
-      sort: 'updated',
-      direction: 'desc'
-    })
-
-    log('green', `✅ Found ${repos.length} repositories`)
-    return repos.map(repo => ({
-      name: repo.name,
-      clone_url: repo.clone_url,
-      ssh_url: repo.ssh_url,
-      html_url: repo.html_url,
-      updated_at: repo.updated_at,
-      private: repo.private
-    }))
-  } catch (error) {
-    const apiUrl = `https://api.github.com/orgs/${org}/repos`
-    if (error.status === 404) {
-      log('red', `❌ Organization '${org}' not found or not accessible`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else if (error.status === 401) {
-      log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else {
-      log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
-      log('red', `   Error: ${error.message}`)
-      if (error.message.includes('Unable to connect')) {
-        log('yellow', '💡 Please check your internet connection')
-        log('yellow', `   You can test by visiting: ${apiUrl}`)
-      }
-    }
-    if (!token) {
-      log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
-      log('yellow', '   Visit: https://github.com/settings/tokens')
-    }
-    process.exit(1)
-  }
-}
-
-async function getUserRepos(username, token) {
-  try {
-    log('blue', `🔍 Fetching repositories from ${username} user account...`)
-
-    // Create Octokit instance
-    const octokit = new Octokit({
-      auth: token,
-      baseUrl: 'https://api.github.com'
-    })
-
-    // Get all repositories for the user
-    const { data: repos } = await octokit.rest.repos.listForUser({
-      username: username,
-      type: 'all',
-      per_page: 100,
-      sort: 'updated',
-      direction: 'desc'
-    })
-
-    log('green', `✅ Found ${repos.length} repositories`)
-    return repos.map(repo => ({
-      name: repo.name,
-      clone_url: repo.clone_url,
-      ssh_url: repo.ssh_url,
-      html_url: repo.html_url,
-      updated_at: repo.updated_at,
-      private: repo.private
-    }))
-  } catch (error) {
-    const apiUrl = `https://api.github.com/users/${username}/repos`
-    if (error.status === 404) {
-      log('red', `❌ User '${username}' not found or not accessible`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else if (error.status === 401) {
-      log('red', `❌ Authentication failed. Please provide a valid GitHub token`)
-      log('yellow', `   API URL: ${apiUrl}`)
-    } else {
-      log('red', `❌ Failed to fetch repositories from: ${apiUrl}`)
-      log('red', `   Error: ${error.message}`)
-      if (error.message.includes('Unable to connect')) {
-        log('yellow', '💡 Please check your internet connection')
-        log('yellow', `   You can test by visiting: ${apiUrl}`)
-      }
-    }
-    if (!token) {
-      log('yellow', '💡 Try providing a GitHub personal access token with --token flag')
-      log('yellow', '   Visit: https://github.com/settings/tokens')
-    }
-    process.exit(1)
-  }
-}
+const { syncForkWithUpstream } = await import('./fork-sync.mjs')
+const {
+  getGhToken,
+  getReposFromGhCli,
+  getOrganizationRepos,
+  getUserRepos
+} = await import('./github-repositories.mjs')
 
 async function directoryExists(dirPath) {
   try {
@@ -1262,7 +1133,7 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 }
 
 // Process repository (either pull or clone)
-async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false) {
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false, pullChangesToFork = false) {
   const repoPath = path.join(targetDir, repo.name)
   const exists = await directoryExists(repoPath)
 
@@ -1272,19 +1143,30 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
     return { success: true, type: 'skipped' }
   }
 
+  if (pullChangesToFork && (!repo.fork || !repo.parent)) {
+    statusDisplay.updateRepo(repo.name, 'skipped', repo.fork ? 'Fork parent unavailable' : 'Not a fork')
+    return { success: true, type: repo.fork ? 'missing_parent' : 'not_fork' }
+  }
+
   if (exists) {
-    if (switchToDefault) {
+    if (pullChangesToFork) {
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: git })
+    } else if (switchToDefault) {
       return await switchToDefaultBranch(repo.name, targetDir, statusDisplay)
     } else {
       return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
     }
   } else {
-    return await cloneRepository(repo, targetDir, useSsh, statusDisplay)
+    const cloneResult = await cloneRepository(repo, targetDir, useSsh, statusDisplay)
+    if (pullChangesToFork && cloneResult.success) {
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: git })
+    }
+    return cloneResult
   }
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault, 'pull-changes-to-fork': pullChangesToFork } = argv
 
   if (org) {
     org = normalizeExplicitTarget(org, 'organization')
@@ -1347,6 +1229,9 @@ async function main() {
     if (switchToDefault) {
       log('cyan', `🔄 Switch to default branch: enabled`)
     }
+    if (pullChangesToFork) {
+      log('cyan', `🍴 Pull changes to fork: enabled`)
+    }
     log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
   }
 
@@ -1359,8 +1244,8 @@ async function main() {
     // Fallback to API calls
     log('cyan', '📋 Using GitHub API to fetch repositories')
     repos = org
-      ? await getOrganizationRepos(org, token)
-      : await getUserRepos(user, token)
+      ? await getOrganizationRepos(org, token, Octokit, log)
+      : await getUserRepos(user, token, Octokit, log)
   }
 
   // Initialize status display
@@ -1391,7 +1276,7 @@ async function main() {
       for (const repo of repos) {
         const result = deleteMode
           ? await deleteRepository(repo.name, targetDir, statusDisplay)
-          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
         results.push(result)
       }
     } else {
@@ -1419,7 +1304,7 @@ async function main() {
             // Process repository asynchronously
             const processPromise = deleteMode
               ? deleteRepository(repo.name, targetDir, statusDisplay)
-              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault)
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
 
             processPromise
               .then(result => {

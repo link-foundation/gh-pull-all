@@ -63,6 +63,7 @@ const testDescriptions = {
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
   'test-switch-to-default-pull.mjs': 'Tests --switch-to-default fetches before switching and pulls after switching',
   'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',
+  'test-pull-changes-to-fork-cli.mjs': 'Tests --pull-changes-to-fork CLI validation and fork upstream synchronization',
   'test-use-m-loader.mjs': 'Tests robust use-m loading with CDN fallback and clear errors (issue #35)'
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// Integration test for Issue #11 - Short error messages in status display
+// Integration test for Issue #19 - concise error numbers in status display
 // Download use-m dynamically
 import { loadUseM } from '../load-use-m.mjs'
 const { use } = await loadUseM()
@@ -137,7 +137,7 @@ async function testIssue11Integration() {
   let testRoot
   
   try {
-    log('blue', '🧪 Testing Issue #11 integration (short error messages)...')
+    log('blue', '🧪 Testing Issue #19 integration (concise status errors)...')
     
     testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'gh-pull-all-test-issue-11-'))
     const testEnv = await setupLocalGhFixture(testRoot)
@@ -174,7 +174,7 @@ async function testIssue11Integration() {
       let hasShortErrorFormat = false
       
       for (const line of statusLines) {
-        if (line.includes('Failed with error #')) {
+        if (/Error #\d+/.test(line)) {
           hasShortErrorFormat = true
           
           // Ensure it doesn't contain full error details
@@ -235,17 +235,17 @@ async function testIssue11Integration() {
       throw new Error('No successful operations found in clean test')
     }
     
-    // Should not contain "Failed with error" in success cases
-    if (successResult.includes('Failed with error #')) {
+    // Success cases should not contain concise error references.
+    if (/Error #\d+/.test(successResult)) {
       throw new Error('Success case should not contain error messages')
     }
     
     log('green', '✅ Successful operations display correctly')
     
-    log('green', '🎉 Issue #11 integration test passed!')
+    log('green', '🎉 Issue #19 integration test passed!')
     
   } catch (error) {
-    log('red', `❌ Issue #11 integration test failed: ${error.message}`)
+    log('red', `❌ Issue #19 integration test failed: ${error.message}`)
     throw error
   } finally {
     // Clean up

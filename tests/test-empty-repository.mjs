@@ -140,7 +140,7 @@ test('empty repository can be pulled again without reporting a stale upstream er
     assert.is(secondRun.status, 0, secondOutput)
     assert.ok(/Successfully pulled/.test(secondOutput), secondOutput)
     assert.not.ok(/Your configuration specifies to merge with the ref/.test(secondOutput), secondOutput)
-    assert.not.ok(/Failed with error/.test(secondOutput), secondOutput)
+    assert.not.ok(/Error #\d+|Failed with error/.test(secondOutput), secondOutput)
   } finally {
     await fs.rm(fixture.workDir, { recursive: true, force: true })
   }
@@ -162,7 +162,7 @@ test('empty repository pulls when the configured default branch appears later', 
     assert.is(secondRun.status, 0, secondOutput)
     assert.ok(/Successfully pulled main/.test(secondOutput), secondOutput)
     assert.not.ok(/Your configuration specifies to merge with the ref/.test(secondOutput), secondOutput)
-    assert.not.ok(/Failed with error/.test(secondOutput), secondOutput)
+    assert.not.ok(/Error #\d+|Failed with error/.test(secondOutput), secondOutput)
 
     const localRepoDir = path.join(fixture.targetDir, fixture.repoName)
     const currentBranch = runGit(['-C', localRepoDir, 'rev-parse', '--abbrev-ref', 'HEAD']).trim()
@@ -189,7 +189,7 @@ test('empty repository pulls and switches when a default branch appears later', 
     const secondOutput = `${secondRun.stdout}${secondRun.stderr}`
     assert.is(secondRun.status, 0, secondOutput)
     assert.ok(/Successfully pulled trunk/.test(secondOutput), secondOutput)
-    assert.not.ok(/Failed with error/.test(secondOutput), secondOutput)
+    assert.not.ok(/Error #\d+|Failed with error/.test(secondOutput), secondOutput)
 
     const localRepoDir = path.join(fixture.targetDir, fixture.repoName)
     const currentBranch = runGit(['-C', localRepoDir, 'rev-parse', '--abbrev-ref', 'HEAD']).trim()

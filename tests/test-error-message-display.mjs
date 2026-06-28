@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// Test error message display - Issue #11
+// Test error message display - Issue #19
 // Download use-m dynamically
 import { loadUseM } from '../load-use-m.mjs'
 const { use } = await loadUseM()
@@ -30,7 +30,7 @@ async function testErrorMessageDisplay() {
   const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-error-message-display')
   
   try {
-    log('blue', '🧪 Testing error message display (Issue #11)...')
+    log('blue', '🧪 Testing error message display (Issue #19)...')
     
     // Clean up any existing test directory
     await fs.rm(testDir, {recursive: true, force: true})
@@ -63,17 +63,15 @@ async function testErrorMessageDisplay() {
     
     for (const line of statusLines) {
       if (line.includes('Error #')) {
-        // Should NOT contain the full error message in status display
-        // Should only show "Failed with error #X" or similar
+        // Should NOT contain the full error message in status display.
         if (line.includes('Your configuration specifies') || 
             line.includes('already exists and is not an empty directory') ||
             line.includes('from the remote, but no such ref was fetched')) {
           throw new Error(`Status line contains full error message: ${line}`)
         }
         
-        // Should contain short error format like "Failed with error #1"
-        if (!line.includes('Failed with error #')) {
-          throw new Error(`Status line should contain 'Failed with error #X' format: ${line}`)
+        if (!/Error #\d+/.test(line)) {
+          throw new Error(`Status line should contain 'Error #X' format: ${line}`)
         }
       }
     }

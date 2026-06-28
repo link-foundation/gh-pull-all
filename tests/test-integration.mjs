@@ -123,7 +123,7 @@ async function testIntegration() {
     const allResults = phase1Result + '\n' + phase3Result + '\n' + phase4Result
     
     // Test 1: Error numbering and handling
-    const errorNumbers = (allResults.match(/Failed with error #\d+/g) || []).length
+    const errorNumbers = (allResults.match(/Error #\d+/g) || []).length
     if (errorNumbers > 0) {
       log('green', `✅ Error numbering: Found ${errorNumbers} numbered errors`)
     } else {

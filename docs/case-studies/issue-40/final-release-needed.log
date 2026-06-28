@@ -1,0 +1,8 @@
+
+> gh-pull-all@1.4.2 release:needed
+> node scripts/check-release-needed.mjs
+
+Package: gh-pull-all
+Current version: 1.4.2
+gh-pull-all@1.4.2 is not published yet.
+should_release=true

@@ -2,11 +2,16 @@
 
 // Master test runner for all gh-pull-all.mjs tests
 // Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import modern npm libraries using use-m
 import { promises as fs } from 'fs'
-const { execSync } = await import('child_process')
+import path from 'path'
+import { fileURLToPath } from 'url'
+const { execFileSync } = await import('child_process')
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Colors for console output
 const colors = {
@@ -29,12 +34,17 @@ const testDescriptions = {
   'test-multithread-live.mjs': 'Tests multi-thread mode with live in-place updates',
   'test-multithread-no-live.mjs': 'Tests multi-thread mode with append-only final status',
   'test-error-handling.mjs': 'Tests error numbering system and error list display',
+  'test-empty-repository.mjs': 'Tests empty repository pull handling and first default branch detection',
+  'test-auto-detect.mjs': 'Tests GitHub owner parsing and local repository owner detection',
+  'test-auto-mode.mjs': 'Tests default auto mode with local git repositories and directory fallback',
   'test-terminal-width.mjs': 'Tests terminal width handling and message truncation',
   'test-uncommitted-changes.mjs': 'Tests handling of repositories with uncommitted changes',
   'test-integration.mjs': 'Tests all functionality together in complex scenarios',
+  'test-issue-11-integration.mjs': 'Tests short status errors with full details in the errors section',
   'test-cli-simple.mjs': 'Tests basic CLI functionality and argument parsing',
   'test-file-operations.mjs': 'Tests file system operations and directory handling',
   'test-github-api.mjs': 'Tests GitHub API integration and error handling',
+  'test-help.mjs': 'Tests complete --help output and validation bypass behavior',
   'test-parallel.mjs': 'Tests parallel processing functionality',
   'test-terminal-output.mjs': 'Tests terminal output formatting and colors',
   'test-threading.mjs': 'Tests threading and concurrency management',
@@ -42,12 +52,17 @@ const testDescriptions = {
   'test-fixed-rendering.mjs': 'Tests fixed terminal rendering functionality',
   'test-terminal-rendering.mjs': 'Tests terminal rendering output and formatting',
   'test-windowed-display.mjs': 'Tests windowed display mode for terminal output',
+  'test-version.mjs': 'Tests --version output and fallback behavior without package metadata',
   'test-progress-bar.mjs': 'Tests progress bar functionality and display',
   'test-gh-cli.mjs': 'Tests GitHub CLI integration and fallback behavior',
   'test-concurrent-processing.mjs': 'Tests concurrent repository processing with worker pool pattern',
+  'test-changesets.mjs': 'Tests changeset validation and release metadata scripts',
+  'test-detect-code-changes.mjs': 'Tests CI change detection for code and non-code commits',
+  'test-file-line-limits.mjs': 'Tests CI line-limit warnings and hard failures',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
-  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option'
+  'test-switch-to-default-cli.mjs': 'Tests CLI argument validation and help text for --switch-to-default option',
+  'test-use-m-loader.mjs': 'Tests robust use-m loading with CDN fallback and clear errors (issue #35)'
 }
 
 function getTestDisplayName(filename) {
@@ -60,9 +75,22 @@ function getTestDisplayName(filename) {
     .join(' ')
 }
 
+function formatChildOutput(label, output, maxLength = 4000) {
+  if (!output) {
+    return ''
+  }
+
+  const normalizedOutput = output.toString()
+  const displayOutput = normalizedOutput.length > maxLength
+    ? `${normalizedOutput.slice(0, maxLength)}\n...<truncated>`
+    : normalizedOutput
+
+  return `   ${label}:\n${displayOutput}`
+}
+
 async function discoverTests() {
   // Find all test files (excluding test-all.mjs)
-  const files = await fs.readdir('.')
+  const files = await fs.readdir(__dirname)
   const testFilePattern = /^test-.*\.mjs$/
   return files
     .filter(file => testFilePattern.test(file) && file !== 'test-all.mjs')
@@ -99,7 +127,8 @@ async function runAllTests() {
     log('dim', `   ${description}`)
     
     try {
-      const result = execSync(`./${testFile}`, {
+      const result = execFileSync(process.execPath, [path.join(__dirname, testFile)], {
+        cwd: __dirname,
         encoding: 'utf8',
         stdio: 'pipe'
       })
@@ -120,9 +149,10 @@ async function runAllTests() {
       const testDuration = ((Date.now() - testStartTime) / 1000).toFixed(1)
       log('red', `❌ ${displayName} failed (${testDuration}s)`)
       log('red', `   Error: ${error.message}`)
-      if (error.stdout) {
-        log('dim', `   Output: ${error.stdout.slice(0, 200)}...`)
-      }
+      const stdout = formatChildOutput('stdout', error.stdout)
+      const stderr = formatChildOutput('stderr', error.stderr)
+      if (stdout) log('dim', stdout)
+      if (stderr) log('dim', stderr)
       failedTests++
       
       results.push({

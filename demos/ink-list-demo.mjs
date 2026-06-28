@@ -1,7 +1,9 @@
 #!/usr/bin/env bun
 
-// Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+// Download use-m dynamically (robustly, with CDN fallback and clear errors).
+// See https://github.com/link-foundation/gh-pull-all/issues/35.
+import { loadUseM } from '../load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import React and Ink using use-m (with workaround for ink path)
 const React = await use('react@latest')

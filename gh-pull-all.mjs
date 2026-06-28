@@ -262,12 +262,7 @@ class StatusDisplay {
     const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
     const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
 
-    let displayMessage = repo.message
-    if (repo.status === 'failed' && repo.errorNumber) {
-      displayMessage = `Error #${repo.errorNumber}`
-    } else {
-      displayMessage = this.truncateMessage(repo.message, availableWidth)
-    }
+    const displayMessage = this.formatStatusMessage(repo, repo.message, availableWidth)
 
     // Build the line with proper padding to ensure full width clearing
     const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
@@ -335,13 +330,10 @@ class StatusDisplay {
       // Show static time for completed repos
       const duration = `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s`
 
-      let displayMessage = repo.message || this.getStatusMessage(repo.status)
       const baseLength = name.length + this.maxNameLength + 15
       const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10)
-
-      if (displayMessage && displayMessage.length > availableWidth) {
-        displayMessage = this.truncateMessage(displayMessage, availableWidth)
-      }
+      const fallbackMessage = repo.message || this.getStatusMessage(repo.status)
+      const displayMessage = this.formatStatusMessage(repo, fallbackMessage, availableWidth)
 
       const line = `${statusColor}${statusIcon} ${name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
 
@@ -364,12 +356,7 @@ class StatusDisplay {
       // Always show ticking time for active repos (no endTime)
       const duration = `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
 
-      let displayMessage = repo.message
-      if (repo.status === 'failed' && repo.errorNumber) {
-        displayMessage = `Error #${repo.errorNumber}`
-      } else {
-        displayMessage = this.truncateMessage(repo.message, availableWidth)
-      }
+      const displayMessage = this.formatStatusMessage(repo, repo.message, availableWidth)
 
       const line = `${statusColor}${statusIcon} ${repo.name.padEnd(this.maxNameLength)} ${colors.dim}${duration.padStart(6)}${colors.reset} ${displayMessage}`
 
@@ -455,6 +442,14 @@ class StatusDisplay {
       case 'uncommitted': return colors.yellow  // Changed to yellow to group with skipped
       default: return colors.reset
     }
+  }
+
+  formatStatusMessage(repo, message, availableWidth) {
+    if (repo.status === 'failed' && repo.errorNumber) {
+      return `Error #${repo.errorNumber}`
+    }
+
+    return this.truncateMessage(message, availableWidth)
   }
 
   truncateMessage(message, maxLength) {
@@ -1462,9 +1457,23 @@ async function main() {
   statusDisplay.printSummary()
 }
 
-if (!isHelpOrVersionRequest) {
+function isDirectExecution() {
+  if (!process.argv[1]) {
+    return false
+  }
+
+  try {
+    return realpathSync(process.argv[1]) === __filename
+  } catch (error) {
+    return path.resolve(process.argv[1]) === __filename
+  }
+}
+
+if (isDirectExecution() && !isHelpOrVersionRequest) {
   main().catch(error => {
     log('red', `💥 Script failed: ${error.message}`)
     process.exit(1)
   })
 }
+
+export { StatusDisplay }

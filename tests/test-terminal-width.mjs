@@ -56,19 +56,25 @@ async function testTerminalWidth() {
     
     log('green', '✅ Terminal width test completed')
     
-    // Check that error messages are truncated in status lines
+    // Check that error status lines use concise error numbers.
     const lines = result.split('\n')
-    const errorStatusLines = lines.filter(line => line.includes('Failed with error #') && line.includes('❌'))
+    const errorStatusLines = lines.filter(line => /Error #\d+/.test(line) && line.includes('❌'))
     
     if (errorStatusLines.length > 0) {
       log('green', `✅ Found ${errorStatusLines.length} error status line(s)`)
       
-      // Check if any status line message ends with '...' indicating truncation
+      const fullMessageLines = errorStatusLines.filter(line =>
+        line.includes('destination path') ||
+        line.includes('already exists') ||
+        line.includes('from the remote, but no such ref was fetched')
+      )
+      if (fullMessageLines.length > 0) {
+        throw new Error(`Status line contains full error message: ${fullMessageLines[0]}`)
+      }
+
       const truncatedLines = errorStatusLines.filter(line => line.includes('...'))
       if (truncatedLines.length > 0) {
-        log('green', '✅ Found truncated error messages in status lines')
-      } else {
-        log('yellow', '⚠️ No truncation found (may be normal if messages are short)')
+        throw new Error(`Status line should show only the error number: ${truncatedLines[0]}`)
       }
     } else {
       throw new Error('Expected error status lines not found')

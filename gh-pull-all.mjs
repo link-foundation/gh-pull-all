@@ -96,6 +96,8 @@ if (hasAnyArg(startupArgs, ['--version', '-v']) && !hasAnyArg(startupArgs, ['--h
   process.exit(0)
 }
 
+const { normalizeExplicitTarget, resolveAutoTarget } = await import('./auto-detect.mjs')
+
 // Download use-m dynamically (robustly, with CDN fallback and clear errors).
 // A bare `eval(await (await fetch(...)).text())` crashes with a cryptic
 // SyntaxError when a CDN returns an error body instead of the module source.
@@ -113,19 +115,37 @@ const hideBin = yargsHelpers.hideBin || yargsHelpers.default?.hideBin || ((argv)
 
 version = getVersionSync()
 
-// Helper function for confirmation prompt
-async function askConfirmation(question) {
+async function askQuestion(question) {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
 
   return new Promise((resolve) => {
+    let resolved = false
+
+    rl.on('close', () => {
+      if (!resolved) {
+        resolved = true
+        resolve('')
+      }
+    })
+
     rl.question(question, (answer) => {
+      resolved = true
       rl.close()
-      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes')
+      resolve(answer.trim())
     })
   })
+}
+
+async function askConfirmation(question, defaultValue = false) {
+  const answer = await askQuestion(question)
+  if (!answer) {
+    return defaultValue
+  }
+
+  return answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes'
 }
 
 // Colors for console output
@@ -681,18 +701,18 @@ const cli = yargs(yargsInput)
   .scriptName(scriptName)
   .version(version)
   .alias('version', 'v')
-  .usage('Usage: $0 [--org <organization> | --user <username>] [options]')
+  .usage('Usage: $0 [--org <organization> | --user <username>] [options]\n\nOmit --org and --user to auto-detect the GitHub owner from local repositories or the target directory name.')
   .option('org', {
     alias: 'o',
     type: 'string',
-    describe: 'GitHub organization name',
-    example: 'deep-assistant'
+    describe: 'GitHub organization name or URL',
+    example: 'github.com/deep-assistant'
   })
   .option('user', {
     alias: 'u',
     type: 'string',
-    describe: 'GitHub username',
-    example: 'konard'
+    describe: 'GitHub username or URL',
+    example: 'github.com/konard'
   })
   .option('token', {
     alias: 't',
@@ -751,9 +771,6 @@ const cli = yargs(yargsInput)
     const explicitThreads = readThreadOption(rawArgs)
     const threads = explicitThreads === undefined ? argv.threads : explicitThreads
 
-    if (!argv.org && !argv.user) {
-      throw new Error('You must specify either --org or --user')
-    }
     if (argv.org && argv.user) {
       throw new Error('You cannot specify both --org and --user')
     }
@@ -773,8 +790,10 @@ const cli = yargs(yargsInput)
   })
   .help('h')
   .alias('h', 'help')
+  .example('$0', 'Auto-detect GitHub owner from local repositories or directory name')
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
   .example('$0 --user konard', 'Sync all repositories from konard user account')
+  .example('$0 --user github.com/konard', 'Sync all repositories from a GitHub URL owner')
   .example('$0 --org myorg --ssh --dir ./repos', 'Clone using SSH to ./repos directory')
   .example('$0 --user konard --threads 5', 'Use 5 concurrent operations')
   .example('$0 --user konard --single-thread', 'Run operations sequentially')
@@ -1263,6 +1282,14 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 async function main() {
   let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault } = argv
 
+  if (org) {
+    org = normalizeExplicitTarget(org, 'organization')
+  }
+
+  if (user) {
+    user = normalizeExplicitTarget(user, 'username')
+  }
+
   // If no token provided, try to get it from gh CLI
   if (!token || token === undefined) {
     const ghToken = await getGhToken()
@@ -1270,6 +1297,23 @@ async function main() {
       token = ghToken
       log('cyan', '🔑 Using GitHub token from gh CLI')
     }
+  }
+
+  // Ensure target directory exists before auto-detection inspects it
+  await fs.ensureDir(targetDir)
+
+  if (!org && !user) {
+    const detectedTarget = await resolveAutoTarget({
+      targetDir,
+      gitFactory: git,
+      token,
+      Octokit,
+      askConfirmation,
+      askQuestion,
+      log
+    })
+    org = detectedTarget.org
+    user = detectedTarget.user
   }
 
   const target = org || user
@@ -1301,9 +1345,6 @@ async function main() {
     }
     log('cyan', `⚡ Concurrency: ${concurrencyLimit} ${concurrencyLimit === 1 ? 'thread (sequential)' : 'threads (parallel)'}`)
   }
-
-  // Ensure target directory exists
-  await fs.ensureDir(targetDir)
 
   // Try to get repositories using gh CLI first (includes private repos)
   let repos = await getReposFromGhCli(org, user)

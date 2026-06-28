@@ -7,8 +7,14 @@ import { loadUseM } from '../load-use-m.mjs'
 const { use } = await loadUseM()
 
 // Import dependencies
-const { execSync } = await import('child_process')
+const { execSync, spawnSync } = await import('child_process')
 const path = await import('path')
+const { fileURLToPath } = await import('url')
+const fs = await import('fs')
+const os = await import('os')
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const scriptPath = path.join(__dirname, '../gh-pull-all.mjs')
 
 // Colors for console output
 const colors = {
@@ -25,42 +31,41 @@ const colors = {
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
 async function testSwitchToDefaultCLI() {
-  const scriptPath = path.join(process.cwd(), '../gh-pull-all.mjs')
-  
   log('blue', '🧪 Testing switch-to-default CLI functionality...')
   
   try {
     // Test 1: Help text should include --switch-to-default option
     log('cyan', '\n📋 Test 1: Verify --switch-to-default appears in help text')
+    let helpOutput
     try {
-      const helpOutput = execSync(`node "${scriptPath}" --help`, { encoding: 'utf8', stdio: 'pipe' })
+      helpOutput = execSync(`node "${scriptPath}" --help`, { encoding: 'utf8', stdio: 'pipe' })
     } catch (error) {
       // Help command fails with exit code due to missing args, but we can still check the output
-      const helpOutput = error.stdout || error.message
-      
-      if (helpOutput.includes('--switch-to-default')) {
-        log('green', '✅ --switch-to-default option found in help text')
-      } else {
-        log('red', '❌ --switch-to-default option not found in help text')
-        log('red', `Output: ${helpOutput.substring(0, 500)}...`)
-        process.exit(1)
-      }
-      
-      if (helpOutput.includes('Switch to the default branch') && helpOutput.includes('in each')) {
-        log('green', '✅ --switch-to-default description found in help text')
-      } else {
-        log('red', '❌ --switch-to-default description not found in help text')
-        log('red', `Output: ${helpOutput.substring(0, 500)}...`)
-        process.exit(1)
-      }
-      
-      if (helpOutput.includes('Switch all repositories to their') && helpOutput.includes('--switch-to-default')) {
-        log('green', '✅ --switch-to-default example found in help text')
-      } else {
-        log('red', '❌ --switch-to-default example not found in help text')
-        log('red', `Output: ${helpOutput.substring(0, 500)}...`)
-        process.exit(1)
-      }
+      helpOutput = error.stdout || error.message
+    }
+
+    if (helpOutput.includes('--switch-to-default')) {
+      log('green', '✅ --switch-to-default option found in help text')
+    } else {
+      log('red', '❌ --switch-to-default option not found in help text')
+      log('red', `Output: ${helpOutput.substring(0, 500)}...`)
+      process.exit(1)
+    }
+
+    if (helpOutput.includes('Switch to the default branch') && helpOutput.includes('in each')) {
+      log('green', '✅ --switch-to-default description found in help text')
+    } else {
+      log('red', '❌ --switch-to-default description not found in help text')
+      log('red', `Output: ${helpOutput.substring(0, 500)}...`)
+      process.exit(1)
+    }
+
+    if (helpOutput.includes('Switch all repositories to their') && helpOutput.includes('--switch-to-default')) {
+      log('green', '✅ --switch-to-default example found in help text')
+    } else {
+      log('red', '❌ --switch-to-default example not found in help text')
+      log('red', `Output: ${helpOutput.substring(0, 500)}...`)
+      process.exit(1)
     }
     
     // Test 2: Conflicting options should be rejected
@@ -81,22 +86,31 @@ async function testSwitchToDefaultCLI() {
       }
     }
     
-    // Test 3: Missing required arguments should be rejected
-    log('cyan', '\n📋 Test 3: Verify missing required arguments are rejected')
-    try {
-      const missingArgsOutput = execSync(`node "${scriptPath}" --switch-to-default`, { 
-        encoding: 'utf8', 
-        stdio: 'pipe' 
-      })
-      log('red', '❌ Script should have failed with missing required arguments')
+    // Test 3: Omitted target should enter auto mode and fail clearly when unresolved
+    log('cyan', '\n📋 Test 3: Verify omitted target uses auto mode')
+    const autoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-pull-all-switch-auto-'))
+    fs.mkdirSync(path.join(autoDir, 'not-a-git-repo'))
+
+    const missingArgsResult = spawnSync('node', [scriptPath, '--switch-to-default', '--dir', autoDir], {
+      encoding: 'utf8',
+      input: ''
+    })
+    const missingArgsOutput = `${missingArgsResult.stdout || ''}${missingArgsResult.stderr || ''}`
+    fs.rmSync(autoDir, { recursive: true, force: true })
+
+    if (missingArgsResult.status === 0) {
+      log('red', '❌ Script should have failed when auto mode could not resolve a target')
       process.exit(1)
-    } catch (error) {
-      if (error.message.includes('You must specify either --org or --user')) {
-        log('green', '✅ Missing required arguments properly rejected')
-      } else {
-        log('red', `❌ Unexpected error message: ${error.message}`)
-        process.exit(1)
-      }
+    }
+
+    if (
+      missingArgsOutput.includes('Auto-detection did not find git repositories') &&
+      missingArgsOutput.includes('No valid GitHub user or organization was provided')
+    ) {
+      log('green', '✅ Omitted target enters auto mode and reports unresolved detection clearly')
+    } else {
+      log('red', `❌ Unexpected error message: ${missingArgsOutput}`)
+      process.exit(1)
     }
     
     // Test 4: Valid combination should pass argument validation

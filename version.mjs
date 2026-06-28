@@ -8,8 +8,10 @@ import { execSync } from 'child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// Download use-m dynamically
-const { use } = eval(await (await fetch('https://unpkg.com/use-m/use.js')).text());
+// Download use-m dynamically (robustly, with CDN fallback and clear errors).
+// See https://github.com/link-foundation/gh-pull-all/issues/35.
+import { loadUseM } from './load-use-m.mjs'
+const { use } = await loadUseM()
 
 // Import semver for version management
 const semver = await use('semver@7.7.2')

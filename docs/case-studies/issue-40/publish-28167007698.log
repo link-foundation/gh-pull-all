@@ -1,0 +1,174 @@
+publish	UNKNOWN STEP	﻿2026-06-25T11:30:57.0220255Z Current runner version: '2.335.1'
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0244553Z ##[group]Runner Image Provisioner
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0245396Z Hosted Compute Agent
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0246099Z Version: 20260611.554
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0247044Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0247858Z Build Date: 2026-06-11T21:40:46Z
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0248603Z Worker ID: {dbddfc96-0b3c-4a6d-890c-bda21ef4bf24}
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0249701Z Azure Region: westus
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0250335Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0251814Z ##[group]Operating System
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0252536Z Ubuntu
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0253105Z 24.04.4
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0253608Z LTS
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0254193Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0254754Z ##[group]Runner Image
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0255436Z Image: ubuntu-24.04
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0256048Z Version: 20260622.220.1
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0257599Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0259199Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0260235Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0261430Z ##[group]GITHUB_TOKEN Permissions
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0263620Z Contents: read
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0264243Z Metadata: read
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0264806Z Packages: read
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0265487Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0267899Z Secret source: Actions
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0268761Z Prepare workflow directory
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0652979Z Prepare all required actions
+publish	UNKNOWN STEP	2026-06-25T11:30:57.0701545Z Getting action download info
+publish	UNKNOWN STEP	2026-06-25T11:30:57.4445398Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+publish	UNKNOWN STEP	2026-06-25T11:30:57.5546300Z Download action repository 'oven-sh/setup-bun@v2' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+publish	UNKNOWN STEP	2026-06-25T11:30:58.0469385Z Complete job name: publish
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1247016Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1256167Z ##[group]Run actions/checkout@v4
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1257305Z with:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1257862Z   repository: link-foundation/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1262568Z   token: ***
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1263059Z   ssh-strict: true
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1263540Z   ssh-user: git
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1264042Z   persist-credentials: true
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1264597Z   clean: true
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1265094Z   sparse-checkout-cone-mode: true
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1265682Z   fetch-depth: 1
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1266166Z   fetch-tags: false
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1266916Z   show-progress: true
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1267842Z   lfs: false
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1268701Z   submodules: false
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1269504Z   set-safe-directory: true
+publish	UNKNOWN STEP	2026-06-25T11:30:58.1270951Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2240654Z Syncing repository: link-foundation/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2242741Z ##[group]Getting Git version info
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2243786Z Working directory is '/home/runner/work/gh-pull-all/gh-pull-all'
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2244939Z [command]/usr/bin/git version
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2318653Z git version 2.54.0
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2373869Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2388456Z Temporarily overriding HOME='/home/runner/work/_temp/cad1b075-dfcf-4208-8d94-b1bb4624db7b' before making global git config changes
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2390776Z Adding repository directory to the temporary git global config as a safe directory
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2395165Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2449551Z Deleting the contents of '/home/runner/work/gh-pull-all/gh-pull-all'
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2453343Z ##[group]Initializing the repository
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2458585Z [command]/usr/bin/git init /home/runner/work/gh-pull-all/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2590723Z hint: Using 'master' as the name for the initial branch. This default branch name
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2591972Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2593102Z hint: to use in all of your new repositories, which will suppress this warning,
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2593976Z hint: call:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2594451Z hint:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2595046Z hint: 	git config --global init.defaultBranch <name>
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2596013Z hint:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2597464Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2599212Z hint: 'development'. The just-created branch can be renamed via this command:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2600868Z hint:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2601853Z hint: 	git branch -m <name>
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2602959Z hint:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2604402Z hint: Disable this message with "git config set advice.defaultBranchName false"
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2606580Z Initialized empty Git repository in /home/runner/work/gh-pull-all/gh-pull-all/.git/
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2610653Z [command]/usr/bin/git remote add origin https://github.com/link-foundation/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2655702Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2657682Z ##[group]Disabling automatic garbage collection
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2659737Z [command]/usr/bin/git config --local gc.auto 0
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2696541Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2698402Z ##[group]Setting up auth
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2699779Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+publish	UNKNOWN STEP	2026-06-25T11:30:58.2731627Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3103504Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3133672Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3351703Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3381265Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3594698Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3631654Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3640935Z ##[group]Fetching the repository
+publish	UNKNOWN STEP	2026-06-25T11:30:58.3642753Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +866b5384754bc8d8aa90e16c248e753e81b931eb:refs/remotes/origin/main
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8110079Z From https://github.com/link-foundation/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8113488Z  * [new ref]         866b5384754bc8d8aa90e16c248e753e81b931eb -> origin/main
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8148907Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8150794Z ##[group]Determining the checkout info
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8152868Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8155688Z [command]/usr/bin/git sparse-checkout disable
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8201194Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8229526Z ##[group]Checking out the ref
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8233142Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8322530Z Switched to a new branch 'main'
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8324928Z branch 'main' set up to track 'origin/main'.
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8332375Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8373375Z [command]/usr/bin/git log -1 --format=%H
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8397726Z 866b5384754bc8d8aa90e16c248e753e81b931eb
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8768627Z ##[group]Run oven-sh/setup-bun@v2
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8769866Z with:
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8770742Z   bun-version: latest
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8772008Z   no-cache: false
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8787748Z   token: ***
+publish	UNKNOWN STEP	2026-06-25T11:30:58.8788711Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:30:59.4739009Z Downloading a new version of Bun: https://github.com/oven-sh/bun/releases/download/bun-v1.3.14/bun-linux-x64.zip
+publish	UNKNOWN STEP	2026-06-25T11:30:59.7261515Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/69c784b9-74fa-4a04-977a-62c4d76fa416.zip
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4064220Z [command]/home/runner/.bun/bin/bun --revision
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4113404Z 1.3.14+0d9b296af
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4287211Z ##[group]Run PACKAGE_NAME=$(bun -p "require('./package.json').name")
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4287821Z ^[[36;1mPACKAGE_NAME=$(bun -p "require('./package.json').name")^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4288303Z ^[[36;1mPACKAGE_VERSION=$(bun -p "require('./package.json').version")^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4288685Z ^[[36;1m^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4288921Z ^[[36;1m# Check if this version exists on npm^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4289374Z ^[[36;1mif bun pm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null; then^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4289885Z ^[[36;1m  echo "Version ${PACKAGE_VERSION} already published"^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4290284Z ^[[36;1m  echo "should_publish=false" >> $GITHUB_OUTPUT^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4290591Z ^[[36;1melse^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4290893Z ^[[36;1m  echo "Version ${PACKAGE_VERSION} not found, will publish"^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4291321Z ^[[36;1m  echo "should_publish=true" >> $GITHUB_OUTPUT^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4291628Z ^[[36;1mfi^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4491132Z shell: /usr/bin/bash -e {0}
+publish	UNKNOWN STEP	2026-06-25T11:31:00.4491455Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5868472Z Version 1.4.2 not found, will publish
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5936242Z ##[group]Run bun publish -p --access public
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5936921Z ^[[36;1mbun publish -p --access public^[[0m
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5970397Z shell: /usr/bin/bash -e {0}
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5970670Z env:
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5971198Z   NPM_CONFIG_TOKEN: ***
+publish	UNKNOWN STEP	2026-06-25T11:31:00.5971471Z ##[endgroup]
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6035178Z bun publish v1.3.14 (0d9b296a)
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6078396Z
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6078990Z packed 0.98KB package.json
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6079306Z packed 1.21KB LICENSE
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6079561Z packed 8.16KB README.md
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6079819Z packed 48.42KB gh-pull-all.mjs
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6080135Z packed 4.31KB load-use-m.mjs
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6080322Z
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6080437Z Total files: 5
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6080738Z Shasum: 7d5a4e45ec0aab4eec34e01012b0ef18c1ae71e2
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6081100Z Integrity: sha512-siOuAaUFRD+9E[...]wSNOOgz8VpnIw==
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6081428Z Unpacked size: 63.1KB
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6081702Z Packed size: 16.66KB
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6794149Z
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6794361Z Tag: latest
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6798235Z 404 Not Found: https://registry.npmjs.org/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6799148Z Access: public
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6799858Z Registry: https://registry.npmjs.org/
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6800888Z
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6801170Z  - 'gh-pull-all@1.4.2' does not exist in this registry
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6817596Z ##[error]Process completed with exit code 1.
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6951639Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+publish	UNKNOWN STEP	2026-06-25T11:31:00.6952945Z Post job cleanup.
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7770388Z [command]/usr/bin/git version
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7806489Z git version 2.54.0
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7846995Z Temporarily overriding HOME='/home/runner/work/_temp/0f88b6f0-3491-44f1-aae9-fb607e1e778a' before making global git config changes
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7848012Z Adding repository directory to the temporary git global config as a safe directory
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7851229Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7887033Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+publish	UNKNOWN STEP	2026-06-25T11:31:00.7944719Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8165010Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8190241Z http.https://github.com/.extraheader
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8201230Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8231782Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8470969Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8504404Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+publish	UNKNOWN STEP	2026-06-25T11:31:00.8862823Z Cleaning up orphan processes
+publish	UNKNOWN STEP	2026-06-25T11:31:00.9136053Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

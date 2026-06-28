@@ -1,0 +1,10 @@
+[36m🔑 Using GitHub token from gh CLI[0m
+[34m🚀 Starting nonexistent-test-user user repository sync...[0m
+[36m📁 Target directory: /tmp/gh-issue-solver-1782400949399/tests[0m
+[36m🔗 Using HTTPS for cloning[0m
+[36m⚡ Concurrency: 7 threads (parallel)[0m
+[36m📋 Using GitHub API to fetch repositories[0m
+[34m🔍 Fetching repositories from nonexistent-test-user user account...[0m
+GET /users/nonexistent-test-user/repos?type=all&per_page=100&sort=updated&direction=desc - 404 with id CAB0:2E20E3:4797B0:43CE24:6A3D4E29 in 241ms
+[31m❌ User 'nonexistent-test-user' not found or not accessible[0m
+[33m   API URL: https://api.github.com/users/nonexistent-test-user/repos[0m

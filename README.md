@@ -1,4 +1,6 @@
 [![npm version](https://img.shields.io/npm/v/gh-pull-all)](https://www.npmjs.com/package/gh-pull-all)
+[![GitHub release](https://img.shields.io/github/v/release/link-foundation/gh-pull-all)](https://github.com/link-foundation/gh-pull-all/releases)
+[![Checks and release](https://github.com/link-foundation/gh-pull-all/actions/workflows/release.yml/badge.svg)](https://github.com/link-foundation/gh-pull-all/actions/workflows/release.yml)
 [![Open in Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-f29718?logo=gitpod)](https://gitpod.io/#https://github.com/link-foundation/gh-pull-all)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/GitHub%20Codespaces-Open-181717?logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=link-foundation/gh-pull-all)
 
@@ -209,15 +211,15 @@ The project includes a comprehensive test suite:
 
 ```bash
 # Run all tests
-./test-all.mjs
+npm test
 
 # Run specific test categories
-./test-cli-simple.mjs      # CLI validation tests
-./test-github-api.mjs      # GitHub API integration tests  
-./test-file-operations.mjs # File system and git operations
-./test-threading.mjs       # Thread configuration tests
-./test-parallel.mjs        # Parallel processing tests
-./test-integration.mjs     # End-to-end integration tests
+node tests/test-cli-simple.mjs      # CLI validation tests
+node tests/test-github-api.mjs      # GitHub API integration tests
+node tests/test-file-operations.mjs # File system and git operations
+node tests/test-threading.mjs       # Thread configuration tests
+node tests/test-parallel.mjs        # Parallel processing tests
+node tests/test-integration.mjs     # End-to-end integration tests
 ```
 
 ## Rate Limits

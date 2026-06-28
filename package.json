@@ -1,6 +1,6 @@
 {
   "name": "gh-pull-all",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A tool to pull all git repositories in a directory with parallel processing and status display",
   "type": "module",
   "main": "gh-pull-all.mjs",
@@ -8,10 +8,22 @@
     "gh-pull-all": "./gh-pull-all.mjs"
   },
   "scripts": {
-    "test": "(cd tests && ./test-all.mjs)",
+    "test": "node tests/test-all.mjs",
+    "test:ci": "node tests/test-all.mjs",
+    "check:syntax": "bash scripts/check-mjs-syntax.sh",
+    "check:line-limits": "bash scripts/check-file-line-limits.sh",
+    "release:needed": "node scripts/check-release-needed.mjs",
+    "release:publish": "node scripts/publish-to-npm.mjs",
+    "release:github": "node scripts/create-github-release.mjs",
     "version:patch": "./version.mjs patch",
     "version:minor": "./version.mjs minor",
     "version:major": "./version.mjs major"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "git",
@@ -33,6 +45,7 @@
   "homepage": "https://github.com/link-foundation/gh-pull-all#readme",
   "files": [
     "gh-pull-all.mjs",
+    "load-use-m.mjs",
     "README.md",
     "LICENSE"
   ]

@@ -1,0 +1,52 @@
+Promise {
+  'Usage: gh-pull-all.mjs [--org <organization> | --user <username>] [options]\n' +
+    '\n' +
+    'Options:\n' +
+    '      --version            Show version number                         [boolean]\n' +
+    '  -o, --org                GitHub organization name                     [string]\n' +
+    '  -u, --user               GitHub username                              [string]\n' +
+    '  -t, --token              GitHub personal access token (optional for public\n' +
+    '                           repos)                                       [string]\n' +
+    '  -s, --ssh                Use SSH URLs for cloning (requires SSH key setup)\n' +
+    '                                                      [boolean] [default: false]\n' +
+    '  -d, --dir                Target directory for repositories\n' +
+    '                        [string] [default: "/tmp/gh-issue-solver-1782400949399"]\n' +
+    '  -j, --threads            Number of concurrent operations (default: 8)\n' +
+    '                                                           [number] [default: 8]\n' +
+    '      --single-thread      Run operations sequentially (equivalent to --threads\n' +
+    '                           1)                         [boolean] [default: false]\n' +
+    '      --live-updates       Enable live in-place status updates (default: true,\n' +
+    '                           use --no-live-updates to disable)\n' +
+    '                                                       [boolean] [default: true]\n' +
+    '      --delete             Delete all cloned repositories (skips repos with\n' +
+    '                           uncommitted changes)       [boolean] [default: false]\n' +
+    '      --pull-from-default  Pull changes from the default branch (main/master)\n' +
+    '                           into the current branch if behind\n' +
+    '                                                      [boolean] [default: false]\n' +
+    '      --switch-to-default  Switch to the default branch (main/master) in each\n' +
+    '                           repository                 [boolean] [default: false]\n' +
+    '  -h, --help               Show help                                   [boolean]\n' +
+    '      ----help\n' +
+    '\n' +
+    'Examples:\n' +
+    '  gh-pull-all.mjs --org deep-assistant      Sync all repositories from\n' +
+    '                                            deep-assistant organization\n' +
+    '  gh-pull-all.mjs --user konard             Sync all repositories from konard\n' +
+    '                                            user account\n' +
+    '  gh-pull-all.mjs --org myorg --ssh --dir   Clone using SSH to ./repos directory\n' +
+    '  ./repos\n' +
+    '  gh-pull-all.mjs --user konard --threads   Use 5 concurrent operations\n' +
+    '  5\n' +
+    '  gh-pull-all.mjs --user konard             Run operations sequentially\n' +
+    '  --single-thread\n' +
+    '  gh-pull-all.mjs --user konard -j 16       Use 16 concurrent operations (alias\n' +
+    '                                            for --threads)\n' +
+    '  gh-pull-all.mjs --user konard             Disable live updates for terminal\n' +
+    '  --no-live-updates                         history preservation\n' +
+    '  gh-pull-all.mjs --user konard --delete    Delete all cloned repositories (with\n' +
+    '                                            confirmation)\n' +
+    '  gh-pull-all.mjs --user konard             Pull from default branch to current\n' +
+    '  --pull-from-default                       branch when behind\n' +
+    '  gh-pull-all.mjs --user konard             Switch all repositories to their\n' +
+    '  --switch-to-default                       default branch'
+}

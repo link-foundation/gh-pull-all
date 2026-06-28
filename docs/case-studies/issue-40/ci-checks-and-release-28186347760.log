@@ -1,0 +1,503 @@
+Test	UNKNOWN STEP	﻿2026-06-25T16:51:19.0420356Z Current runner version: '2.335.1'
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0447056Z ##[group]Runner Image Provisioner
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0448035Z Hosted Compute Agent
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0448662Z Version: 20260611.554
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0449290Z Commit: 5e0782fdc9014723d3be820dd114dd31555c2bd1
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0450437Z Build Date: 2026-06-11T21:40:46Z
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0451152Z Worker ID: {6081bb4d-b91c-4517-bf26-8953630d50cf}
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0451925Z Azure Region: eastus
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0452541Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0454029Z ##[group]Operating System
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0454824Z Ubuntu
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0455363Z 24.04.4
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0455929Z LTS
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0456490Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0457095Z ##[group]Runner Image
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0457818Z Image: ubuntu-24.04
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0458405Z Version: 20260622.220.1
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0459942Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260622.220/images/ubuntu/Ubuntu2404-Readme.md
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0461587Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260622.220
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0462658Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0463787Z ##[group]GITHUB_TOKEN Permissions
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0466181Z Contents: read
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0466818Z Metadata: read
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0467424Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0469734Z Secret source: Actions
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0470792Z Prepare workflow directory
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0796220Z Prepare all required actions
+Test	UNKNOWN STEP	2026-06-25T16:51:19.0834113Z Getting action download info
+Test	UNKNOWN STEP	2026-06-25T16:51:19.3132792Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+Test	UNKNOWN STEP	2026-06-25T16:51:19.4099083Z Download action repository 'actions/setup-node@v6' (SHA:48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e)
+Test	UNKNOWN STEP	2026-06-25T16:51:19.5979213Z Complete job name: Test
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6690525Z ##[group]Run actions/checkout@v6
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6691401Z with:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6691886Z   repository: link-foundation/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6696666Z   token: ***
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6697112Z   ssh-strict: true
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6697555Z   ssh-user: git
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6697999Z   persist-credentials: true
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6698485Z   clean: true
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6698928Z   sparse-checkout-cone-mode: true
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6699443Z   fetch-depth: 1
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6700033Z   fetch-tags: false
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6700483Z   show-progress: true
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6700932Z   lfs: false
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6701344Z   submodules: false
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6701794Z   set-safe-directory: true
+Test	UNKNOWN STEP	2026-06-25T16:51:19.6702480Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7706359Z Syncing repository: link-foundation/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7708109Z ##[group]Getting Git version info
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7708926Z Working directory is '/home/runner/work/gh-pull-all/gh-pull-all'
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7710264Z [command]/usr/bin/git version
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7760509Z git version 2.54.0
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7813439Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7828847Z Temporarily overriding HOME='/home/runner/work/_temp/c33925f2-ce37-4832-b8bf-f2c2d7b71caf' before making global git config changes
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7831331Z Adding repository directory to the temporary git global config as a safe directory
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7835184Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7881357Z Deleting the contents of '/home/runner/work/gh-pull-all/gh-pull-all'
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7885554Z ##[group]Determining repository object format
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7887909Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7889078Z ##[group]Initializing the repository
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7893707Z [command]/usr/bin/git init /home/runner/work/gh-pull-all/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7977001Z hint: Using 'master' as the name for the initial branch. This default branch name
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7978435Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7980614Z hint: to use in all of your new repositories, which will suppress this warning,
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7981700Z hint: call:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7982494Z hint:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7983464Z hint: 	git config --global init.defaultBranch <name>
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7984612Z hint:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7985590Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7987069Z hint: 'development'. The just-created branch can be renamed via this command:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7988261Z hint:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7988919Z hint: 	git branch -m <name>
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7989881Z hint:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7990894Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7992873Z Initialized empty Git repository in /home/runner/work/gh-pull-all/gh-pull-all/.git/
+Test	UNKNOWN STEP	2026-06-25T16:51:19.7995912Z [command]/usr/bin/git remote add origin https://github.com/link-foundation/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8035273Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8036513Z ##[group]Disabling automatic garbage collection
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8040013Z [command]/usr/bin/git config --local gc.auto 0
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8068921Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8070243Z ##[group]Setting up auth
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8071034Z Removing SSH command configuration
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8075787Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8109165Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8445987Z Removing HTTP extra header
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8451145Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8483164Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8710157Z Removing includeIf entries pointing to credentials config files
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8716514Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8749445Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Test	UNKNOWN STEP	2026-06-25T16:51:19.8981897Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9019472Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9052129Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9085726Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9115500Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9149380Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9150344Z ##[group]Fetching the repository
+Test	UNKNOWN STEP	2026-06-25T16:51:19.9157674Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8bdeb7742b25f25dba64bd0b6f775e7f23ac6037:refs/remotes/pull/41/merge
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1351013Z From https://github.com/link-foundation/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1352640Z  * [new ref]         8bdeb7742b25f25dba64bd0b6f775e7f23ac6037 -> pull/41/merge
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1395746Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1397349Z ##[group]Determining the checkout info
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1399043Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1400003Z [command]/usr/bin/git sparse-checkout disable
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1440578Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1471474Z ##[group]Checking out the ref
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1475427Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/41/merge
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1644172Z Note: switching to 'refs/remotes/pull/41/merge'.
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1644980Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1645409Z You are in 'detached HEAD' state. You can look around, make experimental
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1646392Z changes and commit them, and you can discard any commits you make in this
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1647376Z state without impacting any branches by switching back to a branch.
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1648370Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1649098Z If you want to create a new branch to retain commits you create, you may
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1650944Z do so (now or later) by using -c with the switch command. Example:
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1651887Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1652289Z   git switch -c <new-branch-name>
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1652932Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1653313Z Or undo this operation with:
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1653925Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1654283Z   git switch -
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1654753Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1655487Z Turn off this advice by setting config variable advice.detachedHead to false
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1656572Z
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1657798Z HEAD is now at 8bdeb77 Merge 1c54eab5d7da9196ea3d5c2b14fb88c1440e4120 into 866b5384754bc8d8aa90e16c248e753e81b931eb
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1661521Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1694817Z [command]/usr/bin/git log -1 --format=%H
+Test	UNKNOWN STEP	2026-06-25T16:51:20.1719164Z 8bdeb7742b25f25dba64bd0b6f775e7f23ac6037
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2089423Z ##[group]Run actions/setup-node@v6
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2090445Z with:
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2091166Z   node-version: 24.x
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2091693Z   check-latest: false
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2096841Z   token: ***
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2097373Z   package-manager-cache: true
+Test	UNKNOWN STEP	2026-06-25T16:51:20.2097947Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:20.3640587Z Found in cache @ /opt/hostedtoolcache/node/24.17.0/x64
+Test	UNKNOWN STEP	2026-06-25T16:51:20.3651318Z ##[group]Environment details
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7161035Z node: v24.17.0
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7162222Z npm: 11.13.0
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7163175Z yarn: 1.22.22
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7165161Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7343811Z ##[group]Run npm install
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7345176Z ^[[36;1mnpm install^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7503885Z shell: /usr/bin/bash -e {0}
+Test	UNKNOWN STEP	2026-06-25T16:51:20.7505119Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:21.2867769Z
+Test	UNKNOWN STEP	2026-06-25T16:51:21.2878590Z up to date, audited 1 package in 475ms
+Test	UNKNOWN STEP	2026-06-25T16:51:21.2880439Z
+Test	UNKNOWN STEP	2026-06-25T16:51:21.2881226Z found 0 vulnerabilities
+Test	UNKNOWN STEP	2026-06-25T16:51:21.3329198Z ##[group]Run npm run check:syntax
+Test	UNKNOWN STEP	2026-06-25T16:51:21.3330948Z ^[[36;1mnpm run check:syntax^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:21.3367527Z shell: /usr/bin/bash -e {0}
+Test	UNKNOWN STEP	2026-06-25T16:51:21.3368559Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4364105Z
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4365586Z > gh-pull-all@1.4.2 check:syntax
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4367771Z > bash scripts/check-mjs-syntax.sh
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4368944Z
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4447594Z Checking syntax: demos/demo-progress-bar.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4704943Z Checking syntax: demos/demonstrate-bug.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.4936904Z Checking syntax: demos/ink-list-demo.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.5178535Z Checking syntax: demos/terminal-simulator.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.5425157Z Checking syntax: experiments/use-m-loader-failure.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.5650069Z Checking syntax: gh-pull-all.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.5903723Z Checking syntax: load-use-m.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.6132288Z Checking syntax: scripts/check-release-needed.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.6414513Z Checking syntax: scripts/create-github-release.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.6698398Z Checking syntax: scripts/package-info.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.6929065Z Checking syntax: scripts/publish-to-npm.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.7151880Z Checking syntax: scripts/setup-npm.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.7414913Z Checking syntax: scripts/smoke-test-package.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.7657907Z Checking syntax: tests/test-all.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.7920350Z Checking syntax: tests/test-cli-simple.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.8144405Z Checking syntax: tests/test-concurrent-processing.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.8391777Z Checking syntax: tests/test-empty-repository.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.8634036Z Checking syntax: tests/test-error-handling.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.8875204Z Checking syntax: tests/test-error-message-display.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.9135592Z Checking syntax: tests/test-file-operations.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.9361872Z Checking syntax: tests/test-fixed-rendering.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.9600463Z Checking syntax: tests/test-gh-cli.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:21.9873493Z Checking syntax: tests/test-github-api.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.0097956Z Checking syntax: tests/test-integration.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.0338431Z Checking syntax: tests/test-issue-11-integration.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.0581441Z Checking syntax: tests/test-line-padding.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.0819855Z Checking syntax: tests/test-merge-result.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.1042871Z Checking syntax: tests/test-multithread-live.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.1279305Z Checking syntax: tests/test-multithread-no-live.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.1520425Z Checking syntax: tests/test-parallel.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.1788947Z Checking syntax: tests/test-progress-bar.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.2076924Z Checking syntax: tests/test-release-workflow.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.2334074Z Checking syntax: tests/test-single-repo.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.2583288Z Checking syntax: tests/test-single-thread.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.2825171Z Checking syntax: tests/test-sorting.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.3058478Z Checking syntax: tests/test-switch-to-default-cli.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.3283507Z Checking syntax: tests/test-switch-to-default.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.3514750Z Checking syntax: tests/test-terminal-output.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.3773219Z Checking syntax: tests/test-terminal-rendering.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.4012523Z Checking syntax: tests/test-terminal-width.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.4244655Z Checking syntax: tests/test-threading.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.4477341Z Checking syntax: tests/test-uncommitted-changes.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.4710854Z Checking syntax: tests/test-use-m-loader.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.4939841Z Checking syntax: tests/test-windowed-display.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.5182673Z Checking syntax: version.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.5533971Z ##[group]Run npm run check:line-limits
+Test	UNKNOWN STEP	2026-06-25T16:51:22.5534423Z ^[[36;1mnpm run check:line-limits^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:22.5569436Z shell: /usr/bin/bash -e {0}
+Test	UNKNOWN STEP	2026-06-25T16:51:22.5569983Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6555711Z
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6556796Z > gh-pull-all@1.4.2 check:line-limits
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6557576Z > bash scripts/check-file-line-limits.sh
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6557968Z
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6652675Z OK: .github/workflows/release.yml has 104 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6671939Z OK: README.md has 234 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6691096Z OK: demos/demo-progress-bar.mjs has 84 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6710034Z OK: demos/demonstrate-bug.mjs has 91 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6729708Z OK: demos/ink-list-demo.mjs has 221 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6748561Z OK: demos/terminal-simulator.mjs has 318 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6767549Z OK: docs/case-studies/issue-38/analysis.md has 47 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6786816Z OK: docs/case-studies/issue-40/analysis.md has 161 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6805427Z OK: experiments/use-m-loader-failure.mjs has 35 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6825286Z OK: gh-pull-all.mjs has 1351 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6844988Z OK: load-use-m.mjs has 106 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6864579Z OK: scripts/check-release-needed.mjs has 37 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6884331Z OK: scripts/create-github-release.mjs has 91 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6903774Z OK: scripts/package-info.mjs has 33 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6923558Z OK: scripts/publish-to-npm.mjs has 96 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6942866Z OK: scripts/setup-npm.mjs has 93 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6962546Z OK: scripts/smoke-test-package.mjs has 60 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.6981748Z OK: tests/test-all.mjs has 194 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7001358Z OK: tests/test-cli-simple.mjs has 115 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7020992Z OK: tests/test-concurrent-processing.mjs has 113 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7040351Z OK: tests/test-empty-repository.mjs has 204 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7059982Z OK: tests/test-error-handling.mjs has 121 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7079469Z OK: tests/test-error-message-display.mjs has 121 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7098642Z OK: tests/test-file-operations.mjs has 127 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7117970Z OK: tests/test-fixed-rendering.mjs has 151 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7137117Z OK: tests/test-gh-cli.mjs has 123 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7156589Z OK: tests/test-github-api.mjs has 133 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7175726Z OK: tests/test-integration.mjs has 234 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7195156Z OK: tests/test-issue-11-integration.mjs has 157 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7214331Z OK: tests/test-line-padding.mjs has 132 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7233680Z OK: tests/test-merge-result.mjs has 84 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7252765Z OK: tests/test-multithread-live.mjs has 94 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7272328Z OK: tests/test-multithread-no-live.mjs has 102 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7291919Z OK: tests/test-parallel.mjs has 114 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7311628Z OK: tests/test-progress-bar.mjs has 149 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7330938Z OK: tests/test-release-workflow.mjs has 70 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7350088Z OK: tests/test-single-repo.mjs has 62 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7371436Z OK: tests/test-single-thread.mjs has 81 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7391574Z OK: tests/test-sorting.mjs has 39 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7412011Z OK: tests/test-switch-to-default-cli.mjs has 130 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7431820Z OK: tests/test-switch-to-default.mjs has 218 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7451470Z OK: tests/test-terminal-output.mjs has 72 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7470917Z OK: tests/test-terminal-rendering.mjs has 423 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7490480Z OK: tests/test-terminal-width.mjs has 133 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7510280Z OK: tests/test-threading.mjs has 100 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7529314Z OK: tests/test-uncommitted-changes.mjs has 198 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7548811Z OK: tests/test-use-m-loader.mjs has 173 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7569199Z OK: tests/test-windowed-display.mjs has 44 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7590042Z OK: version.mjs has 95 lines.
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7698340Z ##[group]Run npm run test:ci
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7698701Z ^[[36;1mnpm run test:ci^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7733940Z shell: /usr/bin/bash -e {0}
+Test	UNKNOWN STEP	2026-06-25T16:51:22.7734408Z ##[endgroup]
+Test	UNKNOWN STEP	2026-06-25T16:51:22.8702415Z
+Test	UNKNOWN STEP	2026-06-25T16:51:22.8703222Z > gh-pull-all@1.4.2 test:ci
+Test	UNKNOWN STEP	2026-06-25T16:51:22.8703866Z > node tests/test-all.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:22.8704178Z
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1879259Z ^[[34m^[[1m🧪 GH-Pull-All Test Suite^[[0m^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1889687Z ^[[36mRunning 30 test suites...^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1894876Z ^[[36mFound test files: test-cli-simple.mjs, test-concurrent-processing.mjs, test-empty-repository.mjs, test-error-handling.mjs, test-error-message-display.mjs, test-file-operations.mjs, test-fixed-rendering.mjs, test-gh-cli.mjs, test-github-api.mjs, test-integration.mjs, test-issue-11-integration.mjs, test-line-padding.mjs, test-merge-result.mjs, test-multithread-live.mjs, test-multithread-no-live.mjs, test-parallel.mjs, test-progress-bar.mjs, test-release-workflow.mjs, test-single-repo.mjs, test-single-thread.mjs, test-sorting.mjs, test-switch-to-default-cli.mjs, test-switch-to-default.mjs, test-terminal-output.mjs, test-terminal-rendering.mjs, test-terminal-width.mjs, test-threading.mjs, test-uncommitted-changes.mjs, test-use-m-loader.mjs, test-windowed-display.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1898389Z ^[[2m────────────────────────────────────────────────────────────────────────────────^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1898980Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1899637Z 🔍 Running: Cli Simple^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1900577Z ^[[2m   File: test-cli-simple.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:23.1901228Z ^[[2m   Tests basic CLI functionality and argument parsing^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:24.1159994Z ^[[32m✅ Cli Simple passed (0.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:24.1160661Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:51:24.1161156Z 🔍 Running: Concurrent Processing^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:24.1161779Z ^[[2m   File: test-concurrent-processing.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:24.1162353Z ^[[2m   Tests concurrent repository processing with worker pool pattern^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0268661Z ^[[31m❌ Concurrent Processing failed (8.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0270047Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-concurrent-processing.mjs
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0270809Z Exiting early before testing is finished.
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0271185Z node:internal/process/promises:394
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0271589Z     triggerUncaughtException(err, true /* fromPromise */);
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0271957Z     ^
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0272076Z
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0272546Z [Error: ENOTEMPTY: directory not empty, rmdir '/tmp/test-concurrent-processing/accessibility-alt-text-bot'] {
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0273074Z   errno: -39,
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0273301Z   code: 'ENOTEMPTY',
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0273536Z   syscall: 'rmdir',
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0273905Z   path: '/tmp/test-concurrent-processing/accessibility-alt-text-bot'
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0274412Z }
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0274562Z
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0274708Z Node.js v24.17.0
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0275059Z ^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0275457Z ^[[2m   Output: • • • ...^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0276018Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0276919Z 🔍 Running: Empty Repository^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0277555Z ^[[2m   File: test-empty-repository.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:33.0278296Z ^[[2m   Tests empty repository pull handling and first default branch detection^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:38.7654815Z ^[[32m✅ Empty Repository passed (5.7s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:38.7655526Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:51:38.7656161Z 🔍 Running: Error Handling^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:38.7656772Z ^[[2m   File: test-error-handling.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:51:38.7657615Z ^[[2m   Tests error numbering system and error list display^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:00.3781743Z ^[[32m✅ Error Handling passed (21.6s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:00.3782688Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:00.3790580Z 🔍 Running: Error Message Display^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:00.3791321Z ^[[2m   File: test-error-message-display.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:00.3791913Z ^[[2m   Test suite^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:21.9559827Z ^[[32m✅ Error Message Display passed (21.6s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:21.9560875Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:21.9561832Z 🔍 Running: File Operations^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:21.9562497Z ^[[2m   File: test-file-operations.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:21.9563307Z ^[[2m   Tests file system operations and directory handling^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.8355072Z ^[[32m✅ File Operations passed (1.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.8355753Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.8356261Z 🔍 Running: Fixed Rendering^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.8356796Z ^[[2m   File: test-fixed-rendering.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.8357439Z ^[[2m   Tests fixed terminal rendering functionality^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.9775216Z ^[[32m✅ Fixed Rendering passed (0.1s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.9775819Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.9776180Z 🔍 Running: Gh Cli^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.9776620Z ^[[2m   File: test-gh-cli.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:23.9777255Z ^[[2m   Tests GitHub CLI integration and fallback behavior^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:24.7179196Z ^[[32m✅ Gh Cli passed (0.7s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:24.7180076Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:24.7180561Z 🔍 Running: Github Api^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:24.7181151Z ^[[2m   File: test-github-api.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:24.7181903Z ^[[2m   Tests GitHub API integration and error handling^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:30.5918888Z ^[[32m✅ Github Api passed (5.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:30.5930564Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:30.5935264Z 🔍 Running: Integration^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:30.5935878Z ^[[2m   File: test-integration.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:30.5936682Z ^[[2m   Tests all functionality together in complex scenarios^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:44.5661731Z ^[[32m✅ Integration passed (14.0s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:44.5663155Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:52:44.5664031Z 🔍 Running: Issue 11 Integration^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:44.5664744Z ^[[2m   File: test-issue-11-integration.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:52:44.5665333Z ^[[2m   Test suite^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3885770Z ^[[31m❌ Issue 11 Integration failed (90.8s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3887799Z ^[[31m   Error: Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-issue-11-integration.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3889337Z ^[[2m   Output: ^[[34m🧪 Testing Issue #11 integration (short error messages)...^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3890502Z ^[[36m🔧 Created conflicting files to trigger errors^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3891249Z ^[[36m🔧 Testing: Multi-threaded with live updates^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3891856Z ^[[32m✅ Multi-threaded ...^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3892320Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3892713Z 🔍 Running: Line Padding^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3893328Z ^[[2m   File: test-line-padding.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:15.3894253Z ^[[2m   Tests line padding to prevent truncation issues like "Successfully pulledes..."^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:21.7998593Z ^[[32m✅ Line Padding passed (6.4s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:21.8000182Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:21.8000680Z 🔍 Running: Merge Result^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:21.8001168Z ^[[2m   File: test-merge-result.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:21.8001666Z ^[[2m   Test suite^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:22.6325653Z ^[[32m✅ Merge Result passed (0.8s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:22.6326254Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:22.6326760Z 🔍 Running: Multithread Live^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:22.6327407Z ^[[2m   File: test-multithread-live.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:22.6328188Z ^[[2m   Tests multi-thread mode with live in-place updates^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:34.4238959Z ^[[32m✅ Multithread Live passed (11.8s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:34.4239854Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:34.4240446Z 🔍 Running: Multithread No Live^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:34.4241115Z ^[[2m   File: test-multithread-no-live.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:34.4242010Z ^[[2m   Tests multi-thread mode with append-only final status^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:48.4709462Z ^[[32m✅ Multithread No Live passed (14.0s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:48.4710278Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:48.4710770Z 🔍 Running: Parallel^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:48.4711366Z ^[[2m   File: test-parallel.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:48.4712037Z ^[[2m   Tests parallel processing functionality^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:53.6579111Z ^[[32m✅ Parallel passed (5.2s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:53.6580407Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:53.6580877Z 🔍 Running: Progress Bar^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:53.6581484Z ^[[2m   File: test-progress-bar.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:53.6581989Z ^[[2m   Tests progress bar functionality and display^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0415479Z ^[[32m✅ Progress Bar passed (0.4s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0416000Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0416335Z 🔍 Running: Release Workflow^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0416779Z ^[[2m   File: test-release-workflow.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0417153Z ^[[2m   Test suite^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0768969Z ^[[32m✅ Release Workflow passed (0.0s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0769686Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0770098Z 🔍 Running: Single Repo^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0770731Z ^[[2m   File: test-single-repo.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.0771239Z ^[[2m   Test suite^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.8221675Z ^[[32m✅ Single Repo passed (0.7s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.8222233Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.8222650Z 🔍 Running: Single Thread^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.8223241Z ^[[2m   File: test-single-thread.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:54:54.8224205Z ^[[2m   Tests single-thread mode with live updates and append-only behavior^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:36.5661142Z ^[[32m✅ Single Thread passed (41.7s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:36.5662264Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:55:36.5663199Z 🔍 Running: Sorting^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:36.5663793Z ^[[2m   File: test-sorting.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:36.5664514Z ^[[2m   Tests alphabetical sorting of repositories^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:37.3308611Z ^[[32m✅ Sorting passed (0.8s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:37.3309329Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:55:37.3310585Z 🔍 Running: Switch To Default Cli^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:37.3311261Z ^[[2m   File: test-switch-to-default-cli.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:37.3312055Z ^[[2m   Tests CLI argument validation and help text for --switch-to-default option^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:40.6234664Z ^[[32m✅ Switch To Default Cli passed (3.3s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:40.6235134Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:55:40.6235467Z 🔍 Running: Switch To Default^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:40.6235876Z ^[[2m   File: test-switch-to-default.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:40.6236628Z ^[[2m   Tests --switch-to-default functionality for switching repositories to default branch^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:42.5536598Z ^[[32m✅ Switch To Default passed (1.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:42.5537027Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:55:42.5537380Z 🔍 Running: Terminal Output^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:42.5537791Z ^[[2m   File: test-terminal-output.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:42.5540544Z ^[[2m   Tests terminal output formatting and colors^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:45.5126869Z ^[[32m✅ Terminal Output passed (3.0s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:45.5127489Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:55:45.5127978Z 🔍 Running: Terminal Rendering^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3132110Z ^[[2m   File: test-terminal-rendering.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3132989Z ^[[2m   Tests terminal rendering output and formatting^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3133846Z ^[[32m✅ Terminal Rendering passed (0.8s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3134357Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3134812Z 🔍 Running: Terminal Width^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3135393Z ^[[2m   File: test-terminal-width.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:55:46.3136169Z ^[[2m   Tests terminal width handling and message truncation^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:05.3062208Z ^[[32m✅ Terminal Width passed (19.0s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:05.3064710Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:56:05.3065092Z 🔍 Running: Threading^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:05.3065566Z ^[[2m   File: test-threading.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:05.3066169Z ^[[2m   Tests threading and concurrency management^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:11.2102200Z ^[[32m✅ Threading passed (5.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:11.2102810Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:56:11.2103416Z 🔍 Running: Uncommitted Changes^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:11.2104079Z ^[[2m   File: test-uncommitted-changes.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:11.2104906Z ^[[2m   Tests handling of repositories with uncommitted changes^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.0674341Z ^[[32m✅ Uncommitted Changes passed (12.9s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.0674765Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.0675082Z 🔍 Running: Use M Loader^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.0675458Z ^[[2m   File: test-use-m-loader.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.0676461Z ^[[2m   Tests robust use-m loading with CDN fallback and clear errors (issue #35)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.5997774Z ^[[32m✅ Use M Loader passed (0.5s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.5998407Z ^[[36m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.5998931Z 🔍 Running: Windowed Display^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.5999772Z ^[[2m   File: test-windowed-display.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:24.6000531Z ^[[2m   Tests windowed display mode for terminal output^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0005471Z ^[[32m✅ Windowed Display passed (1.4s)^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0006134Z ^[[2m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0006979Z ────────────────────────────────────────────────────────────────────────────────^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0007693Z ^[[34m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0008077Z ^[[1m📊 Test Suite Summary^[[0m^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0008461Z ^[[32m✅ Passed: 28/30 tests^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0008773Z ^[[31m❌ Failed: 2/30 tests^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0009028Z ^[[31m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0009264Z Failed Tests:^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0011374Z ^[[31m  • Concurrent Processing (test-concurrent-processing.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-concurrent-processing.mjs
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0012977Z Exiting early before testing is finished.
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0013498Z node:internal/process/promises:394
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0014041Z     triggerUncaughtException(err, true /* fromPromise */);
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0014575Z     ^
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0014727Z
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0015406Z [Error: ENOTEMPTY: directory not empty, rmdir '/tmp/test-concurrent-processing/accessibility-alt-text-bot'] {
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0016533Z   errno: -39,
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0016821Z   code: 'ENOTEMPTY',
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0017124Z   syscall: 'rmdir',
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0017639Z   path: '/tmp/test-concurrent-processing/accessibility-alt-text-bot'
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0018189Z }
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0018327Z
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0018466Z Node.js v24.17.0
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0018822Z ^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0020716Z ^[[31m  • Issue 11 Integration (test-issue-11-integration.mjs): Command failed: /opt/hostedtoolcache/node/24.17.0/x64/bin/node /home/runner/work/gh-pull-all/gh-pull-all/tests/test-issue-11-integration.mjs^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0022142Z ^[[34m⏱️  Total time: 302.8s^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0022510Z ^[[31m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0023053Z 💥 2 test(s) failed. Please review and fix the issues.^[[0m
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0185045Z ##[error]Process completed with exit code 1.
+Test	UNKNOWN STEP	2026-06-25T16:56:26.0329920Z Post job cleanup.
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1249998Z [command]/usr/bin/git version
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1291066Z git version 2.54.0
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1331938Z Temporarily overriding HOME='/home/runner/work/_temp/3044d23d-86a9-4572-9f57-22066987d0bf' before making global git config changes
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1333959Z Adding repository directory to the temporary git global config as a safe directory
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1337771Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gh-pull-all/gh-pull-all
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1370695Z Removing SSH command configuration
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1376890Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1412211Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1684907Z Removing HTTP extra header
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1689675Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1724761Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1955848Z Removing includeIf entries pointing to credentials config files
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1962430Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1990913Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1991952Z includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1992760Z includeif.gitdir:/github/workspace/.git.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.1993471Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2001018Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2024717Z /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2035807Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git.path /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2073472Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2097262Z /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2107186Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/gh-pull-all/gh-pull-all/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2141783Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2165784Z /github/runner_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2173156Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2208364Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2234807Z /github/runner_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2252780Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2285975Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2536199Z Removing credentials config '/home/runner/work/_temp/git-credentials-0701ca6b-4d80-431b-ad9e-c53e08cdafd0.config'
+Test	UNKNOWN STEP	2026-06-25T16:56:26.2720378Z Cleaning up orphan processes

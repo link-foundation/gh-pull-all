@@ -1,0 +1,10 @@
+[36m🔑 Using GitHub token from gh CLI[0m
+[34m🚀 Starting undefined user repository sync...[0m
+[36m📁 Target directory: /tmp/gh-issue-solver-1782400949399[0m
+[36m🔗 Using HTTPS for cloning[0m
+[36m⚡ Concurrency: 8 threads (parallel)[0m
+[36m📋 Using GitHub API to fetch repositories[0m
+[34m🔍 Fetching repositories from undefined user account...[0m
+GET /users//repos?type=all&per_page=100&sort=updated&direction=desc - 404 with id 9F2A:37D367:502A00:4C8710:6A3D4D67 in 124ms
+[31m❌ User 'undefined' not found or not accessible[0m
+[33m   API URL: https://api.github.com/users/undefined/repos[0m

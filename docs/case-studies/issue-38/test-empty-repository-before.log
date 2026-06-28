@@ -1,0 +1,48 @@
+✘   (0 / 1)
+
+   FAIL  "empty repository can be pulled again without reporting a stale upstream error"
+    [34m🚀 Starting local-empty-owner user repository sync...[0m
+[36m📁 Target directory: /tmp/gh-pull-all-empty-repo-4486/repos[0m
+[36m🔗 Using HTTPS for cloning[0m
+[36m⚡ Concurrency: 1 thread (sequential)[0m
+[36m📋 Using gh CLI to fetch repositories (includes private repos)[0m
+[31m❌ empty-repo [2m  0.1s[0m Failed with error #1
+
+[31m[1m❌ Errors:[0m[0m
+[2m────────────────────────────────────────────────────────────────────────────────[0m
+[31m# 1 [33mempty-repo[0m: Error: Your configuration specifies to merge with the ref 'refs/heads/main'
+from the remote, but no such ref was fetched.
+
+
+[34m[1m📊 Summary:[0m[0m
+[31m❌ Failed: 1[0m
+[34m⏱️  Total time: 0.1s[0m
+[34m🎉 Operation completed![0m
+  (ok)
+
+    [36m📁 Target directory: /tmp/gh-pull-all-empty-repo-4486/repos[0m
+    [36m🔗 Using HTTPS for cloning[0m
+    [36m⚡ Concurrency: 1 thread (sequential)[0m
+    [36m📋 Using gh CLI to fetch repositories (includes private repos)[0m
+    [31m❌ empty-repo [2m  0.1s[0m Failed with error #1
+    [31m[1m❌ Errors:[0m[0m
+    [2m────────────────────────────────────────────────────────────────────────────────[0m
+    [31m# 1 [33mempty-repo[0m: Error: Your configuration specifies to merge with the ref 'refs/heads/main'
+    from the remote, but no such ref was fetched.
+    [34m[1m📊 Summary:[0m[0m
+    [31m❌ Failed: 1[0m
+    [34m⏱️  Total time: 0.1s[0m
+    [34m🎉 Operation completed![0m
+    at assert (/home/box/.bun/install/global/node_modules/uvu-v-0.5.6/assert/index.js:33:12)
+    at ok (/home/box/.bun/install/global/node_modules/uvu-v-0.5.6/assert/index.js:37:2)
+    at <anonymous> (/tmp/gh-issue-solver-1782381754598/tests/test-empty-repository.mjs:113:12)
+    at async runner (/home/box/.bun/install/global/node_modules/uvu-v-0.5.6/dist/index.js:78:16)
+    at async exec (/home/box/.bun/install/global/node_modules/uvu-v-0.5.6/dist/index.js:141:39)
+    at processTicksAndRejections (native:7:39)
+
+
+
+  Total:     1
+  Passed:    0
+  Skipped:   0
+  Duration:  811.89ms

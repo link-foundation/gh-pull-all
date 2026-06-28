@@ -1,0 +1,20 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression />=22\./. Input:
+
+'>=20.0.0'
+
+    at file:///tmp/gh-issue-solver-1782400949399/tests/test-release-workflow.mjs:61:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '>=20.0.0',
+  expected: />=22\./,
+  operator: 'match'
+}
+
+Node.js v20.20.2

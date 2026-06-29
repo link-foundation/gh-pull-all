@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.dirname(__dirname)
 const cliPath = path.join(projectRoot, 'gh-pull-all.mjs')
+const versionScriptPath = path.join(projectRoot, 'version.mjs')
 const packageJson = JSON.parse(readFileSync(path.join(projectRoot, 'package.json'), 'utf8'))
 const expectedVersion = packageJson.version
 
@@ -30,6 +31,14 @@ function assertVersion(scriptPath, args) {
 
 assertVersion(cliPath, ['--version'])
 assertVersion(cliPath, ['-v'])
+
+const versionScript = readFileSync(versionScriptPath, 'utf8')
+assert.match(versionScript, /git status --porcelain/)
+assert.doesNotMatch(versionScript, /git add \./)
+assert.match(versionScript, /git add package\.json gh-pull-all\.mjs/)
+
+const versionHelpOutput = runVersion(versionScriptPath, ['--help'])
+assert.match(versionHelpOutput, /Usage: \.\/version\.mjs <patch\|minor\|major>/)
 
 const tempDir = mkdtempSync(path.join(tmpdir(), 'gh-pull-all-version-'))
 

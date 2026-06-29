@@ -60,6 +60,7 @@
     "auto-detect.mjs",
     "fork-sync.mjs",
     "github-repositories.mjs",
+    "help-text.mjs",
     "load-use-m.mjs",
     "README.md",
     "LICENSE"

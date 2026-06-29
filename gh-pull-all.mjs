@@ -96,6 +96,12 @@ if (hasAnyArg(startupArgs, ['--version', '-v']) && !hasAnyArg(startupArgs, ['--h
   process.exit(0)
 }
 
+if (hasAnyArg(startupArgs, ['--help', '-h'])) {
+  const { HELP_TEXT } = await import('./help-text.mjs')
+  console.log(HELP_TEXT.trim())
+  process.exit(0)
+}
+
 const { normalizeExplicitTarget, resolveAutoTarget } = await import('./auto-detect.mjs')
 
 // Download use-m dynamically (robustly, with CDN fallback and clear errors).
@@ -160,6 +166,20 @@ const colors = {
 
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
+const DEFAULTS = {
+  TERMINAL_WIDTH: 80,
+  TERMINAL_HEIGHT: 24,
+  HEADER_LINES: 3,
+  MIN_MESSAGE_WIDTH: 20,
+  SAFETY_MARGIN: 10,
+  DURATION_PADDING: 6,
+  PROGRESS_BAR_WIDTH: 50,
+  PROGRESS_BAR_RESERVED_SPACE: 40,
+  RENDER_INTERVAL_MS: 100,
+  RESIZE_DEBOUNCE_MS: 150,
+  GIT_TIMEOUT_MS: 30000
+}
+
 // Status display system with safe terminal output
 class StatusDisplay {
   constructor(liveUpdates = false, threads = 1) {
@@ -173,25 +193,32 @@ class StatusDisplay {
     this.headerPrinted = false
     this.renderedOnce = false
     this.maxNameLength = 0
-    this.terminalWidth = process.stdout.columns || 80
-    this.terminalHeight = process.stdout.rows || 24
+    this.terminalWidth = process.stdout.columns || DEFAULTS.TERMINAL_WIDTH
+    this.terminalHeight = process.stdout.rows || DEFAULTS.TERMINAL_HEIGHT
     this.errors = []
     this.errorCounter = 0
-    this.headerLines = 3 // Header + separator line + blank line
+    this.headerLines = DEFAULTS.HEADER_LINES
     this.completedRepos = [] // Store completed repos for persistent display
     this.currentBatchStart = 0
     this.lastRenderedCount = 0
     this.batchDisplayMode = true // New mode for batch-based display
+    this.isDirty = false
+    this.resizeTimeout = null
 
     // Listen for terminal resize
     if (this.isInteractive) {
       process.stdout.on('resize', () => {
-        this.terminalWidth = process.stdout.columns || 80
-        this.terminalHeight = process.stdout.rows || 24
-        // Keep render on resize for immediate response
-        if (this.useInPlaceUpdates) {
-          this.render()
+        this.terminalWidth = process.stdout.columns || DEFAULTS.TERMINAL_WIDTH
+        this.terminalHeight = process.stdout.rows || DEFAULTS.TERMINAL_HEIGHT
+        if (this.resizeTimeout) {
+          clearTimeout(this.resizeTimeout)
         }
+        this.resizeTimeout = setTimeout(() => {
+          if (this.useInPlaceUpdates) {
+            this.isDirty = true
+            this.render()
+          }
+        }, DEFAULTS.RESIZE_DEBOUNCE_MS)
       })
     }
   }
@@ -207,6 +234,7 @@ class StatusDisplay {
     })
     // Update max name length for proper alignment
     this.maxNameLength = Math.max(this.maxNameLength, name.length)
+    this.isDirty = true
   }
 
   updateRepo(name, status, message = '') {
@@ -232,8 +260,9 @@ class StatusDisplay {
 
       if (!this.useInPlaceUpdates) {
         this.logStatusChange(repo, oldStatus)
+      } else {
+        this.isDirty = true
       }
-      // Render is now handled by the main loop at 10 FPS
     }
   }
 
@@ -259,8 +288,11 @@ class StatusDisplay {
       : `${((Date.now() - repo.startTime) / 1000).toFixed(1)}s`
 
     // Calculate available space for message
-    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
-    const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
+    const baseLength = statusIcon.length + 1 + this.maxNameLength + 1 + DEFAULTS.DURATION_PADDING + 1
+    const availableWidth = Math.max(
+      DEFAULTS.MIN_MESSAGE_WIDTH,
+      this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN
+    )
 
     const displayMessage = this.formatStatusMessage(repo, repo.message, availableWidth)
 
@@ -283,10 +315,15 @@ class StatusDisplay {
       return // Use append-only mode by default
     }
 
+    if (!this.isDirty && this.renderedOnce && !this.hasActiveRepos()) {
+      return
+    }
+    this.isDirty = false
+
     if (!this.headerPrinted) {
       console.log(`\n${colors.bold}Repository Status${colors.reset}`)
-      console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
-      this.headerLines = 3 // Don't include legend in header lines
+      console.log(`${colors.dim}${'─'.repeat(Math.min(DEFAULTS.TERMINAL_WIDTH, this.terminalWidth))}${colors.reset}`)
+      this.headerLines = DEFAULTS.HEADER_LINES
       this.headerPrinted = true
     }
 
@@ -320,8 +357,11 @@ class StatusDisplay {
     }
 
     // Calculate available space for message
-    const baseLength = 2 + this.maxNameLength + 1 + 6 + 1 // icon + space + name + space + duration + space
-    const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10) // Reserve 10 chars for safety
+    const baseLength = 2 + this.maxNameLength + 1 + DEFAULTS.DURATION_PADDING + 1
+    const availableWidth = Math.max(
+      DEFAULTS.MIN_MESSAGE_WIDTH,
+      this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN
+    )
 
     // Print newly completed repos (these won't be updated again)
     for (const [name, repo] of newlyCompleted) {
@@ -331,7 +371,10 @@ class StatusDisplay {
       const duration = `${((repo.endTime - repo.startTime) / 1000).toFixed(1)}s`
 
       const baseLength = name.length + this.maxNameLength + 15
-      const availableWidth = Math.max(20, this.terminalWidth - baseLength - 10)
+      const availableWidth = Math.max(
+        DEFAULTS.MIN_MESSAGE_WIDTH,
+        this.terminalWidth - baseLength - DEFAULTS.SAFETY_MARGIN
+      )
       const fallbackMessage = repo.message || this.getStatusMessage(repo.status)
       const displayMessage = this.formatStatusMessage(repo, fallbackMessage, availableWidth)
 
@@ -400,6 +443,19 @@ class StatusDisplay {
     this.lastRenderedCount = renderedCount
   }
 
+  hasActiveRepos() {
+    for (const repo of this.repos.values()) {
+      if (repo.status === 'pending' ||
+          repo.status === 'pulling' ||
+          repo.status === 'cloning' ||
+          repo.status === 'checking' ||
+          repo.status === 'deleting') {
+        return true
+      }
+    }
+    return false
+  }
+
   getStatusIcon(status) {
     switch (status) {
       case 'pending': return '⏳'
@@ -460,8 +516,8 @@ class StatusDisplay {
   }
 
   getVisibleLength(str) {
-    // Remove ANSI escape codes to calculate visible length
-    return str.replace(/\x1b\[[0-9;]*m/g, '').length
+    // Remove ANSI escape codes to calculate visible length.
+    return str.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').length
   }
 
   createProgressBar() {
@@ -488,13 +544,16 @@ class StatusDisplay {
     }
 
     // Calculate bar width (reserve space for text)
-    const barWidth = Math.min(50, this.terminalWidth - 40)
+    const barWidth = Math.max(
+      0,
+      Math.min(DEFAULTS.PROGRESS_BAR_WIDTH, this.terminalWidth - DEFAULTS.PROGRESS_BAR_RESERVED_SPACE)
+    )
     const completed = statusCounts.success + statusCounts.failed + statusCounts.skipped + statusCounts.uncommitted
     const inProgress = statusCounts.pulling + statusCounts.cloning + statusCounts.checking + statusCounts.deleting
     const pending = statusCounts.pending
 
     // Create bar segments - ensure they sum to barWidth
-    const successWidth = Math.round((statusCounts.success / repoCount) * barWidth)
+    let successWidth = Math.round((statusCounts.success / repoCount) * barWidth)
     const failedWidth = Math.round((statusCounts.failed / repoCount) * barWidth)
     const skippedWidth = Math.round(((statusCounts.skipped + statusCounts.uncommitted) / repoCount) * barWidth)
     const inProgressWidth = Math.round((inProgress / repoCount) * barWidth)
@@ -505,17 +564,12 @@ class StatusDisplay {
     const totalWidth = successWidth + failedWidth + skippedWidth + inProgressWidth + pendingWidth
     if (totalWidth < barWidth && completed === repoCount) {
       // If all done but bar not full due to rounding, extend success segment
-      const diff = barWidth - totalWidth
-      return this.createProgressBar.call(this, {
-        ...arguments[0],
-        _successWidth: successWidth + diff
-      })
+      successWidth += barWidth - totalWidth
     }
 
     // Build the bar
     let bar = ''
-    const finalSuccessWidth = arguments[0]?._successWidth || successWidth
-    bar += colors.green + '█'.repeat(finalSuccessWidth)
+    bar += colors.green + '█'.repeat(successWidth)
     bar += colors.red + '█'.repeat(failedWidth)
     bar += colors.yellow + '█'.repeat(skippedWidth)
     bar += colors.cyan + '█'.repeat(inProgressWidth)
@@ -539,7 +593,7 @@ class StatusDisplay {
 
     console.log() // Add spacing
     log('red', `${colors.bold}❌ Errors:${colors.reset}`)
-    console.log(`${colors.dim}${'─'.repeat(Math.min(80, this.terminalWidth))}${colors.reset}`)
+    console.log(`${colors.dim}${'─'.repeat(Math.min(DEFAULTS.TERMINAL_WIDTH, this.terminalWidth))}${colors.reset}`)
 
     for (const error of this.errors) {
       console.log(`${colors.red}#${error.number.toString().padStart(2)} ${colors.yellow}${error.repo}${colors.reset}: ${error.message}`)
@@ -787,12 +841,22 @@ const {
   getUserRepos
 } = await import('./github-repositories.mjs')
 
+function createGit(baseDir) {
+  const simpleGit = git(baseDir)
+  return typeof simpleGit.timeout === 'function'
+    ? simpleGit.timeout({ block: DEFAULTS.GIT_TIMEOUT_MS })
+    : simpleGit
+}
+
 async function directoryExists(dirPath) {
   try {
     const stats = await statPath(dirPath)
     return stats.isDirectory()
-  } catch {
-    return false
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return false
+    }
+    throw error
   }
 }
 
@@ -853,6 +917,11 @@ async function getDefaultBranch(simpleGit) {
   }
 }
 
+async function getPrimaryRemoteName(simpleGit) {
+  const remotes = await simpleGit.getRemotes(true)
+  return remotes[0]?.name || 'origin'
+}
+
 async function repositoryHasCommits(simpleGit) {
   try {
     await simpleGit.raw(['rev-parse', '--verify', 'HEAD'])
@@ -908,7 +977,7 @@ async function pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisp
   }
 
   statusDisplay.updateRepo(repoName, 'pulling', `Pulling ${defaultBranch}...`)
-  await simpleGit.pull('origin', defaultBranch)
+  await simpleGit.pull(await getPrimaryRemoteName(simpleGit), defaultBranch)
   statusDisplay.updateRepo(repoName, 'success', `Successfully pulled ${defaultBranch}`)
   return { success: true, type: 'pulled_default', details: { defaultBranch } }
 }
@@ -917,7 +986,7 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
   try {
     statusDisplay.updateRepo(repoName, 'checking', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath)
+    const simpleGit = createGit(repoPath)
 
     const status = await simpleGit.status()
     if (status.files.length > 0) {
@@ -934,7 +1003,7 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
     // Get default branch
     statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
     const defaultBranch = await getDefaultBranch(simpleGit)
-    const remoteName = (await simpleGit.getRemotes(true))[0]?.name || 'origin'
+    const remoteName = await getPrimaryRemoteName(simpleGit)
 
     if (currentBranchName === defaultBranch) {
       // Already on default branch, but still pull latest changes
@@ -974,7 +1043,7 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
   try {
     statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
-    const simpleGit = git(repoPath)
+    const simpleGit = createGit(repoPath)
 
     const status = await simpleGit.status()
     if (status.files.length > 0) {
@@ -1001,7 +1070,7 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
         // Attempt to merge from default branch
         statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
         try {
-          const remoteName = 'origin' // Assume origin for now
+          const remoteName = await getPrimaryRemoteName(simpleGit)
           const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
 
           // Check if remote branch exists
@@ -1076,7 +1145,7 @@ async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefaul
 async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   try {
     statusDisplay.updateRepo(repo.name, 'cloning', 'Cloning...')
-    const simpleGit = git(targetDir)
+    const simpleGit = createGit(targetDir)
 
     // Use SSH if requested and available, fallback to HTTPS
     const cloneUrl = useSsh && repo.ssh_url ? repo.ssh_url : repo.clone_url
@@ -1084,7 +1153,7 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
 
     statusDisplay.updateRepo(repo.name, 'cloning', 'Fetching all branches...')
     const repoPath = path.join(targetDir, repo.name)
-    const repoGit = git(repoPath)
+    const repoGit = createGit(repoPath)
     await repoGit.fetch(['--all'])
 
     statusDisplay.updateRepo(repo.name, 'success', 'Successfully cloned')
@@ -1107,7 +1176,7 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 
     // Check for uncommitted changes
     statusDisplay.updateRepo(repoName, 'checking', 'Checking for uncommitted changes...')
-    const simpleGit = git(repoPath)
+    const simpleGit = createGit(repoPath)
 
     try {
       const status = await simpleGit.status()
@@ -1150,7 +1219,7 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 
   if (exists) {
     if (pullChangesToFork) {
-      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: git })
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit })
     } else if (switchToDefault) {
       return await switchToDefaultBranch(repo.name, targetDir, statusDisplay)
     } else {
@@ -1159,7 +1228,7 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
   } else {
     const cloneResult = await cloneRepository(repo, targetDir, useSsh, statusDisplay)
     if (pullChangesToFork && cloneResult.success) {
-      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: git })
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit })
     }
     return cloneResult
   }
@@ -1191,7 +1260,7 @@ async function main() {
   if (!org && !user) {
     const detectedTarget = await resolveAutoTarget({
       targetDir,
-      gitFactory: git,
+      gitFactory: createGit,
       token,
       Octokit,
       askConfirmation,

@@ -2,10 +2,17 @@
 
 // Test progress bar functionality
 import { loadUseM } from '../load-use-m.mjs'
+import { readFileSync } from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.dirname(__dirname)
+const cliSource = readFileSync(path.join(projectRoot, 'gh-pull-all.mjs'), 'utf8')
 
 // Mock StatusDisplay with progress bar functionality
 class StatusDisplay {
@@ -145,6 +152,11 @@ test('progress bar groups uncommitted with skipped', () => {
   
   const progressBar = display.createProgressBar()
   assert.match(progressBar, /2\/3 \(67%\)/)
+})
+
+test('production progress bar handles rounding without recursion', () => {
+  assert.ok(!/return\s+this\.createProgressBar\.call/.test(cliSource))
+  assert.ok(/successWidth\s\+=\sbarWidth\s-\stotalWidth/.test(cliSource))
 })
 
 test.run()

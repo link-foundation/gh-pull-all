@@ -1,0 +1,108 @@
+
+> gh-pull-all@1.4.3 check:line-limits
+> bash scripts/check-file-line-limits.sh
+
+Checking that JavaScript and Markdown files are under 1500 lines...
+./scripts/version-and-commit.mjs: 128 lines
+./scripts/create-github-release.mjs: 91 lines
+./scripts/package-info.mjs: 54 lines
+./scripts/smoke-test-package.mjs: 60 lines
+./scripts/publish-to-npm.mjs: 96 lines
+./scripts/check-release-needed.mjs: 48 lines
+./scripts/check-version.mjs: 47 lines
+./scripts/validate-changeset.mjs: 139 lines
+./scripts/changeset-version.mjs: 39 lines
+./scripts/setup-npm.mjs: 93 lines
+./scripts/check-changesets.mjs: 51 lines
+./scripts/detect-code-changes.mjs: 138 lines
+./scripts/merge-changesets.mjs: 61 lines
+./scripts/js-paths.mjs: 70 lines
+./gh-pull-all.mjs: 1439 lines
+WARNING: ./gh-pull-all.mjs has 1439 lines (approaching limit of 1500, warning threshold: 1350)
+::warning file=./gh-pull-all.mjs::File has 1439 lines (approaching limit of 1500). Extract code to keep files under the 1500 line limit.
+./demos/terminal-simulator.mjs: 318 lines
+./demos/demonstrate-bug.mjs: 91 lines
+./demos/demo-progress-bar.mjs: 84 lines
+./demos/ink-list-demo.mjs: 221 lines
+./README.md: 291 lines
+./help-text.mjs: 57 lines
+./load-use-m.mjs: 106 lines
+./experiments/use-m-loader-failure.mjs: 35 lines
+./auto-detect.mjs: 365 lines
+./docs/case-studies/issue-42/templates/csharp-detect-code-changes.mjs: 222 lines
+./docs/case-studies/issue-42/templates/js-detect-code-changes.mjs: 171 lines
+./docs/case-studies/issue-42/analysis.md: 176 lines
+./docs/case-studies/issue-38/analysis.md: 47 lines
+./docs/case-studies/issue-44/templates/csharp-version-and-commit.mjs: 433 lines
+./docs/case-studies/issue-44/templates/csharp-version-and-commit.test.mjs: 197 lines
+./docs/case-studies/issue-44/templates/js-version-and-commit.mjs: 284 lines
+./docs/case-studies/issue-44/templates/js-workflow-reliability.test.js: 265 lines
+./docs/case-studies/issue-44/templates/js-changeset-version.mjs: 75 lines
+./docs/case-studies/issue-40/template-comparison-2026-06-25.md: 36 lines
+./docs/case-studies/issue-40/analysis.md: 206 lines
+./github-repositories.mjs: 168 lines
+./version.mjs: 125 lines
+./tests/test-pull-changes-to-fork-cli.mjs: 265 lines
+./tests/test-empty-repository.mjs: 204 lines
+./tests/test-version-and-commit.mjs: 101 lines
+./tests/test-issue-11-integration.mjs: 267 lines
+./tests/test-error-message-display.mjs: 120 lines
+./tests/test-cli-simple.mjs: 108 lines
+./tests/test-multithread-live.mjs: 94 lines
+./tests/test-auto-detect.mjs: 121 lines
+./tests/test-windowed-display.mjs: 44 lines
+./tests/test-line-padding.mjs: 132 lines
+./tests/test-detect-code-changes.mjs: 106 lines
+./tests/common-test-utils.mjs: 158 lines
+./tests/test-terminal-output.mjs: 72 lines
+./tests/test-release-workflow.mjs: 103 lines
+./tests/core-functions.test.mjs: 132 lines
+./tests/test-file-operations.mjs: 127 lines
+./tests/test-merge-result.mjs: 84 lines
+./tests/test-file-line-limits.mjs: 100 lines
+./tests/test-fixed-rendering.mjs: 151 lines
+./tests/test-sorting.mjs: 39 lines
+./tests/test-switch-to-default-pull.mjs: 261 lines
+./tests/test-threading.mjs: 100 lines
+./tests/test-github-api.mjs: 133 lines
+./tests/test-single-repo.mjs: 62 lines
+./tests/test-single-thread.mjs: 81 lines
+./tests/test-version.mjs: 53 lines
+./tests/test-multithread-no-live.mjs: 102 lines
+./tests/test-switch-to-default-cli.mjs: 145 lines
+./tests/test-uncommitted-changes.mjs: 198 lines
+./tests/test-integration-fast.mjs: 134 lines
+./tests/test-switch-to-default.mjs: 218 lines
+./tests/test-parallel.mjs: 153 lines
+./tests/test-status-display.mjs: 68 lines
+./tests/test-use-m-loader.mjs: 173 lines
+./tests/test-auto-mode.mjs: 147 lines
+./tests/test-all.mjs: 237 lines
+./tests/test-gh-cli.mjs: 135 lines
+./tests/test-progress-bar.mjs: 162 lines
+./tests/test-integration-slow.mjs: 234 lines
+./tests/test-changesets.mjs: 86 lines
+./tests/test-terminal-width.mjs: 139 lines
+./tests/test-concurrent-processing.mjs: 125 lines
+./tests/test-error-handling.mjs: 122 lines
+./tests/test-help.mjs: 39 lines
+./tests/test-terminal-rendering.mjs: 424 lines
+./fork-sync.mjs: 199 lines
+./.changeset/default-auto-mode.md: 5 lines
+./.changeset/README.md: 5 lines
+./.changeset/reenable-fast-tests.md: 5 lines
+./.changeset/resolve-pr-36-conflicts.md: 5 lines
+./.changeset/concise-error-status.md: 5 lines
+./.changeset/pull-changes-to-fork.md: 5 lines
+./.changeset/switch-default-pull.md: 5 lines
+./.changeset/fix-help-output.md: 5 lines
+
+Checking that GitHub workflow files are under 1500 lines...
+.github/workflows/release.yml: 200 lines
+
+The following files are approaching the 1500 line limit (>1350 lines):
+  ./gh-pull-all.mjs
+
+Consider extracting code before concurrent PRs push files over the hard limit.
+
+All checked files are within the 1500 line limit!

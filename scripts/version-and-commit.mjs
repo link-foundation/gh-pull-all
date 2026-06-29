@@ -20,10 +20,11 @@ function parseArgs(argv) {
 
 function run(command, args, { capture = false, allowFailure = false } = {}) {
   try {
-    return execFileSync(command, args, {
+    const output = execFileSync(command, args, {
       encoding: 'utf8',
       stdio: capture ? ['ignore', 'pipe', allowFailure ? 'pipe' : 'inherit'] : 'inherit',
-    }).trim();
+    });
+    return typeof output === 'string' ? output.trim() : '';
   } catch (error) {
     if (allowFailure) {
       return '';

@@ -12,7 +12,10 @@ const assert = await use('uvu@0.5.6/assert')
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.dirname(__dirname)
-const cliSource = readFileSync(path.join(projectRoot, 'gh-pull-all.mjs'), 'utf8')
+const productionSource = [
+  readFileSync(path.join(projectRoot, 'gh-pull-all.mjs'), 'utf8'),
+  readFileSync(path.join(projectRoot, 'status-display.mjs'), 'utf8')
+].join('\n')
 
 // Mock StatusDisplay with progress bar functionality
 class StatusDisplay {
@@ -155,8 +158,8 @@ test('progress bar groups uncommitted with skipped', () => {
 })
 
 test('production progress bar handles rounding without recursion', () => {
-  assert.ok(!/return\s+this\.createProgressBar\.call/.test(cliSource))
-  assert.ok(/successWidth\s\+=\sbarWidth\s-\stotalWidth/.test(cliSource))
+  assert.ok(!/return\s+this\.createProgressBar\.call/.test(productionSource))
+  assert.ok(/successWidth\s\+=\sbarWidth\s-\stotalWidth/.test(productionSource))
 })
 
 test.run()

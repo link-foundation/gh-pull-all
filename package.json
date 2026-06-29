@@ -62,6 +62,7 @@
     "github-repositories.mjs",
     "help-text.mjs",
     "load-use-m.mjs",
+    "status-display.mjs",
     "README.md",
     "LICENSE"
   ]

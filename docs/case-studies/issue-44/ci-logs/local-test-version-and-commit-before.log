@@ -1,0 +1,29 @@
+node:internal/errors:984
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /home/box/.nvm/versions/node/v20.20.2/bin/node /tmp/gh-issue-solver-1782723815087/scripts/version-and-commit.mjs --mode instant --bump-type patch
+Error: Cannot read properties of null (reading 'trim')
+
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at checkExecSyncError (node:child_process:891:11)
+    at execFileSync (node:child_process:927:15)
+    at run (file:///tmp/gh-issue-solver-1782723815087/tests/test-version-and-commit.mjs:19:10)
+    at file:///tmp/gh-issue-solver-1782723815087/tests/test-version-and-commit.mjs:80:18
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '',
+    "Error: Cannot read properties of null (reading 'trim')\n"
+  ],
+  pid: 5599,
+  stdout: '',
+  stderr: "Error: Cannot read properties of null (reading 'trim')\n"
+}
+
+Node.js v20.20.2

@@ -97,10 +97,10 @@ withRepo((repoDir) => {
 
   const { outputs, stdout } = runDetector(repoDir, 'pull_request');
 
-  assert.match(stdout, /Comparing HEAD\^2\^ to HEAD\^2/);
-  assert.match(stdout, /Changed files:\n  \.gitkeep/);
-  assert.equal(outputs['any-code-changed'], 'false');
-  assert.equal(outputs['mjs-changed'], 'false');
+  assert.match(stdout, /Comparing HEAD\^1\.\.\.HEAD\^2/);
+  assert.match(stdout, /Changed files:\n  \.gitkeep\n  scripts\/example\.mjs/);
+  assert.equal(outputs['any-code-changed'], 'true');
+  assert.equal(outputs['mjs-changed'], 'true');
 });
 
 console.log('Change detection behavior is valid.');

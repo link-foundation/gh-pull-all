@@ -60,6 +60,7 @@ const testDescriptions = {
   'test-changesets.mjs': 'Tests changeset validation and release metadata scripts',
   'test-detect-code-changes.mjs': 'Tests CI change detection for code and non-code commits',
   'test-file-line-limits.mjs': 'Tests CI line-limit warnings and hard failures',
+  'test-version-and-commit.mjs': 'Tests release version commit behavior against a local Git remote',
   'test-line-padding.mjs': 'Tests line padding to prevent truncation issues like "Successfully pulledes..."',
   'test-switch-to-default.mjs': 'Tests --switch-to-default functionality for switching repositories to default branch',
   'test-switch-to-default-pull.mjs': 'Tests --switch-to-default fetches before switching and pulls after switching',

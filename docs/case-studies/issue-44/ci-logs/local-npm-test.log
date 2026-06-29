@@ -1,0 +1,230 @@
+
+> gh-pull-all@1.4.3 test
+> node tests/test-all.mjs
+
+[34m[1m🧪 GH-Pull-All Test Suite[0m[0m
+[36mRunning 40 test suites...[0m
+[33m⚡ Running fast tests only (use --include-slow to include slow integration tests)[0m
+[36mFound test files: test-auto-detect.mjs, test-auto-mode.mjs, test-changesets.mjs, test-cli-simple.mjs, test-concurrent-processing.mjs, test-detect-code-changes.mjs, test-empty-repository.mjs, test-error-handling.mjs, test-error-message-display.mjs, test-file-line-limits.mjs, test-file-operations.mjs, test-fixed-rendering.mjs, test-gh-cli.mjs, test-github-api.mjs, test-help.mjs, test-integration-fast.mjs, test-line-padding.mjs, test-merge-result.mjs, test-multithread-live.mjs, test-multithread-no-live.mjs, test-parallel.mjs, test-progress-bar.mjs, test-pull-changes-to-fork-cli.mjs, test-release-workflow.mjs, test-single-repo.mjs, test-single-thread.mjs, test-sorting.mjs, test-status-display.mjs, test-switch-to-default-cli.mjs, test-switch-to-default-pull.mjs, test-switch-to-default.mjs, test-terminal-output.mjs, test-terminal-rendering.mjs, test-terminal-width.mjs, test-threading.mjs, test-uncommitted-changes.mjs, test-use-m-loader.mjs, test-version-and-commit.mjs, test-version.mjs, test-windowed-display.mjs[0m
+[2m────────────────────────────────────────────────────────────────────────────────[0m
+[36m
+🔍 Running: Auto Detect[0m
+[2m   File: test-auto-detect.mjs[0m
+[2m   Tests GitHub owner parsing and local repository owner detection[0m
+[32m✅ Auto Detect passed (3.0s)[0m
+[36m
+🔍 Running: Auto Mode[0m
+[2m   File: test-auto-mode.mjs[0m
+[2m   Tests default auto mode with local git repositories and directory fallback[0m
+[32m✅ Auto Mode passed (5.9s)[0m
+[36m
+🔍 Running: Changesets[0m
+[2m   File: test-changesets.mjs[0m
+[2m   Tests changeset validation and release metadata scripts[0m
+[32m✅ Changesets passed (0.1s)[0m
+[36m
+🔍 Running: Cli Simple[0m
+[2m   File: test-cli-simple.mjs[0m
+[2m   Tests basic CLI functionality and argument parsing[0m
+[32m✅ Cli Simple passed (0.4s)[0m
+[36m
+🔍 Running: Concurrent Processing[0m
+[2m   File: test-concurrent-processing.mjs[0m
+[2m   Tests concurrent repository processing with worker pool pattern[0m
+[32m✅ Concurrent Processing passed (6.7s)[0m
+[36m
+🔍 Running: Detect Code Changes[0m
+[2m   File: test-detect-code-changes.mjs[0m
+[2m   Tests CI change detection for code and non-code commits[0m
+[32m✅ Detect Code Changes passed (0.4s)[0m
+[36m
+🔍 Running: Empty Repository[0m
+[2m   File: test-empty-repository.mjs[0m
+[2m   Tests empty repository pull handling and first default branch detection[0m
+[32m✅ Empty Repository passed (7.3s)[0m
+[36m
+🔍 Running: Error Handling[0m
+[2m   File: test-error-handling.mjs[0m
+[2m   Tests error numbering system and error list display[0m
+[32m✅ Error Handling passed (5.6s)[0m
+[36m
+🔍 Running: Error Message Display[0m
+[2m   File: test-error-message-display.mjs[0m
+[2m   Test suite[0m
+[32m✅ Error Message Display passed (5.9s)[0m
+[36m
+🔍 Running: File Line Limits[0m
+[2m   File: test-file-line-limits.mjs[0m
+[2m   Tests CI line-limit warnings and hard failures[0m
+[32m✅ File Line Limits passed (0.1s)[0m
+[36m
+🔍 Running: File Operations[0m
+[2m   File: test-file-operations.mjs[0m
+[2m   Tests file system operations and directory handling[0m
+[32m✅ File Operations passed (2.6s)[0m
+[36m
+🔍 Running: Fixed Rendering[0m
+[2m   File: test-fixed-rendering.mjs[0m
+[2m   Tests fixed terminal rendering functionality[0m
+[32m✅ Fixed Rendering passed (0.1s)[0m
+[36m
+🔍 Running: Gh Cli[0m
+[2m   File: test-gh-cli.mjs[0m
+[2m   Tests GitHub CLI integration and fallback behavior[0m
+[32m✅ Gh Cli passed (4.0s)[0m
+[36m
+🔍 Running: Github Api[0m
+[2m   File: test-github-api.mjs[0m
+[2m   Tests GitHub API integration and error handling[0m
+[32m✅ Github Api passed (6.6s)[0m
+[36m
+🔍 Running: Help[0m
+[2m   File: test-help.mjs[0m
+[2m   Tests complete --help output and validation bypass behavior[0m
+[32m✅ Help passed (0.2s)[0m
+[36m
+🔍 Running: Integration Fast[0m
+[2m   File: test-integration-fast.mjs[0m
+[2m   Tests core CLI behavior with local mock repositories[0m
+[32m✅ Integration Fast passed (15.9s)[0m
+[36m
+🔍 Running: Line Padding[0m
+[2m   File: test-line-padding.mjs[0m
+[2m   Tests line padding to prevent truncation issues like "Successfully pulledes..."[0m
+[32m✅ Line Padding passed (9.4s)[0m
+[36m
+🔍 Running: Merge Result[0m
+[2m   File: test-merge-result.mjs[0m
+[2m   Test suite[0m
+[32m✅ Merge Result passed (1.2s)[0m
+[36m
+🔍 Running: Multithread Live[0m
+[2m   File: test-multithread-live.mjs[0m
+[2m   Tests multi-thread mode with live in-place updates[0m
+[32m✅ Multithread Live passed (10.7s)[0m
+[36m
+🔍 Running: Multithread No Live[0m
+[2m   File: test-multithread-no-live.mjs[0m
+[2m   Tests multi-thread mode with append-only final status[0m
+[32m✅ Multithread No Live passed (5.8s)[0m
+[36m
+🔍 Running: Parallel[0m
+[2m   File: test-parallel.mjs[0m
+[2m   Tests parallel processing functionality[0m
+[32m✅ Parallel passed (4.4s)[0m
+[36m
+🔍 Running: Progress Bar[0m
+[2m   File: test-progress-bar.mjs[0m
+[2m   Tests progress bar functionality and display[0m
+[32m✅ Progress Bar passed (0.5s)[0m
+[36m
+🔍 Running: Pull Changes To Fork Cli[0m
+[2m   File: test-pull-changes-to-fork-cli.mjs[0m
+[2m   Tests --pull-changes-to-fork CLI validation and fork upstream synchronization[0m
+[32m✅ Pull Changes To Fork Cli passed (3.5s)[0m
+[36m
+🔍 Running: Release Workflow[0m
+[2m   File: test-release-workflow.mjs[0m
+[2m   Test suite[0m
+[32m✅ Release Workflow passed (0.0s)[0m
+[36m
+🔍 Running: Single Repo[0m
+[2m   File: test-single-repo.mjs[0m
+[2m   Test suite[0m
+[32m✅ Single Repo passed (1.5s)[0m
+[36m
+🔍 Running: Single Thread[0m
+[2m   File: test-single-thread.mjs[0m
+[2m   Tests single-thread mode with live updates and append-only behavior[0m
+[32m✅ Single Thread passed (12.2s)[0m
+[36m
+🔍 Running: Sorting[0m
+[2m   File: test-sorting.mjs[0m
+[2m   Tests alphabetical sorting of repositories[0m
+[32m✅ Sorting passed (0.1s)[0m
+[36m
+🔍 Running: Status Display[0m
+[2m   File: test-status-display.mjs[0m
+[2m   Test suite[0m
+[32m✅ Status Display passed (1.0s)[0m
+[36m
+🔍 Running: Switch To Default Cli[0m
+[2m   File: test-switch-to-default-cli.mjs[0m
+[2m   Tests CLI argument validation and help text for --switch-to-default option[0m
+[32m✅ Switch To Default Cli passed (3.7s)[0m
+[36m
+🔍 Running: Switch To Default Pull[0m
+[2m   File: test-switch-to-default-pull.mjs[0m
+[2m   Tests --switch-to-default fetches before switching and pulls after switching[0m
+[32m✅ Switch To Default Pull passed (4.5s)[0m
+[36m
+🔍 Running: Switch To Default[0m
+[2m   File: test-switch-to-default.mjs[0m
+[2m   Tests --switch-to-default functionality for switching repositories to default branch[0m
+[32m✅ Switch To Default passed (2.2s)[0m
+[36m
+🔍 Running: Terminal Output[0m
+[2m   File: test-terminal-output.mjs[0m
+[2m   Tests terminal output formatting and colors[0m
+[32m✅ Terminal Output passed (3.6s)[0m
+[36m
+🔍 Running: Terminal Rendering[0m
+[2m   File: test-terminal-rendering.mjs[0m
+[2m   Tests terminal rendering output and formatting[0m
+[32m✅ Terminal Rendering passed (0.8s)[0m
+[36m
+🔍 Running: Terminal Width[0m
+[2m   File: test-terminal-width.mjs[0m
+[2m   Tests terminal width handling and message truncation[0m
+[32m✅ Terminal Width passed (7.2s)[0m
+[36m
+🔍 Running: Threading[0m
+[2m   File: test-threading.mjs[0m
+[2m   Tests threading and concurrency management[0m
+[32m✅ Threading passed (7.9s)[0m
+[36m
+🔍 Running: Uncommitted Changes[0m
+[2m   File: test-uncommitted-changes.mjs[0m
+[2m   Tests handling of repositories with uncommitted changes[0m
+[32m✅ Uncommitted Changes passed (21.8s)[0m
+[36m
+🔍 Running: Use M Loader[0m
+[2m   File: test-use-m-loader.mjs[0m
+[2m   Tests robust use-m loading with CDN fallback and clear errors (issue #35)[0m
+[32m✅ Use M Loader passed (0.5s)[0m
+[36m
+🔍 Running: Version And Commit[0m
+[2m   File: test-version-and-commit.mjs[0m
+[2m   Tests release version commit behavior against a local Git remote[0m
+[32m✅ Version And Commit passed (0.4s)[0m
+[36m
+🔍 Running: Version[0m
+[2m   File: test-version.mjs[0m
+[2m   Tests --version output and fallback behavior without package metadata[0m
+[32m✅ Version passed (0.2s)[0m
+[36m
+🔍 Running: Windowed Display[0m
+[2m   File: test-windowed-display.mjs[0m
+[2m   Tests windowed display mode for terminal output[0m
+[32m✅ Windowed Display passed (2.7s)[0m
+[2m
+────────────────────────────────────────────────────────────────────────────────[0m
+[34m
+[1m📊 Test Suite Summary[0m[0m
+[32m✅ Passed: 40/40 tests[0m
+[34m⏱️  Total time: 170.7s[0m
+[32m
+🎉 All tests passed! The gh-pull-all.mjs implementation is working correctly.[0m
+[35m✨ Features validated across all test suites:[0m
+[35m   • Single-thread and multi-thread modes[0m
+[35m   • Live updates and append-only display modes[0m
+[35m   • Error numbering and error list display[0m
+[35m   • Terminal width handling and message truncation[0m
+[35m   • Uncommitted changes detection and handling[0m
+[35m   • GitHub CLI integration with extended API limits[0m
+[35m   • GitHub API error handling and network resilience[0m
+[35m   • File operations and directory management[0m
+[35m   • CLI argument parsing and validation[0m
+[35m   • Parallel processing and threading[0m
+[35m   • Terminal output formatting and colors[0m
+[35m   • Proper cleanup of cross-platform temporary directories[0m

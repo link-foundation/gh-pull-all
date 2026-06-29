@@ -1,0 +1,24 @@
+npm notice
+npm notice 📦  gh-pull-all@1.4.3
+npm notice Tarball Contents
+npm notice 1.2kB LICENSE
+npm notice 11.5kB README.md
+npm notice 9.6kB auto-detect.mjs
+npm notice 6.9kB fork-sync.mjs
+npm notice 33.1kB gh-pull-all.mjs
+npm notice 4.7kB github-repositories.mjs
+npm notice 2.4kB help-text.mjs
+npm notice 4.3kB load-use-m.mjs
+npm notice 2.1kB package.json
+npm notice 19.6kB status-display.mjs
+npm notice Tarball Details
+npm notice name: gh-pull-all
+npm notice version: 1.4.3
+npm notice filename: gh-pull-all-1.4.3.tgz
+npm notice package size: 24.4 kB
+npm notice unpacked size: 95.2 kB
+npm notice shasum: 33340e9c9f36d7d602a8bf37b7131fcb9ad2b890
+npm notice integrity: sha512-bVnuc5zRwSSVb[...]pQo51mCoxn/VA==
+npm notice total files: 10
+npm notice
+gh-pull-all-1.4.3.tgz

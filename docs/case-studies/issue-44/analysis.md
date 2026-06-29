@@ -12,6 +12,7 @@ Primary failing run: https://github.com/link-foundation/gh-pull-all/actions/runs
 - Pull request metadata and all three comment streams: `pr-45.json`, `pr-45-conversation-comments.json`, `pr-45-review-comments.json`, `pr-45-reviews.json`
 - Linked CI run metadata and logs: `run-28360287046.json`, `run-28360287046.log`
 - Preserved CI-style logs: `ci-logs/`
+- Fresh PR run log that exposed skipped tests after a docs/log-only tip commit: `ci-logs/remote-checks-and-release-28362506160.log`
 - Template file trees, workflow files, and release/version helpers: `templates/`
 - Current repository file tree snapshot: `current-file-tree.txt`
 
@@ -36,12 +37,16 @@ Primary failing run: https://github.com/link-foundation/gh-pull-all/actions/runs
 - 2026-06-29 08:59:15 UTC: The release job reached `Version packages and commit to main`.
 - 2026-06-29 08:59:15 UTC: `node scripts/version-and-commit.mjs --mode changeset` failed with `Error: Cannot read properties of null (reading 'trim')`.
 - 2026-06-29 09:03:47 UTC: The prepared branch had one earlier successful PR run at SHA `020ccf069e5d115aa602fc7e848169b49b647768`; that did not include the fix.
+- 2026-06-29 09:32:55 UTC: PR run 28362506160 started for SHA `7245742a613d9fa81d392445de0769e55cde9677`.
+- 2026-06-29 09:33:02 UTC: That PR run compared only `HEAD^2^` to `HEAD^2`, saw the latest docs/log commit, and reported `any-code-changed=false`.
+- 2026-06-29 09:33:14 UTC: The PR run completed green with the Test job skipped even though the pull request contained code changes.
 
 Relevant preserved log lines:
 
 - `run-28360287046.log:1056-1064` shows the release step and the exact `trim` error.
 - `ci-logs/local-test-version-and-commit-before.log` reproduces the same error locally before the fix.
 - `ci-logs/local-node-execfilesync-inherit-return.log` records that `execFileSync(..., { stdio: 'inherit' })` returns `null` in the local Node runtime.
+- `ci-logs/remote-checks-and-release-28362506160.log:355-400` shows the skipped-test false positive caused by latest-commit-only PR change detection.
 
 ## Online Facts Used
 
@@ -66,6 +71,14 @@ Local `npm run check:line-limits` exposed a warning that `gh-pull-all.mjs` was a
 
 The fix is to extract terminal status display code into `status-display.mjs`, include that file in the published package, and update tests that inspect production source and release packaging.
 
+### PR Test Skipped Despite Code Changes
+
+After the initial fix was pushed, the fresh PR run was green but skipped the Test job. The pull request diff included code changes, but the final commit on the branch only added docs/log artifacts. `scripts/detect-code-changes.mjs` handled GitHub's pull-request merge commit by comparing `HEAD^2^` to `HEAD^2`, which checks only the latest PR head commit.
+
+That behavior created a false positive: CI could report success without running tests for earlier code changes in the same pull request.
+
+The fix is to compare `HEAD^1...HEAD^2` for pull-request merge commits. That matches the full PR base-to-head diff and keeps docs-only PRs fast while still running tests when any code change exists anywhere in the pull request.
+
 ## Template Comparison
 
 The repository already follows several template practices:
@@ -81,6 +94,7 @@ Differences and findings:
 - The C# template has a JavaScript `version-and-commit.mjs` plus a focused `version-and-commit.test.mjs`; its command execution does not trim an inherited-stdio `null` value.
 - The Rust and Python templates use language-specific release/version helpers, so the JavaScript `execFileSync()` null-return issue does not apply.
 - The JavaScript template includes broader workflow reliability tests. This repository already had release workflow tests, and this PR extends them to cover the new published module.
+- The current repository's PR change detector had a latest-commit-only edge case. The fix keeps the existing detector design but changes pull-request merge commit handling to the full PR diff range.
 
 No matching template bug was found, so no template issue was opened.
 
@@ -101,6 +115,8 @@ The final option is the smallest reliable change. It fixes the proven root cause
 - Kept `--version` independent of `status-display.mjs` by dynamically importing status display after early version/help handling.
 - Added `status-display.mjs` to `package.json` published files.
 - Updated release workflow and progress-bar tests for the extracted module.
+- Fixed PR change detection so code changes anywhere in the pull request trigger CI tests, even when the latest commit contains only docs or logs.
+- Updated `tests/test-detect-code-changes.mjs` to reproduce that skipped-test false positive.
 - Added a patch changeset.
 - Preserved CI logs, local reproduction logs, template snapshots, and this case-study analysis.
 
@@ -109,9 +125,10 @@ The final option is the smallest reliable change. It fixes the proven root cause
 Automated checks:
 
 - `node tests/test-version.mjs` passed after the dynamic import fix.
-- `npm test` passed: 40/40 tests in `ci-logs/local-npm-test-final-after-dynamic-import.log`.
-- `npm run check:syntax` passed in `ci-logs/local-check-syntax-final.log`.
-- `npm run check:line-limits` passed with no warnings in `ci-logs/local-check-line-limits-final-after-analysis.log`.
+- `node tests/test-detect-code-changes.mjs` passed in `ci-logs/local-test-detect-code-changes-after-full-pr-diff.log`.
+- `npm test` passed: 40/40 tests in `ci-logs/local-npm-test-after-detect-full-pr-diff.log`.
+- `npm run check:syntax` passed in `ci-logs/local-check-syntax-after-detect-full-pr-diff.log`.
+- `npm run check:line-limits` passed with no warnings in `ci-logs/local-check-line-limits-after-detect-full-pr-diff.log`.
 - `npm pack --dry-run` passed and includes `status-display.mjs` in `ci-logs/local-npm-pack-dry-run-final.log`.
 
 The reproducing test failed before the fix with the same error as CI and passed after the fix.

@@ -35,8 +35,13 @@ function getParentRefs() {
   return refs.split(/\s+/).slice(1);
 }
 
-function getDiffFiles(fromRef, toRef) {
-  const output = runGit(['diff', '--name-only', fromRef, toRef], {
+function getDiffFiles(fromRef, toRef = null) {
+  const args = ['diff', '--name-only', fromRef];
+  if (toRef) {
+    args.push(toRef);
+  }
+
+  const output = runGit(args, {
     allowFailure: true,
   });
   return output ? output.split('\n').filter(Boolean) : [];
@@ -53,14 +58,8 @@ function getChangedFiles() {
 
   if (isPullRequestEvent() && isMergeCommit) {
     console.log('Pull request merge commit detected.');
-
-    if (runGit(['rev-parse', '--verify', 'HEAD^2^'], { allowFailure: true })) {
-      console.log('Comparing HEAD^2^ to HEAD^2 for latest PR head commit.');
-      return getDiffFiles('HEAD^2^', 'HEAD^2');
-    }
-
-    console.log('First PR commit detected; comparing HEAD^ to HEAD^2.');
-    return getDiffFiles('HEAD^', 'HEAD^2');
+    console.log('Comparing HEAD^1...HEAD^2 for full PR changes.');
+    return getDiffFiles('HEAD^1...HEAD^2');
   }
 
   if (parents.length > 0) {

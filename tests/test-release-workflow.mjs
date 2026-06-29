@@ -92,6 +92,7 @@ assert.equal(packageJson.scripts['check:changeset'], 'node scripts/validate-chan
 assert.equal(packageJson.scripts['changeset:version'], 'node scripts/changeset-version.mjs');
 assert.equal(packageJson.devDependencies?.['@changesets/cli'], '^2.29.7');
 assert.equal(packageJson.scripts['test:ci'], 'node tests/test-all.mjs');
+assert.ok(packageJson.files.includes('status-display.mjs'), 'published package should include status display module');
 
 assert.equal(existsSync(resolve(rootDir, '.changeset/config.json')), true, 'changeset config should exist');
 assert.equal(existsSync(resolve(rootDir, '.changeset/default-auto-mode.md')), true, 'feature changeset should exist');

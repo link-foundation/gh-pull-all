@@ -1,16 +1,15 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 
+// Test uncommitted changes handling with local repositories and a fake gh CLI.
+import { execFileSync } from 'child_process'
+import { promises as fs } from 'fs'
+import os from 'os'
 import path from 'path'
+import { fileURLToPath, pathToFileURL } from 'url'
 
-// Test uncommitted changes handling
-// Download use-m dynamically
-import { loadUseM } from '../load-use-m.mjs'
-const { use } = await loadUseM()
-
-// Import modern npm libraries using use-m
-import { promises as fs, statSync } from 'fs'
-const os = await import('os')
-const { execSync } = await import('child_process')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const repoRoot = path.resolve(__dirname, '..')
+const scriptPath = path.join(repoRoot, 'gh-pull-all.mjs')
 
 // Colors for console output
 const colors = {
@@ -19,172 +18,197 @@ const colors = {
   blue: '\x1b[34m',
   red: '\x1b[31m',
   cyan: '\x1b[36m',
-  magenta: '\x1b[35m',
   dim: '\x1b[2m',
-  bold: '\x1b[1m',
   reset: '\x1b[0m'
 }
 
 const log = (color, message) => console.log(`${colors[color]}${message}${colors.reset}`)
 
+function getDiagnosticOutput(output) {
+  const maxLength = 4000
+  return output.length > maxLength ? `${output.slice(0, maxLength)}\n...<truncated>` : output
+}
+
+function assertIncludes(output, expected, message) {
+  if (!output.includes(expected)) {
+    throw new Error(`${message}\nExpected to find: ${expected}\nOutput:\n${getDiagnosticOutput(output)}`)
+  }
+}
+
+function assertMatch(output, pattern, message) {
+  if (!pattern.test(output)) {
+    throw new Error(`${message}\nExpected pattern: ${pattern}\nOutput:\n${getDiagnosticOutput(output)}`)
+  }
+}
+
+function runGit(args, options = {}) {
+  return execFileSync('git', args, {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    ...options
+  }).trim()
+}
+
+function runGhPullAll(args, env) {
+  try {
+    return execFileSync(process.execPath, [scriptPath, ...args], {
+      cwd: repoRoot,
+      env,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe']
+    })
+  } catch (error) {
+    const output = `${error.stdout || ''}${error.stderr || ''}`
+    throw new Error(
+      `Command failed: ${process.execPath} ${scriptPath} ${args.join(' ')}\n` +
+      (output || error.message)
+    )
+  }
+}
+
+async function createRemoteRepository(remoteRoot, repoName) {
+  const remoteBase = path.join(remoteRoot, repoName)
+  const remoteGitDir = `${remoteBase}.git`
+  const seedDir = path.join(remoteRoot, `${repoName}-seed`)
+
+  await fs.mkdir(remoteRoot, { recursive: true })
+  runGit(['init', '--quiet', '--bare', '--initial-branch=main', remoteGitDir])
+  runGit(['init', '--quiet', '--initial-branch=main', seedDir])
+  runGit(['-C', seedDir, 'config', 'user.email', 'test@example.com'])
+  runGit(['-C', seedDir, 'config', 'user.name', 'Test User'])
+  await fs.writeFile(path.join(seedDir, 'README.md'), `# ${repoName}\n`)
+  runGit(['-C', seedDir, 'add', 'README.md'])
+  runGit(['-C', seedDir, 'commit', '-m', 'Initial commit'])
+  runGit(['-C', seedDir, 'remote', 'add', 'origin', remoteGitDir])
+  runGit(['-C', seedDir, 'push', 'origin', 'main'])
+
+  return pathToFileURL(remoteBase).href
+}
+
+async function setupLocalGhFixture(testRoot) {
+  const remoteRoot = path.join(testRoot, 'remotes')
+  const fakeBinDir = path.join(testRoot, 'bin')
+  await fs.mkdir(fakeBinDir, { recursive: true })
+
+  const repos = []
+  for (const repoName of ['alpha-clean', 'beta-dirty', 'gamma-dirty']) {
+    repos.push({
+      name: repoName,
+      isPrivate: false,
+      url: await createRemoteRepository(remoteRoot, repoName),
+      sshUrl: '',
+      updatedAt: '2026-07-02T00:00:00Z'
+    })
+  }
+
+  const fakeGhPath = path.join(fakeBinDir, 'gh')
+  const fakeGhScript = `#!/usr/bin/env node
+const repos = ${JSON.stringify(repos, null, 2)}
+const args = process.argv.slice(2)
+
+if (args[0] === '--version') {
+  console.log('gh version 2.0.0-test')
+  process.exit(0)
+}
+
+if (args[0] === 'auth' && args[1] === 'token') {
+  process.exit(1)
+}
+
+if (args[0] === 'repo' && args[1] === 'list') {
+  console.log(JSON.stringify(repos))
+  process.exit(0)
+}
+
+console.error(\`unsupported fake gh command: \${args.join(' ')}\`)
+process.exit(1)
+`
+  await fs.writeFile(fakeGhPath, fakeGhScript, { mode: 0o755 })
+
+  return {
+    env: {
+      ...process.env,
+      GITHUB_TOKEN: '',
+      PATH: `${fakeBinDir}${path.delimiter}${process.env.PATH || ''}`
+    },
+    repos
+  }
+}
+
 async function testUncommittedChanges() {
-  const testDir = path.join(os.tmpdir(), 'gh-pull-all-test-uncommitted-changes')
-  
+  let testRoot
+
   try {
     log('blue', '🧪 Testing uncommitted changes handling...')
-    
-    // Clean up any existing test directory
-    await fs.rm(testDir, {recursive: true, force: true})
-    
-    // Ensure test directory exists
+
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'gh-pull-all-test-uncommitted-'))
+    const testDir = path.join(testRoot, 'repos')
     await fs.mkdir(testDir, { recursive: true })
-    
-    // First, clone some repositories using a known user with limited repos
-    log('cyan', '🔧 Step 1: Cloning repositories initially...')
-    try {
-      // Use deep-assistant org
-      const result = execSync(`../gh-pull-all.mjs --org deep-assistant --threads 1 --dir ${testDir}`, {
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
-      log('green', '✅ Initial clone completed')
-      log('dim', `Output: ${result.slice(-300)}...`) // Show end of output
-    } catch (error) {
-      // If timeout, that's OK - we probably got some repositories
-      if (error.code === 'ETIMEDOUT' || error.message.includes('ETIMEDOUT')) {
-        log('yellow', '⚠️ Clone timed out, but may have gotten some repositories')
-        if (error.stdout) {
-          log('dim', `Last output: ${error.stdout.slice(-300)}...`)
-        }
-      } else {
-        log('red', `❌ Initial clone failed: ${error.message}`)
-        if (error.stdout) {
-          log('yellow', `Stdout: ${error.stdout.slice(0, 500)}...`)
-        }
-        if (error.stderr) {
-          log('yellow', `Stderr: ${error.stderr.slice(0, 500)}...`)
-        }
-        throw error
-      }
+    const { env } = await setupLocalGhFixture(testRoot)
+
+    const cliArgs = [
+      '--user',
+      'local-uncommitted-owner',
+      '--no-live-updates',
+      '--dir',
+      testDir
+    ]
+
+    log('cyan', '🔧 Step 1: Cloning local fixture repositories...')
+    const firstRun = runGhPullAll(['--threads', '1', ...cliArgs], env)
+    assertIncludes(firstRun, 'Cloned: 3', 'Initial clone should clone all fixture repositories')
+    log('green', '✅ Initial clone completed')
+
+    log('cyan', '🔧 Step 2: Adding uncommitted changes to two repositories...')
+    const dirtyRepos = ['beta-dirty', 'gamma-dirty']
+    for (const repoName of dirtyRepos) {
+      await fs.writeFile(
+        path.join(testDir, repoName, 'test-uncommitted.txt'),
+        `Uncommitted change in ${repoName}\n`
+      )
     }
-    
-    // Wait a moment for file system to settle
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // Add uncommitted changes to some repositories
-    log('cyan', '🔧 Step 2: Adding uncommitted changes to repositories...')
-    
-    // Check if directory exists and list contents for debugging
-    try {
-      const dirStats = await fs.stat(testDir)
-      log('cyan', `🔍 Directory exists: ${dirStats.isDirectory()}`)
-      log('cyan', `🔍 Directory path: ${testDir}`)
-      
-      // List all files/directories in the test directory
-      const allItems = await fs.readdir(testDir, { withFileTypes: true })
-      log('cyan', `🔍 All items in directory: ${allItems.map(item => `${item.name}${item.isDirectory() ? '/' : ''}`).join(', ')}`)
-    } catch (error) {
-      log('red', `❌ Directory doesn't exist: ${error.message}`)
-      throw error
-    }
-    
-    const repos = await fs.readdir(testDir)
-    log('cyan', `🔍 Raw repos list: ${repos.join(', ')}`)
-    
-    const validRepos = repos.filter(repo => {
-      try {
-        const stat = statSync(path.join(testDir, repo))
-        return stat.isDirectory()
-      } catch (error) {
-        return false
-      }
-    })
-    
-    log('cyan', `🔍 Found repositories: ${validRepos.join(', ')} (${validRepos.length} total)`)
-    
-    if (validRepos.length < 2) {
-      throw new Error(`Need at least 2 repositories for uncommitted changes test, found ${validRepos.length}: ${validRepos.join(', ')}`)
-    }
-    
-    // Add uncommitted changes to first two repos
-    await fs.writeFile(path.join(testDir, validRepos[0], 'test-uncommitted-1.txt'), 'This is an uncommitted change')
-    await fs.writeFile(path.join(testDir, validRepos[1], 'test-uncommitted-2.txt'), 'This is another uncommitted change')
-    
-    log('cyan', `🔧 Added uncommitted changes to ${validRepos[0]} and ${validRepos[1]}`)
-    
-    // Now run the script again to test pull behavior with uncommitted changes
+    log('cyan', `🔧 Added uncommitted changes to ${dirtyRepos.join(' and ')}`)
+
     log('cyan', '🔧 Step 3: Running pull with uncommitted changes...')
-    
-    let result
-    try {
-      result = execSync(`../gh-pull-all.mjs --org deep-assistant --threads 2 --no-live-updates --dir ${testDir}`, {
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
-    } catch (execError) {
-      result = execError.stdout || ''
+    const secondRun = runGhPullAll(['--threads', '2', ...cliArgs], env)
+    log('green', '✅ Uncommitted changes run completed')
+
+    assertIncludes(secondRun, '🔄', 'Uncommitted changes status icon should be present')
+    log('green', '✅ Uncommitted changes status icon found')
+
+    assertIncludes(
+      secondRun,
+      'Has uncommitted changes, skipped',
+      'Repositories with uncommitted changes should be skipped'
+    )
+    log('green', '✅ Uncommitted changes skip message found')
+
+    assertMatch(
+      secondRun,
+      /🔄 Uncommitted changes:\s*2/,
+      'Summary should include exactly two uncommitted repositories'
+    )
+    log('green', '✅ Uncommitted changes count found in summary')
+
+    assertIncludes(secondRun, 'alpha-clean', 'Clean repository should still be processed')
+    assertIncludes(secondRun, 'Successfully pulled', 'Clean repository should still be pulled')
+    log('green', '✅ Clean repository was pulled successfully')
+
+    for (const repoName of dirtyRepos) {
+      const uncommittedFile = path.join(testDir, repoName, 'test-uncommitted.txt')
+      await fs.access(uncommittedFile)
     }
-    
-    log('green', '✅ Uncommitted changes test completed')
-    
-    // Check for uncommitted changes status (🔄)
-    if (result.includes('🔄')) {
-      log('green', '✅ Uncommitted changes status icon found')
-    } else {
-      throw new Error('Expected uncommitted changes status icon not found')
-    }
-    
-    // Check for "Has uncommitted changes, skipped" message
-    if (result.includes('Has uncommitted changes, skipped')) {
-      log('green', '✅ Uncommitted changes skip message found')
-    } else {
-      throw new Error('Expected uncommitted changes skip message not found')
-    }
-    
-    // Check for uncommitted count in summary
-    if (result.includes('🔄 Uncommitted changes:')) {
-      log('green', '✅ Uncommitted changes count found in summary')
-    } else {
-      throw new Error('Expected uncommitted changes count not found in summary')
-    }
-    
-    // Check that other repos were still pulled successfully
-    if (result.includes('Successfully pulled')) {
-      log('green', '✅ Other repositories were pulled successfully')
-    } else {
-      throw new Error('Expected successful pulls for clean repositories not found')
-    }
-    
-    // Verify the uncommitted files still exist
-    const uncommittedFile1 = path.join(testDir, validRepos[0], 'test-uncommitted-1.txt')
-    const uncommittedFile2 = path.join(testDir, validRepos[1], 'test-uncommitted-2.txt')
-    
-    if (await fs.access(uncommittedFile1).then(() => true).catch(() => false) && 
-        await fs.access(uncommittedFile2).then(() => true).catch(() => false)) {
-      log('green', '✅ Uncommitted files preserved (not overwritten)')
-    } else {
-      throw new Error('Uncommitted files were not preserved')
-    }
-    
-    // Check that repositories with uncommitted changes were not updated
-    const lines = result.split('\n')
-    const uncommittedLines = lines.filter(line => line.includes('🔄') && line.includes('uncommitted'))
-    
-    if (uncommittedLines.length >= 2) {
-      log('green', `✅ Found ${uncommittedLines.length} repositories with uncommitted changes properly handled`)
-    } else {
-      log('yellow', `⚠️ Expected at least 2 uncommitted repositories, found ${uncommittedLines.length}`)
-    }
-    
+    log('green', '✅ Uncommitted files preserved')
+
     log('green', '🎉 Uncommitted changes test passed!')
-    
   } catch (error) {
     log('red', `❌ Uncommitted changes test failed: ${error.message}`)
     throw error
   } finally {
-    // Clean up
     try {
-      await fs.rm(testDir, {recursive: true, force: true})
+      if (testRoot) {
+        await fs.rm(testRoot, {recursive: true, force: true})
+      }
       log('cyan', '🧹 Cleaned up test directory')
     } catch (cleanupError) {
       log('yellow', `⚠️ Cleanup warning: ${cleanupError.message}`)

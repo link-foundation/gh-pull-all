@@ -39,6 +39,8 @@ Primary run from issue: https://github.com/link-foundation/gh-pull-all/actions/r
 - 2026-06-29 09:57:28 UTC: `npm run test:ci` reported `Failed: 1/40 tests`.
 - 2026-07-02 06:57:51 UTC: Issue 46 was opened with the failing run URL and the template comparison requirement.
 - 2026-07-02 21:40:26 UTC: Prepared PR branch run `28623321155` passed on the placeholder commit; that run did not exercise this fix.
+- 2026-07-02 21:58:01 UTC: PR branch run `28624174228` exercised the workflow-level Git config and failed in `test-switch-to-default.mjs`.
+- 2026-07-02 22:03:21 UTC: `test-switch-to-default.mjs` failed with `fatal: 'master' is not a commit and a branch 'feature' cannot be created from it`.
 
 Relevant log locations:
 
@@ -46,6 +48,8 @@ Relevant log locations:
 - `run-28363495995.log` lines around the `Uncommitted Changes` suite show the failed assertion.
 - `local-test-release-workflow-before-git-env.log` shows the new workflow contract failing before `release.yml` was updated.
 - `local-experiment-git-init-default-branch-env.log` demonstrates the Git runtime env workaround.
+- `ci-logs/checks-and-release-28624174228.log` preserves the PR-branch failure that exposed the `test-switch-to-default.mjs` fixture assumption.
+- `local-test-switch-to-default-before-branch-fix.log` reproduces that fixture failure with the workflow Git config.
 
 ## Online Facts Used
 
@@ -79,6 +83,14 @@ That made CI depend on external repository state, network timing, API ordering, 
 The fix is to replace the live GitHub dependency with a local fake `gh` executable and three local bare repositories. The test now exercises the real `gh-pull-all.mjs` CLI, clone path, pull path, uncommitted-change detection, and summary output without depending on GitHub's live repository list.
 
 The rewritten assertions include bounded diagnostic output when they fail, so a future failure will preserve the relevant CLI output.
+
+### Default-Branch Assumption In `test-switch-to-default.mjs`
+
+The PR-branch run after the workflow fix exposed another test-only `git init` default-branch assumption. The `test-switch-to-default.mjs` fixture skipped branch renaming when it wanted a `master` default branch, assuming newly initialized repositories already used `master`.
+
+With workflow-level `GIT_CONFIG_*` set to `init.defaultBranch=main`, that assumption became false in CI. The fixture then attempted to create `feature` from `master`, but no local `master` branch existed.
+
+The fix is to always rename the fixture's initial branch to the requested default branch, including `master`. This keeps the fixture independent of host Git defaults while preserving the production behavior under test.
 
 ## Template Comparison
 
@@ -121,6 +133,8 @@ After-fix checks:
 - `node experiments/git-init-default-branch-env.mjs` passed in `local-experiment-git-init-default-branch-env.log`.
 - `node tests/test-release-workflow.mjs` passed in `local-test-release-workflow-final.log`.
 - `node tests/test-uncommitted-changes.mjs` passed in `local-test-uncommitted-final.log`.
+- `GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=init.defaultBranch GIT_CONFIG_VALUE_0=main node tests/test-switch-to-default.mjs` reproduced the fixture failure before the branch fix and passed after it.
+- `node tests/test-switch-to-default.mjs` passed in `local-test-switch-to-default-final.log`.
 - `npm run check:syntax` passed in `local-check-syntax.log`.
 - `npm run check:line-limits` passed in `local-check-line-limits.log`.
 - `npm run check:changeset` passed after the implementation commit; it detected `.changeset/stabilize-ci-warning-tests.md` as the required patch changeset.

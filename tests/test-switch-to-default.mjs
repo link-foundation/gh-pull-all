@@ -42,10 +42,8 @@ async function createTestRepo(repoName, tempDir, initialBranch = 'main', current
   await simpleGit.add('.')
   await simpleGit.commit('Initial commit')
   
-  // Rename to desired initial branch if needed
-  if (initialBranch !== 'master') {
-    await simpleGit.branch(['-M', initialBranch])
-  }
+  // Rename to the requested default branch regardless of the host Git default.
+  await simpleGit.branch(['-M', initialBranch])
   
   // Create and switch to feature branch if requested
   if (currentBranch !== initialBranch) {

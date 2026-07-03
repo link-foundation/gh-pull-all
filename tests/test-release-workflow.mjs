@@ -29,6 +29,11 @@ assert.equal(existsSync(releaseWorkflowPath), true, 'release.yml should exist fo
 
 const workflow = read('.github/workflows/release.yml');
 assert.match(workflow, /^name: Checks and release/m);
+assert.match(
+  workflow,
+  /^env:\n\s+GIT_CONFIG_COUNT:\s+'1'\n\s+GIT_CONFIG_KEY_0:\s+init\.defaultBranch\n\s+GIT_CONFIG_VALUE_0:\s+main/m,
+  'workflow should set Git runtime config before checkout actions run'
+);
 assert.match(workflow, /^\s+pull_request:/m);
 assert.match(workflow, /^\s+workflow_dispatch:/m);
 assert.match(workflow, /branches:\s*\n\s+- main/);

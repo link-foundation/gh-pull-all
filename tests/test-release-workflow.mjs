@@ -100,7 +100,9 @@ assert.equal(packageJson.scripts['test:ci'], 'node tests/test-all.mjs');
 assert.ok(packageJson.files.includes('status-display.mjs'), 'published package should include status display module');
 
 assert.equal(existsSync(resolve(rootDir, '.changeset/config.json')), true, 'changeset config should exist');
-assert.equal(existsSync(resolve(rootDir, '.changeset/default-auto-mode.md')), true, 'feature changeset should exist');
+// Individual changeset files are consumed by the release workflow, so only the
+// permanent changeset documentation can be asserted here.
+assert.equal(existsSync(resolve(rootDir, '.changeset/README.md')), true, 'changeset documentation should exist');
 
 const readme = read('README.md');
 assert.match(readme, /actions\/workflows\/release\.yml\/badge\.svg/);

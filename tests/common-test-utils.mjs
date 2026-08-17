@@ -4,7 +4,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import os from 'os'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 import { execFileSync } from 'child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -135,6 +135,92 @@ export async function runGhPullAll(args, options = {}) {
       return { success: false, output, error: error.message }
     }
     throw error
+  }
+}
+
+// Run a git command and return its trimmed stdout
+export function runGit(args, options = {}) {
+  return execFileSync('git', args, {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    ...options
+  }).trim()
+}
+
+// Create a local bare repository with an initial commit and return its file URL
+export async function createLocalRemoteRepository(remoteRoot, repoName, options = {}) {
+  const { defaultBranch = 'main', extraBranches = [] } = options
+  const remoteBase = path.join(remoteRoot, repoName)
+  const remoteGitDir = `${remoteBase}.git`
+  const seedDir = path.join(remoteRoot, `${repoName}-seed`)
+
+  await fs.mkdir(remoteRoot, { recursive: true })
+  runGit(['init', '--quiet', '--bare', `--initial-branch=${defaultBranch}`, remoteGitDir])
+  runGit(['init', '--quiet', `--initial-branch=${defaultBranch}`, seedDir])
+  runGit(['-C', seedDir, 'config', 'user.email', 'test@example.com'])
+  runGit(['-C', seedDir, 'config', 'user.name', 'Test User'])
+  await fs.writeFile(path.join(seedDir, 'README.md'), `# ${repoName}\n`)
+  runGit(['-C', seedDir, 'add', 'README.md'])
+  runGit(['-C', seedDir, 'commit', '-m', 'Initial commit'])
+  runGit(['-C', seedDir, 'remote', 'add', 'origin', remoteGitDir])
+  runGit(['-C', seedDir, 'push', 'origin', defaultBranch])
+
+  for (const branchName of extraBranches) {
+    runGit(['-C', seedDir, 'checkout', '-q', '-b', branchName, defaultBranch])
+    await fs.writeFile(path.join(seedDir, `${branchName}.txt`), `${branchName} start\n`)
+    runGit(['-C', seedDir, 'add', '.'])
+    runGit(['-C', seedDir, 'commit', '-m', `Start ${branchName}`])
+    runGit(['-C', seedDir, 'push', 'origin', branchName])
+  }
+
+  runGit(['-C', seedDir, 'checkout', '-q', defaultBranch])
+
+  return { url: pathToFileURL(remoteBase).href, remoteGitDir, seedDir }
+}
+
+// Add a commit to a branch of a local remote repository through its seed clone
+export async function pushCommitToLocalRemote(seedDir, branchName, fileName, content) {
+  runGit(['-C', seedDir, 'checkout', '-q', branchName])
+  await fs.writeFile(path.join(seedDir, fileName), content)
+  runGit(['-C', seedDir, 'add', '.'])
+  runGit(['-C', seedDir, 'commit', '-m', `Update ${fileName} on ${branchName}`])
+  runGit(['-C', seedDir, 'push', 'origin', branchName])
+}
+
+// Create a fake `gh` executable that lists the provided repositories
+export async function createFakeGhCli(binDir, repos) {
+  await fs.mkdir(binDir, { recursive: true })
+  const fakeGhPath = path.join(binDir, 'gh')
+  const fakeGhScript = `#!/usr/bin/env node
+const repos = ${JSON.stringify(repos, null, 2)}
+const args = process.argv.slice(2)
+
+if (args[0] === '--version') {
+  console.log('gh version 2.0.0-test')
+  process.exit(0)
+}
+
+if (args[0] === 'auth' && args[1] === 'token') {
+  process.exit(1)
+}
+
+if (args[0] === 'repo' && args[1] === 'list') {
+  console.log(JSON.stringify(repos))
+  process.exit(0)
+}
+
+console.error(\`unsupported fake gh command: \${args.join(' ')}\`)
+process.exit(1)
+`
+  await fs.writeFile(fakeGhPath, fakeGhScript, { mode: 0o755 })
+
+  return {
+    fakeGhPath,
+    env: {
+      ...process.env,
+      GITHUB_TOKEN: '',
+      PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}`
+    }
   }
 }
 

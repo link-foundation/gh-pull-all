@@ -59,6 +59,7 @@
     "gh-pull-all.mjs",
     "auto-detect.mjs",
     "fork-sync.mjs",
+    "git-worktrees.mjs",
     "github-repositories.mjs",
     "help-text.mjs",
     "load-use-m.mjs",

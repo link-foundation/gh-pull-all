@@ -1,5 +1,13 @@
 import path from 'path'
 
+import {
+  findWorktreeForBranch,
+  listLinkedWorktrees,
+  pullWorktrees,
+  summarizeWorktreeResults,
+  worktreeLabel
+} from './git-worktrees.mjs'
+
 function getParentOwnerLogin(parent) {
   return parent?.owner?.login || parent?.owner?.name || null
 }
@@ -118,8 +126,24 @@ function isMergeConflict(error) {
   return /conflict|CONFLICT|Automatic merge failed/i.test(error.message || '')
 }
 
+// Pull the linked worktrees that were not used for the upstream sync itself.
+async function pullRemainingWorktrees(worktrees, gitFactory, onProgress) {
+  if (worktrees.length === 0) {
+    return { results: [], suffix: '' }
+  }
+
+  const results = await pullWorktrees(worktrees, { gitFactory, onProgress })
+  const summary = summarizeWorktreeResults(results)
+  const skipped = summary.total - summary.pulled
+  const skippedNote = skipped > 0 ? `, ${skipped} skipped` : ''
+  return {
+    results,
+    suffix: ` (${summary.pulled} of ${summary.total} linked worktrees pulled${skippedNote})`
+  }
+}
+
 export async function syncForkWithUpstream(repo, targetDir, options) {
-  const { useSsh = false, statusDisplay, gitFactory } = options
+  const { useSsh = false, statusDisplay, gitFactory, includeWorktrees = true } = options
   const repoName = repo.name
   const parentInfo = normalizeForkParent(repo.parent)
 
@@ -159,35 +183,58 @@ export async function syncForkWithUpstream(repo, targetDir, options) {
       return { success: false, type: 'no_upstream_branch' }
     }
 
+    // Git refuses to check out a branch held by another worktree, so the sync
+    // runs inside the worktree that already has the upstream branch.
+    const linkedWorktrees = includeWorktrees ? await listLinkedWorktrees(simpleGit) : []
+    const branchWorktree = findWorktreeForBranch(linkedWorktrees, upstreamBranch)
+    const syncGit = branchWorktree ? gitFactory(branchWorktree.path) : simpleGit
+    const otherWorktrees = branchWorktree
+      ? linkedWorktrees.filter(worktree => worktree.path !== branchWorktree.path)
+      : linkedWorktrees
+    const onProgress = message => statusDisplay.updateRepo(repoName, 'pulling', message)
+
+    if (branchWorktree) {
+      const worktreeStatus = await syncGit.status()
+      if (worktreeStatus.files.length > 0) {
+        const label = worktreeLabel(branchWorktree.path)
+        statusDisplay.updateRepo(repoName, 'uncommitted', `Has uncommitted changes in worktree ${label}, skipped`)
+        return { success: true, type: 'uncommitted', details: { worktree: branchWorktree.path } }
+      }
+    }
+
     statusDisplay.updateRepo(repoName, 'pulling', `Checking out ${upstreamBranch}...`)
-    await checkoutForkBranch(simpleGit, upstreamBranch, originBranches)
+    await checkoutForkBranch(syncGit, upstreamBranch, originBranches)
 
     if (originBranches.includes(upstreamBranch)) {
       statusDisplay.updateRepo(repoName, 'pulling', `Pulling origin/${upstreamBranch}...`)
-      await simpleGit.pull('origin', upstreamBranch)
+      await syncGit.pull('origin', upstreamBranch)
     }
 
-    const beforeMerge = await getHeadSha(simpleGit)
+    const beforeMerge = await getHeadSha(syncGit)
     statusDisplay.updateRepo(repoName, 'pulling', `Merging upstream/${upstreamBranch}...`)
-    await simpleGit.merge([`upstream/${upstreamBranch}`])
-    const afterMerge = await getHeadSha(simpleGit)
+    await syncGit.merge([`upstream/${upstreamBranch}`])
+    const afterMerge = await getHeadSha(syncGit)
 
     if (beforeMerge === afterMerge && originBranches.includes(upstreamBranch)) {
-      statusDisplay.updateRepo(repoName, 'success', `Already up to date with upstream/${upstreamBranch}`)
+      const linked = await pullRemainingWorktrees(otherWorktrees, gitFactory, onProgress)
+      statusDisplay.updateRepo(repoName, 'success', `Already up to date with upstream/${upstreamBranch}${linked.suffix}`)
       return {
         success: true,
         type: 'up_to_date_with_upstream',
-        details: { upstream: parentInfo.fullName, branch: upstreamBranch }
+        details: { upstream: parentInfo.fullName, branch: upstreamBranch },
+        worktrees: linked.results
       }
     }
 
     statusDisplay.updateRepo(repoName, 'pulling', 'Pushing synchronized changes...')
-    await simpleGit.push('origin', upstreamBranch)
-    statusDisplay.updateRepo(repoName, 'success', `Successfully synced fork with upstream/${upstreamBranch}`)
+    await syncGit.push('origin', upstreamBranch)
+    const linked = await pullRemainingWorktrees(otherWorktrees, gitFactory, onProgress)
+    statusDisplay.updateRepo(repoName, 'success', `Successfully synced fork with upstream/${upstreamBranch}${linked.suffix}`)
     return {
       success: true,
       type: 'synced_with_upstream',
-      details: { upstream: parentInfo.fullName, branch: upstreamBranch }
+      details: { upstream: parentInfo.fullName, branch: upstreamBranch },
+      worktrees: linked.results
     }
   } catch (error) {
     const message = isMergeConflict(error)

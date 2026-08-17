@@ -1,0 +1,19 @@
+[36m🔧 Step 1: cloning fixture repository[0m
+[36m🔧 Step 2: attaching a linked worktree for the feature branch[0m
+[36m🔧 Step 3: pushing new commits to main and feature[0m
+[36m🔧 Step 4: running gh-pull-all again[0m
+[2m[34m🚀 Starting local-worktree-owner user repository sync...[0m
+[36m📁 Target directory: /tmp/gh-pull-all-issue-48-mAXC47/repos[0m
+[36m🔗 Using HTTPS for cloning[0m
+[36m⚡ Concurrency: 1 thread (sequential)[0m
+[36m📋 Using gh CLI to fetch repositories (includes private repos)[0m
+[32m✅ worktree-repo [2m  0.1s[0m Successfully pulled                                     
+
+[34m[1m📊 Summary:[0m[0m
+[32m✅ Pulled: 1[0m
+[34m⏱️  Total time: 0.1s[0m
+[34m🎉 Operation completed![0m
+[0m
+[32mmain worktree pulled: true[0m
+[31mlinked worktree pulled: false[0m
+[33m🐛 Reproduced issue #48: linked worktrees are never fetched or pulled[0m

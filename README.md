@@ -22,6 +22,7 @@ The script that pulls it all - efficiently sync all repositories from a GitHub o
 - 🛡️ **Error Handling**: Graceful handling of rate limits, authentication, and network issues
 - 📈 **Visual Progress Bar**: Color-coded progress bar shows real-time status (green=success, red=failed, yellow=skipped, cyan=active, gray=pending)
 - 🖥️ **Smart Terminal Display**: Windowed display mode automatically adjusts to terminal height for large repo counts
+- 🌳 **Git Worktree Support**: Fetches and pulls every active worktree, and checks all of them before deleting anything (use `--no-worktrees` to opt out)
 - 🔍 **Uncommitted Changes Detection**: Automatically detects and skips repositories with uncommitted changes
 - 📋 **Error Summary**: Numbered error tracking with detailed error list at completion
 - ⚡ **Smooth Updates**: 10 FPS render loop for fluid terminal animations in multi-thread mode
@@ -115,6 +116,8 @@ Options:
       --pull-from-default Pull default branch changes into the current branch
       --switch-to-default Switch each repository to its default branch
       --pull-changes-to-fork Update forks from their upstream parent repositories
+      --worktrees      Process all active git worktrees (default: true)
+      --no-worktrees   Process only the main worktree of each repository
   -h, --help           Show help
 ```
 
@@ -209,7 +212,22 @@ gh-pull-all --user octocat --pull-changes-to-fork
 
 # Update forks using SSH remotes
 gh-pull-all --user octocat --pull-changes-to-fork --ssh
+
+# Process only the main worktree of each repository
+gh-pull-all --user octocat --no-worktrees
 ```
+
+## Git Worktrees
+
+Repositories often have additional checkouts created with `git worktree add`. By default `gh-pull-all` treats every active worktree as a first-class checkout:
+
+- **Pull**: after the main worktree is updated, each linked worktree is fetched and pulled on its own branch.
+- **Skip rules per worktree**: a worktree is skipped when it has uncommitted changes, a detached `HEAD`, no upstream branch, or a missing directory. The repository status line reports how many worktrees were pulled, for example `Successfully pulled 2 of 3 worktrees (1 worktree with uncommitted changes)`.
+- **`--switch-to-default`**: Git refuses to check out a branch that another worktree already holds, so when the default branch lives in a linked worktree it is pulled there instead of failing.
+- **`--pull-changes-to-fork`**: the upstream sync runs inside the worktree that holds the upstream default branch, and the remaining worktrees are pulled afterwards.
+- **`--delete`**: deletion is skipped when any worktree (main or linked) has uncommitted changes, and also when linked worktrees live outside the repository directory, because removing the repository would break them.
+
+Use `--no-worktrees` to restrict every operation to the main worktree only.
 
 ## Fork Synchronization
 

@@ -250,6 +250,11 @@ const cli = yargs(yargsInput)
     describe: 'Update forks with changes from their parent repositories (upstream sync)',
     default: false
   })
+  .option('worktrees', {
+    type: 'boolean',
+    describe: 'Process all active git worktrees, not only the main one (default: true, use --no-worktrees to disable)',
+    default: true
+  })
   .check((argv) => {
     if (isHelpOrVersionRequest) {
       return true
@@ -284,6 +289,7 @@ const cli = yargs(yargsInput)
   .help('h')
   .alias('h', 'help')
   .example('$0', 'Auto-detect GitHub owner from local repositories or directory name')
+  .example('$0 --user konard --no-worktrees', 'Process only the main worktree of each repository')
   .example('$0 --org deep-assistant', 'Sync all repositories from deep-assistant organization')
   .example('$0 --user konard', 'Sync all repositories from konard user account')
   .example('$0 --user github.com/konard', 'Sync all repositories from a GitHub URL owner')
@@ -314,6 +320,17 @@ const { Octokit } = await use('@octokit/rest@22.0.0')
 const { default: git } = await use('simple-git@3.28.0')
 const fs = await use('fs-extra@11.3.0')
 const { syncForkWithUpstream } = await import('./fork-sync.mjs')
+const {
+  buildWorktreeStatusMessage,
+  findDirtyWorktrees,
+  findWorktreeForBranch,
+  isPathInside,
+  listLinkedWorktrees,
+  pullWorktree,
+  pullWorktrees,
+  summarizeWorktreeResults,
+  worktreeLabel
+} = await import('./git-worktrees.mjs')
 const {
   getGhToken,
   getReposFromGhCli,
@@ -431,15 +448,14 @@ async function getRemoteBranchNames(simpleGit) {
   return Array.from(new Set(remoteBranches))
 }
 
-async function pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisplay) {
+async function pullRepositoryWithoutLocalCommits(simpleGit, onProgress) {
   const remoteBranches = await getRemoteBranchNames(simpleGit)
 
   if (remoteBranches.length === 0) {
-    statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled (empty repository)')
-    return { success: true, type: 'pulled_empty' }
+    return { success: true, type: 'pulled_empty', message: 'Successfully pulled (empty repository)' }
   }
 
-  statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
+  onProgress('Detecting default branch...')
   const detectedDefaultBranch = await getDefaultBranch(simpleGit)
   const defaultBranch = remoteBranches.includes(detectedDefaultBranch)
     ? detectedDefaultBranch
@@ -448,7 +464,7 @@ async function pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisp
   const currentBranchName = await getCurrentBranchName(simpleGit)
 
   if (currentBranchName !== defaultBranch) {
-    statusDisplay.updateRepo(repoName, 'pulling', `Switching to ${defaultBranch}...`)
+    onProgress(`Switching to ${defaultBranch}...`)
     try {
       await simpleGit.checkout(defaultBranch)
     } catch {
@@ -456,17 +472,39 @@ async function pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisp
     }
   }
 
-  statusDisplay.updateRepo(repoName, 'pulling', `Pulling ${defaultBranch}...`)
+  onProgress(`Pulling ${defaultBranch}...`)
   await simpleGit.pull(await getPrimaryRemoteName(simpleGit), defaultBranch)
-  statusDisplay.updateRepo(repoName, 'success', `Successfully pulled ${defaultBranch}`)
-  return { success: true, type: 'pulled_default', details: { defaultBranch } }
+  return {
+    success: true,
+    type: 'pulled_default',
+    message: `Successfully pulled ${defaultBranch}`,
+    details: { defaultBranch }
+  }
 }
 
-async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
+// Pull every linked worktree and describe the outcome for the status line.
+async function pullLinkedWorktrees(worktrees, onProgress) {
+  if (worktrees.length === 0) {
+    return { results: [], suffix: '' }
+  }
+
+  const results = await pullWorktrees(worktrees, { gitFactory: createGit, onProgress })
+  const summary = summarizeWorktreeResults(results)
+  const skipped = summary.total - summary.pulled
+  const skippedNote = skipped > 0 ? `, ${skipped} skipped` : ''
+  return {
+    results,
+    summary,
+    suffix: ` (${summary.pulled} of ${summary.total} linked worktrees pulled${skippedNote})`
+  }
+}
+
+async function switchToDefaultBranch(repoName, targetDir, statusDisplay, includeWorktrees = true) {
   try {
     statusDisplay.updateRepo(repoName, 'checking', 'Checking status...')
     const repoPath = path.join(targetDir, repoName)
     const simpleGit = createGit(repoPath)
+    const onProgress = message => statusDisplay.updateRepo(repoName, 'pulling', message)
 
     const status = await simpleGit.status()
     if (status.files.length > 0) {
@@ -476,6 +514,8 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
 
     statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
     await simpleGit.fetch(['--all'])
+
+    const linkedWorktrees = includeWorktrees ? await listLinkedWorktrees(simpleGit) : []
 
     // Get current branch
     const currentBranchName = await getCurrentBranchName(simpleGit)
@@ -489,8 +529,28 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
       // Already on default branch, but still pull latest changes
       statusDisplay.updateRepo(repoName, 'pulling', `Already on ${defaultBranch}, pulling latest changes...`)
       await simpleGit.pull(remoteName, defaultBranch)
-      statusDisplay.updateRepo(repoName, 'success', `Already on default branch ${defaultBranch} and pulled latest changes`)
-      return { success: true, type: 'already_on_default', details: { defaultBranch } }
+      const linked = await pullLinkedWorktrees(linkedWorktrees, onProgress)
+      statusDisplay.updateRepo(repoName, 'success', `Already on default branch ${defaultBranch} and pulled latest changes${linked.suffix}`)
+      return { success: true, type: 'already_on_default', details: { defaultBranch }, worktrees: linked.results }
+    }
+
+    // Git refuses to check out a branch that another worktree already holds,
+    // so the default branch is updated inside the worktree that owns it.
+    const defaultBranchWorktree = findWorktreeForBranch(linkedWorktrees, defaultBranch)
+    if (defaultBranchWorktree) {
+      const label = worktreeLabel(defaultBranchWorktree.path)
+      const linked = await pullLinkedWorktrees(linkedWorktrees, onProgress)
+      statusDisplay.updateRepo(
+        repoName,
+        'success',
+        `Default branch ${defaultBranch} is checked out in worktree ${label}, pulled it there${linked.suffix}`
+      )
+      return {
+        success: true,
+        type: 'default_branch_in_worktree',
+        details: { defaultBranch, worktree: defaultBranchWorktree.path },
+        worktrees: linked.results
+      }
     }
 
     // Switch to default branch
@@ -511,114 +571,169 @@ async function switchToDefaultBranch(repoName, targetDir, statusDisplay) {
     // After switching to default branch, always pull the latest changes.
     statusDisplay.updateRepo(repoName, 'pulling', `Pulling latest changes from ${remoteName}/${defaultBranch}...`)
     await simpleGit.pull(remoteName, defaultBranch)
-    statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch} and pulled latest changes`)
-    return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch } }
+    const linked = await pullLinkedWorktrees(linkedWorktrees, onProgress)
+    statusDisplay.updateRepo(repoName, 'success', `Switched from ${currentBranchName} to ${defaultBranch} and pulled latest changes${linked.suffix}`)
+    return { success: true, type: 'switched_to_default', details: { from: currentBranchName, to: defaultBranch }, worktrees: linked.results }
   } catch (error) {
     statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
     return { success: false, type: 'switch', error: error.message }
   }
 }
 
-async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefault = false) {
+// Merge the default branch into the branch checked out in `simpleGit`.
+// Used both for the main worktree and for every linked worktree.
+async function pullDefaultIntoCurrentBranch(simpleGit, onProgress) {
+  const currentBranchName = await getCurrentBranchName(simpleGit)
+
+  onProgress('Detecting default branch...')
+  const defaultBranch = await getDefaultBranch(simpleGit)
+
+  if (currentBranchName === defaultBranch) {
+    // On default branch, just pull normally
+    onProgress(`Pulling ${defaultBranch} (current branch)...`)
+    await simpleGit.pull()
+    return { success: true, type: 'pulled_default', message: `Successfully pulled ${defaultBranch}` }
+  }
+
+  // Attempt to merge from default branch
+  onProgress(`Merging changes from ${defaultBranch}...`)
   try {
-    statusDisplay.updateRepo(repoName, 'pulling', 'Checking status...')
-    const repoPath = path.join(targetDir, repoName)
-    const simpleGit = createGit(repoPath)
+    const remoteName = await getPrimaryRemoteName(simpleGit)
+    const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
+
+    // Check if remote branch exists
+    const branches = await simpleGit.branch(['-r'])
+    const hasRemoteDefault = branches.all.some(branch => branch.includes(remoteDefaultBranch))
+
+    if (!hasRemoteDefault) {
+      await simpleGit.pull()
+      return { success: true, type: 'pulled', message: `Remote ${defaultBranch} not found, pulling current branch` }
+    }
+
+    // Attempt to merge - let git decide what to do
+    let result
+    try {
+      result = await simpleGit.merge([remoteDefaultBranch])
+    } catch (mergeError) {
+      // Merge conflict or other merge error
+      return {
+        success: false,
+        type: 'merge_conflict',
+        error: mergeError.message,
+        message: `Merge conflict with ${defaultBranch}: ${mergeError.message}`,
+        details: { from: defaultBranch, to: currentBranchName }
+      }
+    }
+
+    // Check merge result - simple-git returns an object with changes info
+    const hasChanges = (result?.files?.length > 0) ||
+                      (result?.summary?.changes > 0) ||
+                      (result?.summary?.insertions > 0) ||
+                      (result?.summary?.deletions > 0)
+
+    if (!hasChanges) {
+      return {
+        success: true,
+        type: 'up_to_date_with_default',
+        message: `Already up to date with ${defaultBranch}`,
+        details: { defaultBranch, currentBranch: currentBranchName }
+      }
+    }
+
+    // Successful merge with changes, now push the changes
+    onProgress('Pushing merged changes...')
+    try {
+      await simpleGit.push()
+      return {
+        success: true,
+        type: 'merged_from_default',
+        message: `Successfully merged ${defaultBranch} into ${currentBranchName}`,
+        details: { from: defaultBranch, to: currentBranchName }
+      }
+    } catch (pushError) {
+      return {
+        success: true,
+        type: 'merged_from_default',
+        message: `Merged ${defaultBranch} into ${currentBranchName} (push failed: ${pushError.message})`,
+        details: { from: defaultBranch, to: currentBranchName, pushError: pushError.message }
+      }
+    }
+  } catch (error) {
+    // Fall back to regular pull if default branch operations fail
+    onProgress('Falling back to regular pull...')
+    await simpleGit.pull()
+    return { success: true, type: 'pulled', message: 'Successfully pulled (fallback)' }
+  }
+}
+
+async function pullMainWorktree(simpleGit, onProgress, pullFromDefault) {
+  try {
+    onProgress('Checking status...')
 
     const status = await simpleGit.status()
     if (status.files.length > 0) {
-      statusDisplay.updateRepo(repoName, 'uncommitted', 'Has uncommitted changes, skipped')
-      return { success: true, type: 'uncommitted' }
+      return { success: true, type: 'uncommitted', message: 'Has uncommitted changes, skipped' }
     }
 
-    statusDisplay.updateRepo(repoName, 'pulling', 'Fetching all branches...')
+    onProgress('Fetching all branches...')
     await simpleGit.fetch(['--all'])
 
     if (!(await repositoryHasCommits(simpleGit))) {
-      return await pullRepositoryWithoutLocalCommits(repoName, simpleGit, statusDisplay)
+      return await pullRepositoryWithoutLocalCommits(simpleGit, onProgress)
     }
 
     if (pullFromDefault) {
-      // Get current branch
-      const currentBranchName = await getCurrentBranchName(simpleGit)
-
-      // Get default branch
-      statusDisplay.updateRepo(repoName, 'pulling', 'Detecting default branch...')
-      const defaultBranch = await getDefaultBranch(simpleGit)
-
-      if (currentBranchName !== defaultBranch) {
-        // Attempt to merge from default branch
-        statusDisplay.updateRepo(repoName, 'pulling', `Merging changes from ${defaultBranch}...`)
-        try {
-          const remoteName = await getPrimaryRemoteName(simpleGit)
-          const remoteDefaultBranch = `${remoteName}/${defaultBranch}`
-
-          // Check if remote branch exists
-          const branches = await simpleGit.branch(['-r'])
-          const hasRemoteDefault = branches.all.some(branch => branch.includes(remoteDefaultBranch))
-
-          if (hasRemoteDefault) {
-            // Attempt to merge - let git decide what to do
-            try {
-              const result = await simpleGit.merge([remoteDefaultBranch])
-
-              // Check merge result - simple-git returns an object with changes info
-              const hasChanges = (result?.files?.length > 0) ||
-                                (result?.summary?.changes > 0) ||
-                                (result?.summary?.insertions > 0) ||
-                                (result?.summary?.deletions > 0)
-
-              const isAlreadyUpToDate = !hasChanges
-
-              if (isAlreadyUpToDate) {
-                statusDisplay.updateRepo(repoName, 'success', `Already up to date with ${defaultBranch}`)
-                return { success: true, type: 'up_to_date_with_default', details: { defaultBranch, currentBranch: currentBranchName } }
-              } else {
-                // Successful merge with changes, now push the changes
-                statusDisplay.updateRepo(repoName, 'pulling', `Pushing merged changes...`)
-                try {
-                  await simpleGit.push()
-                  statusDisplay.updateRepo(repoName, 'success', `Successfully merged ${defaultBranch} into ${currentBranchName}`)
-                  return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName } }
-                } catch (pushError) {
-                  statusDisplay.updateRepo(repoName, 'success', `Merged ${defaultBranch} into ${currentBranchName} (push failed: ${pushError.message})`)
-                  return { success: true, type: 'merged_from_default', details: { from: defaultBranch, to: currentBranchName, pushError: pushError.message } }
-                }
-              }
-            } catch (mergeError) {
-              // Merge conflict or other merge error
-              statusDisplay.updateRepo(repoName, 'failed', `Merge conflict with ${defaultBranch}: ${mergeError.message}`)
-              return { success: false, type: 'merge_conflict', error: mergeError.message, details: { from: defaultBranch, to: currentBranchName } }
-            }
-          } else {
-            statusDisplay.updateRepo(repoName, 'success', `Remote ${defaultBranch} not found, pulling current branch`)
-            await simpleGit.pull()
-            return { success: true, type: 'pulled' }
-          }
-        } catch (error) {
-          // Fall back to regular pull if default branch operations fail
-          statusDisplay.updateRepo(repoName, 'pulling', 'Falling back to regular pull...')
-          await simpleGit.pull()
-          statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled (fallback)')
-          return { success: true, type: 'pulled' }
-        }
-      } else {
-        // On default branch, just pull normally
-        statusDisplay.updateRepo(repoName, 'pulling', `Pulling ${defaultBranch} (current branch)...`)
-        await simpleGit.pull()
-        statusDisplay.updateRepo(repoName, 'success', `Successfully pulled ${defaultBranch}`)
-        return { success: true, type: 'pulled_default' }
-      }
-    } else {
-      // Standard pull behavior
-      statusDisplay.updateRepo(repoName, 'pulling', 'Pulling changes...')
-      await simpleGit.pull()
-      statusDisplay.updateRepo(repoName, 'success', 'Successfully pulled')
-      return { success: true, type: 'pulled' }
+      return await pullDefaultIntoCurrentBranch(simpleGit, onProgress)
     }
+
+    // Standard pull behavior
+    onProgress('Pulling changes...')
+    await simpleGit.pull()
+    return { success: true, type: 'pulled', message: 'Successfully pulled' }
   } catch (error) {
-    statusDisplay.updateRepo(repoName, 'failed', `Error: ${error.message}`)
-    return { success: false, type: 'pull', error: error.message }
+    return { success: false, type: 'pull', error: error.message, message: `Error: ${error.message}` }
+  }
+}
+
+function reportResult(repoName, statusDisplay, result) {
+  const status = !result.success
+    ? 'failed'
+    : result.type === 'uncommitted'
+      ? 'uncommitted'
+      : 'success'
+
+  statusDisplay.updateRepo(repoName, status, result.message)
+  return result
+}
+
+async function pullRepository(repoName, targetDir, statusDisplay, pullFromDefault = false, includeWorktrees = true) {
+  const repoPath = path.join(targetDir, repoName)
+  const simpleGit = createGit(repoPath)
+  const onProgress = message => statusDisplay.updateRepo(repoName, 'pulling', message)
+
+  // Linked worktrees have their own working directories and their own branches,
+  // so a pull in the main worktree never updates them (issue #48).
+  const linkedWorktrees = includeWorktrees ? await listLinkedWorktrees(simpleGit) : []
+  const mainResult = await pullMainWorktree(simpleGit, onProgress, pullFromDefault)
+
+  if (linkedWorktrees.length === 0) {
+    return reportResult(repoName, statusDisplay, mainResult)
+  }
+
+  const linkedResults = await pullWorktrees(linkedWorktrees, {
+    gitFactory: createGit,
+    onProgress,
+    pullDefaultIntoCurrent: pullFromDefault ? pullDefaultIntoCurrentBranch : null
+  })
+
+  const combined = buildWorktreeStatusMessage(mainResult, linkedResults)
+  statusDisplay.updateRepo(repoName, combined.status, combined.message)
+  return {
+    success: combined.status !== 'failed',
+    type: combined.type,
+    message: combined.message,
+    main: mainResult,
+    worktrees: linkedResults
   }
 }
 
@@ -644,7 +759,7 @@ async function cloneRepository(repo, targetDir, useSsh, statusDisplay) {
   }
 }
 
-async function deleteRepository(repoName, targetDir, statusDisplay) {
+async function deleteRepository(repoName, targetDir, statusDisplay, includeWorktrees = true) {
   try {
     const repoPath = path.join(targetDir, repoName)
 
@@ -670,6 +785,30 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
       return { success: true, type: 'skipped' }
     }
 
+    // Deleting the repository directory destroys the object database shared by
+    // every linked worktree, so all of them must be checked for data first.
+    if (includeWorktrees) {
+      const linkedWorktrees = await listLinkedWorktrees(simpleGit)
+
+      if (linkedWorktrees.length > 0) {
+        statusDisplay.updateRepo(repoName, 'checking', `Checking ${linkedWorktrees.length} linked worktrees...`)
+        const dirtyWorktrees = await findDirtyWorktrees(linkedWorktrees, createGit)
+
+        if (dirtyWorktrees.length > 0) {
+          const labels = dirtyWorktrees.map(worktree => worktreeLabel(worktree.path)).join(', ')
+          statusDisplay.updateRepo(repoName, 'uncommitted', `Has uncommitted changes in worktrees (${labels}), skipped`)
+          return { success: true, type: 'uncommitted', details: { worktrees: dirtyWorktrees.map(worktree => worktree.path) } }
+        }
+
+        const externalWorktrees = linkedWorktrees.filter(worktree => !isPathInside(worktree.path, repoPath))
+        if (externalWorktrees.length > 0) {
+          const labels = externalWorktrees.map(worktree => worktreeLabel(worktree.path)).join(', ')
+          statusDisplay.updateRepo(repoName, 'skipped', `Has linked worktrees outside the repository (${labels}), skipped`)
+          return { success: true, type: 'skipped', details: { worktrees: externalWorktrees.map(worktree => worktree.path) } }
+        }
+      }
+    }
+
     // Delete the repository
     statusDisplay.updateRepo(repoName, 'deleting', 'Deleting repository...')
     await fs.remove(repoPath)
@@ -682,7 +821,7 @@ async function deleteRepository(repoName, targetDir, statusDisplay) {
 }
 
 // Process repository (either pull or clone)
-async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false, pullChangesToFork = false) {
+async function processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault = false, switchToDefault = false, pullChangesToFork = false, includeWorktrees = true) {
   const repoPath = path.join(targetDir, repo.name)
   const exists = await directoryExists(repoPath)
 
@@ -699,23 +838,23 @@ async function processRepository(repo, targetDir, useSsh, statusDisplay, token, 
 
   if (exists) {
     if (pullChangesToFork) {
-      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit })
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit, includeWorktrees })
     } else if (switchToDefault) {
-      return await switchToDefaultBranch(repo.name, targetDir, statusDisplay)
+      return await switchToDefaultBranch(repo.name, targetDir, statusDisplay, includeWorktrees)
     } else {
-      return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault)
+      return await pullRepository(repo.name, targetDir, statusDisplay, pullFromDefault, includeWorktrees)
     }
   } else {
     const cloneResult = await cloneRepository(repo, targetDir, useSsh, statusDisplay)
     if (pullChangesToFork && cloneResult.success) {
-      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit })
+      return await syncForkWithUpstream(repo, targetDir, { useSsh, statusDisplay, gitFactory: createGit, includeWorktrees })
     }
     return cloneResult
   }
 }
 
 async function main() {
-  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault, 'pull-changes-to-fork': pullChangesToFork } = argv
+  let { org, user, token, ssh: useSsh, dir: targetDir, threads, 'single-thread': singleThread, 'live-updates': liveUpdates, delete: deleteMode, 'pull-from-default': pullFromDefault, 'switch-to-default': switchToDefault, 'pull-changes-to-fork': pullChangesToFork, worktrees: includeWorktrees } = argv
 
   if (org) {
     org = normalizeExplicitTarget(org, 'organization')
@@ -824,8 +963,8 @@ async function main() {
       // Sequential processing for single-thread mode
       for (const repo of repos) {
         const result = deleteMode
-          ? await deleteRepository(repo.name, targetDir, statusDisplay)
-          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
+          ? await deleteRepository(repo.name, targetDir, statusDisplay, includeWorktrees)
+          : await processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork, includeWorktrees)
         results.push(result)
       }
     } else {
@@ -852,8 +991,8 @@ async function main() {
 
             // Process repository asynchronously
             const processPromise = deleteMode
-              ? deleteRepository(repo.name, targetDir, statusDisplay)
-              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork)
+              ? deleteRepository(repo.name, targetDir, statusDisplay, includeWorktrees)
+              : processRepository(repo, targetDir, useSsh, statusDisplay, token, pullFromDefault, switchToDefault, pullChangesToFork, includeWorktrees)
 
             processPromise
               .then(result => {

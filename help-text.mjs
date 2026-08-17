@@ -15,6 +15,8 @@ Options:
       --pull-from-default       Pull changes from default branch into current branch when behind
       --switch-to-default       Switch to the default branch (main/master) in each repository
       --pull-changes-to-fork    Update forks with changes from their parent repositories
+      --worktrees               Process all active git worktrees (default: true)
+      --no-worktrees            Process only the main worktree of each repository
   -h, --help                    Show help
   -v, --version                 Show version number
 
@@ -54,4 +56,7 @@ Examples:
 
   gh-pull-all --user konard --pull-changes-to-fork
     Sync forked repositories with their upstream repositories
+
+  gh-pull-all --user konard --no-worktrees
+    Process only the main worktree of each repository
 `

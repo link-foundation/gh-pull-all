@@ -9,7 +9,7 @@ Pull request: https://github.com/link-foundation/gh-pull-all/pull/49
 - Issue and PR metadata: `issue.json`, `issue-comments.json` (empty), `pr-49.json`, `pr-49-conversation-comments.json` (empty), `pr-49-review-comments.json` (empty), `pr-49-reviews.json` (empty)
 - Current repository file tree snapshot: `current-file-tree.txt`
 - Recent merged PR context: `recent-merged-prs.json`
-- Local before/after verification logs: `local-issue-48-reproduction-before-fix.log`, `local-issue-48-reproduction-after-fix.log`
+- Local before/after verification logs: `local-issue-48-reproduction-before-fix.txt`, `local-issue-48-reproduction-after-fix.txt`
 
 The issue has no comments, so the requirement list below is derived directly from the issue body.
 
@@ -42,7 +42,7 @@ linked worktree pulled: false
 🐛 Reproduced issue #48: linked worktrees are never fetched or pulled
 ```
 
-(`local-issue-48-reproduction-before-fix.log`)
+(`local-issue-48-reproduction-before-fix.txt`)
 
 ## Online Facts Used
 
@@ -119,7 +119,7 @@ Status messages keep the substrings that `status-display.mjs#printSummary` match
 
 ## Verification
 
-- `experiments/issue-48-worktree-pull-reproduction.mjs` after the fix: `main worktree pulled: true`, `linked worktree pulled: true` (`local-issue-48-reproduction-after-fix.log`).
+- `experiments/issue-48-worktree-pull-reproduction.mjs` after the fix: `main worktree pulled: true`, `linked worktree pulled: true` (`local-issue-48-reproduction-after-fix.txt`).
 - `tests/test-worktrees.mjs` covers: porcelain parsing (main/linked/detached/prunable/bare, branch lookup, path containment, summary counting), linked worktrees being pulled, `--no-worktrees` opting out, dirty linked worktrees being skipped with their files intact, `--delete` refusing to remove a repository whose worktree is dirty, `--delete` skipping repositories with worktrees stored outside, and `--switch-to-default` pulling the default branch inside the worktree that holds it.
 - Full suite: `npm test`, plus `npm run check:syntax`, `npm run check:line-limits`, `npm run check:changeset`.
 

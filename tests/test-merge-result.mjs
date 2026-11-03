@@ -2,11 +2,11 @@
 ':' //# ; exec "$(command -v bun || command -v node)" "$0" "$@"
 
 // Download use-m dynamically
-import { loadUseM } from '../load-use-m.mjs'
+import { loadUseM, getNamedExport } from '../load-use-m.mjs'
 const { use } = await loadUseM()
 
 // Import simple-git using use-m
-const { default: git } = await use('simple-git@3.28.0')
+const git = getNamedExport(await use('simple-git@3.28.0'), 'simpleGit', { name: 'simple-git', type: 'function' })
 
 async function testMerge() {
   const targetDir = process.argv[2] || '.'

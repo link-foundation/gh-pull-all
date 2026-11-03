@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 
 // Tests for default auto-detection helpers
-import { loadUseM } from '../load-use-m.mjs'
+import { loadUseM, getNamedExport } from '../load-use-m.mjs'
 const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
-const { default: git } = await use('simple-git@3.28.0')
+const git = getNamedExport(await use('simple-git@3.28.0'), 'simpleGit', { name: 'simple-git', type: 'function' })
 import { execFileSync } from 'child_process'
 import { promises as fs } from 'fs'
 import os from 'os'

@@ -24,11 +24,12 @@ if (startupArgs.includes('--help') || startupArgs.includes('-h')) {
 
 // Download use-m dynamically (robustly, with CDN fallback and clear errors).
 // See https://github.com/link-foundation/gh-pull-all/issues/35.
-const { loadUseM } = await import('./load-use-m.mjs')
+const { loadUseM, getDefaultExport } = await import('./load-use-m.mjs')
 const { use } = await loadUseM()
 
-// Import semver for version management
-const semver = await use('semver@7.7.2')
+// Import semver for version management. use-m may return the namespace or the
+// unwrapped CommonJS export, so pick whichever provides `inc` (issue #50).
+const semver = getDefaultExport(await use('semver@7.7.2'), { name: 'semver', members: ['inc'] })
 
 function updatePackageJson(newVersion) {
   const packagePath = path.join(__dirname, 'package.json')

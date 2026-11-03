@@ -304,6 +304,20 @@ node tests/test-integration-slow.mjs # End-to-end integration tests
 - Authentication is automatically handled if GitHub CLI is set up
 - Use `--threads 1` or `--single-thread` if hitting rate limits
 
+## Troubleshooting
+
+gh-pull-all loads its npm dependencies at runtime through [use-m](https://github.com/link-foundation/use-m). If the tool fails during startup (for example `TypeError: ... is not a function`), these environment variables help:
+
+```bash
+# Trace which use-m was loaded and which export was picked for every package
+GH_PULL_ALL_DEBUG=1 gh-pull-all --help
+
+# Pin the use-m loader (comma-separated list of URLs, tried in order)
+GH_PULL_ALL_USE_M_URL=https://unpkg.com/use-m@8.16.2/use.js gh-pull-all --org my-org
+```
+
+Please include the `GH_PULL_ALL_DEBUG=1` output when [reporting an issue](https://github.com/link-foundation/gh-pull-all/issues).
+
 ## License
 
 This project is released into the public domain under The Unlicense - see [LICENSE](LICENSE) file for details.

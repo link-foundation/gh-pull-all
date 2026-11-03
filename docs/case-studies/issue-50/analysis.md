@@ -38,7 +38,7 @@ Every invocation crashes before any argument is parsed, including `--help`. The 
 
 ## 3. Timeline
 
-All times are UTC unless noted. Sources: `use-m/npm-publish-times-8.x.txt`, `use-m/tag-dates.txt`, `use-m/use-m-pr-48.json`, `logs/simple-git-publish-times.txt`, `issue.json`, and `npm view gh-pull-all time`.
+All times are UTC unless noted. Sources: `use-m/npm-publish-times-8.x.txt`, `use-m/tag-dates.txt`, `use-m/use-m-pr-48.json`, `evidence/simple-git-publish-times.txt`, `issue.json`, and `npm view gh-pull-all time`.
 
 | Date | Event |
 |---|---|
@@ -58,7 +58,7 @@ All times are UTC unless noted. Sources: `use-m/npm-publish-times-8.x.txt`, `use
 
 ### 4.1 `yargs is not a function` (the reported crash)
 
-Evidence: `logs/use-m-version-bisect-yargs-shape.txt`, `logs/matrix-before-fix.log`, `logs/use-m-regression-repro.txt`, `use-m/src-use.mjs-v8.16.2-to-v8.16.3.diff`.
+Evidence: `evidence/use-m-version-bisect-yargs-shape.txt`, `evidence/matrix-before-fix.log`, `evidence/use-m-regression-repro.txt`, `use-m/src-use.mjs-v8.16.2-to-v8.16.3.diff`.
 
 The bisect gives the shape of `await use('yargs@17.7.2')` per use-m version:
 
@@ -98,11 +98,11 @@ Under 8.16.3+ they happened to keep working only because those packages' namespa
 
 ### 4.3 simple-git 4 removed its default export
 
-`tests/test-file-operations.mjs` loads `simple-git@latest`. simple-git 4.0.0 (2026-09-25) no longer has a default export, so `mod.default` is `undefined` and one test failed on `main` too (`logs/test-file-operations-before-fix.log`: 5/6 passed). The named `simpleGit` export exists in 3.x and 4.x.
+`tests/test-file-operations.mjs` loads `simple-git@latest`. simple-git 4.0.0 (2026-09-25) no longer has a default export, so `mod.default` is `undefined` and one test failed on `main` too (`evidence/test-file-operations-before-fix.log`: 5/6 passed). The named `simpleGit` export exists in 3.x and 4.x.
 
 ### 4.4 Demo: unexported subpath and duplicate React
 
-`demos/ink-list-demo.mjs` imported `ink@latest/build/index.js`. use-m 8.16.3 enforces `exports`, so this throws `Package subpath './build/index.js' is not exported`. Independently, and already on use-m 8.16.2 (`logs/ink-demo-before-fix-use-m-8.16.2.log`), the demo loaded `react@latest` as a separate alias install. That gave two React copies (ink's own `react` dependency and the alias), which caused `Invalid hook call`.
+`demos/ink-list-demo.mjs` imported `ink@latest/build/index.js`. use-m 8.16.3 enforces `exports`, so this throws `Package subpath './build/index.js' is not exported`. Independently, and already on use-m 8.16.2 (`evidence/ink-demo-before-fix-use-m-8.16.2.log`), the demo loaded `react@latest` as a separate alias install. That gave two React copies (ink's own `react` dependency and the alias), which caused `Invalid hook call`.
 
 ## 5. Solution implemented in this repository
 
@@ -122,7 +122,7 @@ const git = getNamedExport(await use('simple-git@3.28.0'), 'simpleGit', { name: 
 const fs = getDefaultExport(await use('fs-extra@11.3.0'), { name: 'fs-extra', members: ['ensureDir', 'remove'] })
 ```
 
-The fix keeps `use-m@latest` (so gh-pull-all still gets use-m fixes) and works with every use-m version tested: 8.13.7, 8.16.1, 8.16.2, 8.16.3, 8.16.4 and latest (`logs/matrix-after-fix.log`). It also works under Bun (`logs/bun-after-fix.log`).
+The fix keeps `use-m@latest` (so gh-pull-all still gets use-m fixes) and works with every use-m version tested: 8.13.7, 8.16.1, 8.16.2, 8.16.3, 8.16.4 and latest (`evidence/matrix-after-fix.log`). It also works under Bun (`evidence/bun-after-fix.log`).
 
 ### 5.2 Applied to the entire codebase
 
@@ -141,14 +141,14 @@ The fix keeps `use-m@latest` (so gh-pull-all still gets use-m fixes) and works w
 
 - `tests/test-use-m-module-shapes.mjs` (new, 17 tests). It covers every yargs shape observed per use-m version, proves that the old destructuring yields `undefined` on the ≥ 8.16.3 shape, and covers simple-git 3.x/4.x, fs-extra/semver member checks, error messages, the `hideBin`/`Octokit` named lookups, env-var parsing, the debug toggles and the static guard. It also includes an end-to-end run of the real CLI with the real use-m that must get past argument parsing.
 - `tests/test-concurrent-processing.mjs`: the "valid user" test killed the CLI after a fixed 3 s and was flaky when unpkg/npm was slow. It now waits (bounded at 30 s) until the initialization output appears.
-- The first local full-suite run passed 41/42 (`logs/full-suite-before-flaky-test-fix.log`). Its only failure was that 3 s timing race. After the test was fixed, the full suite passes (`logs/full-suite-after-fix.log`).
+- The first local full-suite run passed 41/42 (`evidence/full-suite-before-flaky-test-fix.log`). Its only failure was that 3 s timing race. After the test was fixed, the full suite passes (`evidence/full-suite-after-fix.log`).
 - README gained a "Troubleshooting" section documenting `GH_PULL_ALL_DEBUG` and `GH_PULL_ALL_USE_M_URL`.
 
 ## 6. Fix in use-m and reports to other repositories (R2, R11)
 
 Filed **link-foundation/use-m#83** (body in `use-m/upstream-issue-body.md`). It contains:
 
-- a minimal reproduction (`experiments/issue-50-use-m-regression-repro.mjs`, output in `logs/use-m-regression-repro.txt`);
+- a minimal reproduction (`experiments/issue-50-use-m-regression-repro.mjs`, output in `evidence/use-m-regression-repro.txt`);
 - the bisect table and root-cause code references;
 - the workaround above;
 - suggested code fixes:
@@ -196,10 +196,10 @@ GH_PULL_ALL_DEBUG=1 node gh-pull-all.mjs --help
 - `screenshot.png`, `issue.json`, `issue-comments.json`: original report.
 - `pr-51*.json`: PR metadata and comments at the time of the analysis.
 - `use-m/`: npm publish times, tag dates, the `v8.16.2..v8.16.3` source diff, changelog head, use-m PR #48 and issues #47/#60/#72, and the upstream issue body (#83).
-- `logs/use-m-version-bisect-yargs-shape.txt`, `logs/use-m-latest-module-shapes.txt`: module shapes per use-m version.
-- `logs/matrix-before-fix.log`, `logs/matrix-after-fix.log`: the real CLI across use-m versions.
-- `logs/use-m-regression-repro.txt`: upstream reproduction output.
-- `logs/test-*-before-fix.log`, `logs/test-*-after-fix.log`, `logs/full-suite-before-flaky-test-fix.log`, `logs/full-suite-after-fix.log`: test evidence.
-- `logs/bun-after-fix.log`: Bun run.
-- `logs/ink-demo-*.log`: demo before/after.
-- `logs/simple-git-publish-times.txt`: simple-git 4.0.0 release date.
+- `evidence/use-m-version-bisect-yargs-shape.txt`, `evidence/use-m-latest-module-shapes.txt`: module shapes per use-m version.
+- `evidence/matrix-before-fix.log`, `evidence/matrix-after-fix.log`: the real CLI across use-m versions.
+- `evidence/use-m-regression-repro.txt`: upstream reproduction output.
+- `evidence/test-*-before-fix.log`, `evidence/test-*-after-fix.log`, `evidence/full-suite-before-flaky-test-fix.log`, `evidence/full-suite-after-fix.log`: test evidence.
+- `evidence/bun-after-fix.log`: Bun run.
+- `evidence/ink-demo-*.log`: demo before/after.
+- `evidence/simple-git-publish-times.txt`: simple-git 4.0.0 release date.

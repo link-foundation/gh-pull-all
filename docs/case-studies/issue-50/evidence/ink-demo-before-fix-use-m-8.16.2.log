@@ -1,0 +1,53 @@
+Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+
+  ERROR  Cannot read properties of null (reading 'useState')
+
+ /home/box/.nvm/versions/node/v26.13.0/lib/node_modules/react-v-latest/cjs/reac
+ t.development.js:1309:33
+
+ 1306:       return resolveDispatcher().useRef(initialValue);
+ 1307:     };
+ 1308:     exports.useState = function (initialState) {
+ 1309:       return resolveDispatcher().useState(initialState);
+ 1310:     };
+ 1311:     exports.useSyncExternalStore = function (
+ 1312:       subscribe,
+
+ -process.env.NODE_ENV.expo
+  rts.useState             (/home/box/.nvm/versions/node/v26.13.0/lib/node_modu
+                           les/react-v-latest/cjs/react.development.js:1309:33)
+ - App (demos/ink-list-demo.mjs:99:29)
+ -Object.react_stack_bot (/home/box/.nvm/versions/node/v26.13.0/lib/node_module
+  om_frame              s/ink-v-latest/node_modules/react-reconciler/cjs/react-
+                        reconciler.development.js:19204:20)
+ -renderWithHo (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-la
+  ks          test/node_modules/react-reconciler/cjs/react-reconciler.developme
+              nt.js:5549:22)
+ -updateFunctionCom (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink
+  onent            -v-latest/node_modules/react-reconciler/cjs/react-reconciler
+                   .development.js:7969:19)
+ -beginWor (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-latest
+          /node_modules/react-reconciler/cjs/react-reconciler.development.js:95
+          91:18)
+ -runWithFiberIn (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-
+  EV            latest/node_modules/react-reconciler/cjs/react-reconciler.devel
+                opment.js:2660:30)
+ -performUnitOfW (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-
+  rk            latest/node_modules/react-reconciler/cjs/react-reconciler.devel
+                opment.js:16674:22)
+ -workLoopSy (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-late
+  c         st/node_modules/react-reconciler/cjs/react-reconciler.development.j
+            s:16500:41)
+ -renderRootSy (/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-la
+  c           test/node_modules/react-reconciler/cjs/react-reconciler.developme
+              nt.js:16481:11)
+

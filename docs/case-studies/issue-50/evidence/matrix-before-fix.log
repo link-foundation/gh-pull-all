@@ -1,0 +1,9 @@
+use-m 8.13.7: OK (https://unpkg.com/use-m@8.13.7/use.js)
+use-m 8.16.1: OK (https://unpkg.com/use-m@8.16.1/use.js)
+use-m 8.16.2: OK (https://unpkg.com/use-m@8.16.2/use.js)
+use-m 8.16.3: FAIL
+TypeError: yargs is not a function
+use-m 8.16.4: FAIL
+TypeError: yargs is not a function
+use-m latest: FAIL
+TypeError: yargs is not a function

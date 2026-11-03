@@ -1,0 +1,18 @@
+• • • ✘ • •   (5 / 6)
+
+   FAIL  "cloneRepository should clone a public repository"
+    Should successfully clone repository  (ok)
+
+    at assert (file:///home/box/.nvm/versions/node/v26.13.0/lib/node_modules/uvu-v-0.5.6/assert/index.mjs:33:8)
+    at Module.ok (file:///home/box/.nvm/versions/node/v26.13.0/lib/node_modules/uvu-v-0.5.6/assert/index.mjs:37:2)
+    at Object.handler (file:///tmp/gh-issue-solver-1793702843409/tests/test-file-operations.mjs:101:10)
+    at async Number.runner (file:///home/box/.nvm/versions/node/v26.13.0/lib/node_modules/uvu-v-0.5.6/dist/index.mjs:78:5)
+    at async Timeout.exec [as _onTimeout] (file:///home/box/.nvm/versions/node/v26.13.0/lib/node_modules/uvu-v-0.5.6/dist/index.mjs:141:33)
+
+
+
+  Total:     6
+  Passed:    5
+  Skipped:   0
+  Duration:  10.14ms
+

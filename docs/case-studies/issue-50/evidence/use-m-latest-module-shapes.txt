@@ -1,0 +1,6 @@
+use-m source: https://unpkg.com/use-m/use.js
+yargs@17.7.2: typeof=function keys=[] typeof default=undefined typeof default.default=undefined
+yargs@17.7.2/helpers: typeof=object keys=["Parser","applyExtends","hideBin"] typeof default=undefined typeof default.default=undefined
+simple-git@3.28.0: typeof=object keys=["CheckRepoActions","CleanOptions","DiffNameStatus","GitConfigScope","GitConstructError","GitError","GitPluginError","GitResponseError","ResetMode","TaskConfigurationError","default","gitP"] typeof default=function typeof default.default=undefined
+fs-extra@11.3.0: typeof=object keys=["copy","createFile","createFileSync","createLink","createLinkSync","createSymlink","createSymlinkSync","default","emptyDir","emptyDirSync","emptydir","emptydirSync"] typeof default=object typeof default.default=undefined
+@octokit/rest@22.0.0: typeof=object keys=["Octokit"] typeof default=undefined typeof default.default=undefined

@@ -1,0 +1,12 @@
+use-m: https://unpkg.com/use-m@8.16.2/use.js
+  OK   const { default: yargs } = await use('yargs@17.7.2'); yargs([]) (function)
+  OK   use('ink@5.2.1/build/index.js') (function)
+exit=0
+use-m: https://unpkg.com/use-m@8.16.3/use.js
+  FAIL const { default: yargs } = await use('yargs@17.7.2'); yargs([]): TypeError: yargs is not a function
+  FAIL use('ink@5.2.1/build/index.js'): Package subpath './build/index.js' is not exported by '/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-5.2.1/package.json'.
+exit=1
+use-m: https://unpkg.com/use-m@8.16.4/use.js
+  FAIL const { default: yargs } = await use('yargs@17.7.2'); yargs([]): TypeError: yargs is not a function
+  FAIL use('ink@5.2.1/build/index.js'): Package subpath './build/index.js' is not exported by '/home/box/.nvm/versions/node/v26.13.0/lib/node_modules/ink-v-5.2.1/package.json'.
+exit=1

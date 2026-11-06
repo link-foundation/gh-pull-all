@@ -109,13 +109,19 @@ const { normalizeExplicitTarget, resolveAutoTarget } = await import('./auto-dete
 // A bare `eval(await (await fetch(...)).text())` crashes with a cryptic
 // SyntaxError when a CDN returns an error body instead of the module source.
 // See https://github.com/link-foundation/gh-pull-all/issues/35.
-const { loadUseM } = await import('./load-use-m.mjs')
+const { loadUseM, getDefaultExport, getNamedExport } = await import('./load-use-m.mjs')
 const { use } = await loadUseM()
 
 // Import CLI parsing before heavier sync dependencies so help can print quickly.
-const { default: yargs } = await use('yargs@17.7.2')
-const yargsHelpers = await use('yargs@17.7.2/helpers')
-const hideBin = yargsHelpers.hideBin || yargsHelpers.default?.hideBin || ((argv) => argv.slice(2))
+// use-m may return either the module namespace or the already-unwrapped default
+// export (use-m >= 8.16.3 returns yargs itself), so never destructure `default`
+// directly. See https://github.com/link-foundation/gh-pull-all/issues/50.
+const yargs = getDefaultExport(await use('yargs@17.7.2'), { name: 'yargs', type: 'function' })
+const hideBin = getNamedExport(await use('yargs@17.7.2/helpers'), 'hideBin', {
+  name: 'yargs/helpers',
+  type: 'function',
+  optional: true
+}) || ((argv) => argv.slice(2))
 
 version = getVersionSync()
 
@@ -316,9 +322,9 @@ if (isHelpRequest) {
 }
 
 // Import sync dependencies only after standalone CLI requests are handled.
-const { Octokit } = await use('@octokit/rest@22.0.0')
-const { default: git } = await use('simple-git@3.28.0')
-const fs = await use('fs-extra@11.3.0')
+const Octokit = getNamedExport(await use('@octokit/rest@22.0.0'), 'Octokit', { name: '@octokit/rest', type: 'function' })
+const git = getNamedExport(await use('simple-git@3.28.0'), 'simpleGit', { name: 'simple-git', type: 'function' })
+const fs = getDefaultExport(await use('fs-extra@11.3.0'), { name: 'fs-extra', members: ['ensureDir', 'remove'] })
 const { syncForkWithUpstream } = await import('./fork-sync.mjs')
 const {
   buildWorktreeStatusMessage,

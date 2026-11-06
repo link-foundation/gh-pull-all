@@ -2,13 +2,40 @@
 
 // Download use-m dynamically (robustly, with CDN fallback and clear errors).
 // See https://github.com/link-foundation/gh-pull-all/issues/35.
-import { loadUseM } from '../load-use-m.mjs'
+import { loadUseM, getDefaultExport, getNamedExport } from '../load-use-m.mjs'
 const { use } = await loadUseM()
 
-// Import React and Ink using use-m (with workaround for ink path)
-const React = await use('react@latest')
+// Import React and Ink using use-m. use-m >= 8.16.3 resolves packages through
+// their `exports` map, so the old physical path 'ink@latest/build/index.js' is
+// rejected as unexported; import the package root and fall back to the old path
+// for older use-m releases. See https://github.com/link-foundation/gh-pull-all/issues/50.
+let inkModule
+try {
+  inkModule = await use('ink@latest')
+} catch (error) {
+  inkModule = await use('ink@latest/build/index.js')
+}
+// use-m installs every package into its own alias, so `use('react@latest')`
+// yields a second React copy and Ink fails with "Invalid hook call". Prefer the
+// React that Ink itself resolves (npm resolver), falling back to use-m.
+async function loadReactUsedByInk() {
+  try {
+    const { execSync } = await import('child_process')
+    const { createRequire } = await import('module')
+    const { join } = await import('path')
+    const globalRoot = execSync('npm root -g', { encoding: 'utf8' }).trim()
+    return createRequire(join(globalRoot, 'ink-v-latest', 'package.json'))('react')
+  } catch (error) {
+    return use('react@latest')
+  }
+}
+const React = getDefaultExport(await loadReactUsedByInk(), {
+  name: 'react',
+  members: ['createElement', 'useState', 'useEffect']
+})
 const { useState, useEffect } = React
-const { render, Text, Box, useApp } = await use('ink@latest/build/index.js')
+const [render, Text, Box, useApp] = ['render', 'Text', 'Box', 'useApp']
+  .map((exportName) => getNamedExport(inkModule, exportName, { name: 'ink' }))
 
 // Simulated repository data
 const mockRepos = [

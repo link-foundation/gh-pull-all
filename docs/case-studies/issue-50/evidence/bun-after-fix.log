@@ -1,0 +1,12 @@
+[gh-pull-all:use-m] loaded use-m from https://unpkg.com/use-m@8.16.4/use.js
+[gh-pull-all:use-m] yargs: use() returned function; default export -> function
+[gh-pull-all:use-m] yargs/helpers: named export 'hideBin' -> function
+[gh-pull-all:use-m] @octokit/rest: named export 'Octokit' -> function
+[gh-pull-all:use-m] simple-git: use() returned object { CheckRepoActions, CleanOptions, DiffNameStatus, GitConfigScope, GitConstructError, GitError, GitPluginError, GitResponseError, … }; default export -> function
+[gh-pull-all:use-m] fs-extra: use() returned object { Dir, Dirent, F_OK, FileReadStream, FileWriteStream, R_OK, ReadStream, Stats, … }; default export -> object { Dir, Dirent, F_OK, FileReadStream, FileWriteStream, R_OK, ReadStream, Stats, … }
+[34m🚀 Starting nonexistent-org-issue-50 organization repository sync...[0m
+[36m📁 Target directory: /tmp/exp50/out-bun[0m
+[36m🔗 Using HTTPS for cloning[0m
+[36m⚡ Concurrency: 1 thread (sequential)[0m
+[36m📋 Using GitHub API to fetch repositories[0m
+[34m🔍 Fetching repositories from nonexistent-org-issue-50 organization...[0m

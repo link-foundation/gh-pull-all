@@ -93,8 +93,12 @@ test('concurrent processing with valid user should initialize properly', async (
     stdout += data.toString()
   })
   
-  // Let it run for a bit then kill to test initialization
-  await new Promise(resolve => setTimeout(resolve, 3000))
+  // Wait until initialization output appears (bounded), then kill. A fixed 3s
+  // sleep raced against use-m/CDN latency and made this test flaky.
+  const deadline = Date.now() + 30000
+  while (!/Concurrency: 3 threads/.test(stdout) && Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 200))
+  }
   terminateChildTree(child)
   
   const result = await new Promise((resolve) => {

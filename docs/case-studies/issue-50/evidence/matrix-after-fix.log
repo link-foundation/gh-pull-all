@@ -1,0 +1,6 @@
+use-m 8.13.7: OK (https://unpkg.com/use-m@8.13.7/use.js)
+use-m 8.16.1: OK (https://unpkg.com/use-m@8.16.1/use.js)
+use-m 8.16.2: OK (https://unpkg.com/use-m@8.16.2/use.js)
+use-m 8.16.3: OK (https://unpkg.com/use-m@8.16.3/use.js)
+use-m 8.16.4: OK (https://unpkg.com/use-m@8.16.4/use.js)
+use-m latest: OK (https://unpkg.com/use-m@8.16.4/use.js)

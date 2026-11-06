@@ -1,0 +1,31 @@
+== 8.13.7
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.13.8
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.14.0
+== 8.14.4
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.15.0
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.15.1
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.16.0
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.16.1
+yargs@17.7.2: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+simple-git@3.28.0: typeof=object keys=["default","module.exports"] typeof default=function typeof default.default=function
+== 8.16.2
+yargs@17.7.2: typeof=function keys=["$0","parsed","argv","constructor","addHelpOpt","help","addShowHiddenOpt","showHidden","alias","array","boolean","check"] typeof default=function typeof default.default=undefined
+simple-git@3.28.0: typeof=function keys=["CheckRepoActions","CleanOptions","DiffNameStatus","GitConfigScope","GitConstructError","GitError","GitPluginError","GitResponseError","ResetMode","TaskConfigurationError","grepQueryBuilder","pathspec"] typeof default=function typeof default.default=function
+== 8.16.3
+yargs@17.7.2: typeof=function keys=[] typeof default=undefined typeof default.default=undefined
+simple-git@3.28.0: typeof=object keys=["CheckRepoActions","CleanOptions","DiffNameStatus","GitConfigScope","GitConstructError","GitError","GitPluginError","GitResponseError","ResetMode","TaskConfigurationError","default","gitP"] typeof default=function typeof default.default=undefined
+== 8.16.4
+yargs@17.7.2: typeof=function keys=[] typeof default=undefined typeof default.default=undefined
+simple-git@3.28.0: typeof=object keys=["CheckRepoActions","CleanOptions","DiffNameStatus","GitConfigScope","GitConstructError","GitError","GitPluginError","GitResponseError","ResetMode","TaskConfigurationError","default","gitP"] typeof default=function typeof default.default=undefined

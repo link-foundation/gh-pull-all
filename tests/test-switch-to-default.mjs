@@ -3,11 +3,11 @@
 
 // Test script for --switch-to-default functionality
 // Download use-m dynamically
-import { loadUseM } from '../load-use-m.mjs'
+import { loadUseM, getNamedExport } from '../load-use-m.mjs'
 const { use } = await loadUseM()
 
 // Import dependencies
-const { default: git } = await use('simple-git@3.28.0')
+const git = getNamedExport(await use('simple-git@3.28.0'), 'simpleGit', { name: 'simple-git', type: 'function' })
 import { promises as fs } from 'fs'
 const path = await import('path')
 const { execSync } = await import('child_process')

@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 
 // Test file system and git operations
-import { loadUseM } from '../load-use-m.mjs'
+import { loadUseM, getNamedExport } from '../load-use-m.mjs'
 const { use } = await loadUseM()
 
 const { test } = await use('uvu@0.5.6')
 const assert = await use('uvu@0.5.6/assert')
 import { promises as fs } from 'fs'
 import path from 'path'
-const { default: git } = await use('simple-git@latest')
+const git = getNamedExport(await use('simple-git@latest'), 'simpleGit', { name: 'simple-git', type: 'function' })
 
 // Test file system functions by creating them here
 async function directoryExists(dirPath) {
